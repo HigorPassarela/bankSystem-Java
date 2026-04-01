@@ -14,18 +14,18 @@ Isso sobe apenas os serviços de infraestrutura:
 
 | Container | Porta | Descrição |
 |---|---|---|
-| banksystem-mongodb | 27017 | Banco de dados |
-| banksystem-redis | 6379 | Cache / saldo atômico |
-| banksystem-zookeeper | — | Dependência do Kafka |
-| banksystem-kafka | 29092 | Mensageria |
-| banksystem-camunda | 8080 | Camunda Cockpit (admin/admin) |
+| banksystem-mongodb | 27017 | Banco de dados principal |
+| banksystem-redis | 6379 | Cache / saldo atômico em centavos |
+| banksystem-zookeeper | — | Dependência interna do Kafka |
+| banksystem-kafka | 29092 | Mensageria entre microserviços |
+| banksystem-camunda | 8080 | Motor de processos BPMN (admin/admin) |
 | banksystem-mailhog | 1025 / 8025 | SMTP fake + UI de e-mails |
 
 ---
 
 ## Rodar os microserviços localmente
 
-Cada serviço é um projeto Spring Boot independente. Em terminais separados:
+Cada serviço é um projeto Spring Boot independente. Abra um terminal para cada um:
 
 ```bash
 # Serviço de Contas
@@ -51,7 +51,7 @@ cd servico-fraudes
 
 ### Portas dos microserviços
 
-| Serviço | Porta | Swagger |
+| Serviço | Porta | Swagger UI |
 |---|---|---|
 | servico-contas | 8081 | http://localhost:8081/swagger-ui.html |
 | servico-transacoes | 8082 | http://localhost:8082/swagger-ui.html |
@@ -59,38 +59,55 @@ cd servico-fraudes
 | servico-notificacoes | 8084 | http://localhost:8084/swagger-ui.html |
 | servico-fraudes | 8085 | http://localhost:8085/swagger-ui.html |
 
+> Em todos os Swagger UIs, clique em **Authorize 🔒** e cole `Bearer <token>` para autenticar os endpoints protegidos.
+
 ---
 
-## Variáveis de ambiente (já com defaults para desenvolvimento local)
+## Variáveis de ambiente
 
 Os `application.yml` de cada serviço já apontam para `localhost` por padrão.
 Nenhuma configuração extra é necessária para rodar localmente após subir o Docker.
 
 | Variável | Padrão |
 |---|---|
-| MongoDB | mongodb://admin:senha123@localhost:27017/banksystem |
-| Redis | localhost:6379 (senha: senha123) |
-| Kafka | localhost:29092 |
-| MailHog SMTP | localhost:1025 |
-| Camunda | http://localhost:8080/engine-rest |
+| MongoDB | `mongodb://admin:senha123@localhost:27017/banksystem` |
+| Redis | `localhost:6379` (senha: `senha123`) |
+| Kafka | `localhost:29092` |
+| MailHog SMTP | `localhost:1025` |
+| Camunda REST | `http://localhost:8080/engine-rest` |
 
 ---
 
 ## Visualizar e-mails (MailHog)
 
-Acesse **http://localhost:8025** para ver todos os e-mails enviados pelo sistema,
-incluindo os links de verificação de conta.
+Acesse **http://localhost:8025** para ver todos os e-mails enviados pelo sistema.
+O link de verificação de conta chega aqui após o cadastro.
+
+---
+
+## Ciclo de vida da conta
+
+```
+Cadastro → PENDENTE_EMAIL → (clica no link do MailHog) → ATIVA → SUSPENSA / ENCERRADA
+```
+
+- Contas com status `PENDENTE_EMAIL` **não conseguem fazer login**.
+- Apenas contas `ATIVA` podem realizar transações.
 
 ---
 
 ## Fluxo principal
 
-1. `POST /api/contas/criar` — cria conta + envia e-mail de verificação
-2. Abrir MailHog (http://localhost:8025) e clicar no link de ativação
-3. `POST /api/contas/login` — obtém JWT
-4. Usar o JWT no Swagger (botão 🔒 Authorize) ou no frontend
-5. `POST /api/transacoes/transferencia` — transferência entre contas (requer PIN 4 dígitos)
-6. Kafka publica eventos → extratos persistidos no MongoDB → SSE notifica o frontend
+1. `POST /api/contas/criar` — cria conta (status: `PENDENTE_EMAIL`), envia e-mail de verificação
+2. Acessar **http://localhost:8025** (MailHog) e clicar no link de ativação
+3. Conta muda para status `ATIVA` no MongoDB
+4. `POST /api/contas/login` — obtém token JWT
+5. Usar o JWT no Swagger (🔒 Authorize) ou no frontend
+6. `POST /api/transacoes/deposito` — depositar saldo na conta
+7. `POST /api/transacoes/debito` / `credito` — movimentar saldo/limite
+8. `POST /api/transacoes/transferencia` — transferir entre contas (requer PIN de 4 dígitos)
+9. Kafka publica eventos → MongoDB persiste → SSE notifica o frontend em tempo real
+10. `GET /api/extratos/pdf/{numeroConta}` — baixar extrato em PDF
 
 ---
 
@@ -100,6 +117,17 @@ incluindo os links de verificação de conta.
 |---|---|---|
 | `transacoes-aprovadas` | servico-transacoes | servico-extratos, servico-fraudes, servico-notificacoes |
 | `transacoes-reprovadas` | servico-transacoes | servico-extratos, servico-notificacoes |
+
+---
+
+## Senhas — dois tipos distintos
+
+| Tipo | Tamanho | Uso |
+|---|---|---|
+| Senha de login | 6–50 caracteres | Autenticar no sistema (`POST /login`) |
+| Senha de transferência (PIN) | exatamente 4 dígitos | Autorizar transferências entre contas |
+
+As duas senhas são independentes e armazenadas com BCrypt.
 
 ---
 
