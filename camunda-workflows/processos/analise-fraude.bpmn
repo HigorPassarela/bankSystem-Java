@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+             targetNamespace="http://banksystem.com.br/fraudes"
+             exporter="Camunda Modeler" exporterVersion="5.0.0">
+
+  <!--
+    historyTimeToLive="P30D" = obrigatório no Camunda 7.21+
+    Sem esse atributo o processo falha com ENGINE-12018 ao fazer deploy.
+    "P30D" = manter histórico por 30 dias (formato ISO 8601 Duration)
+  -->
+  <process id="processoAnaliseFraude"
+           name="Processo de Análise de Fraude"
+           isExecutable="true"
+           camunda:historyTimeToLive="P30D">
+
+    <startEvent id="inicioProcesso" name="Transação Recebida">
+      <outgoing>fluxo1</outgoing>
+    </startEvent>
+
+    <sequenceFlow id="fluxo1" sourceRef="inicioProcesso" targetRef="verificarRisco"/>
+
+    <serviceTask id="verificarRisco"
+                 name="Verificar Risco da Transação"
+                 camunda:delegateExpression="${verificarRiscoDelegate}">
+      <incoming>fluxo1</incoming>
+      <outgoing>fluxo2</outgoing>
+    </serviceTask>
+
+    <sequenceFlow id="fluxo2" sourceRef="verificarRisco" targetRef="decisaoRisco"/>
+
+    <exclusiveGateway id="decisaoRisco" name="Alto Risco?">
+      <incoming>fluxo2</incoming>
+      <outgoing>fluxoAltoRisco</outgoing>
+      <outgoing>fluxoBaixoRisco</outgoing>
+    </exclusiveGateway>
+
+    <sequenceFlow id="fluxoAltoRisco" name="Sim"
+                  sourceRef="decisaoRisco" targetRef="bloquearTransacao">
+      <conditionExpression xsi:type="tFormalExpression">${altoRisco == true}</conditionExpression>
+    </sequenceFlow>
+
+    <sequenceFlow id="fluxoBaixoRisco" name="Não"
+                  sourceRef="decisaoRisco" targetRef="aprovarTransacao">
+      <conditionExpression xsi:type="tFormalExpression">${altoRisco == false}</conditionExpression>
+    </sequenceFlow>
+
+    <serviceTask id="bloquearTransacao"
+                 name="Bloquear e Notificar Fraude"
+                 camunda:delegateExpression="${notificarResultadoDelegate}">
+      <incoming>fluxoAltoRisco</incoming>
+      <outgoing>fluxo3</outgoing>
+    </serviceTask>
+
+    <serviceTask id="aprovarTransacao"
+                 name="Aprovar Antifraude e Notificar"
+                 camunda:delegateExpression="${notificarResultadoDelegate}">
+      <incoming>fluxoBaixoRisco</incoming>
+      <outgoing>fluxo4</outgoing>
+    </serviceTask>
+
+    <sequenceFlow id="fluxo3" sourceRef="bloquearTransacao" targetRef="fimProcesso"/>
+    <sequenceFlow id="fluxo4" sourceRef="aprovarTransacao"  targetRef="fimProcesso"/>
+
+    <endEvent id="fimProcesso" name="Processo Concluído">
+      <incoming>fluxo3</incoming>
+      <incoming>fluxo4</incoming>
+    </endEvent>
+
+  </process>
+</definitions>

@@ -1,0 +1,241 @@
+version: '3.8'
+
+# ============================================================
+# BankSystem — Infraestrutura + Microserviços
+# Para subir tudo: docker compose up --build -d
+# ============================================================
+
+services:
+
+  # ── MongoDB ────────────────────────────────────────────────
+  mongodb:
+    image: mongo:7.0
+    container_name: banksystem-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: senha123
+      MONGO_INITDB_DATABASE: banksystem
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_dados:/data/db
+    networks:
+      - banksystem-rede
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Redis ──────────────────────────────────────────────────
+  redis:
+    image: redis:7.2-alpine
+    container_name: banksystem-redis
+    restart: unless-stopped
+    command: redis-server --requirepass senha123
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_dados:/data
+    networks:
+      - banksystem-rede
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "senha123", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Zookeeper ──────────────────────────────────────────────
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    container_name: banksystem-zookeeper
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - banksystem-rede
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "2181"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Kafka ──────────────────────────────────────────────────
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    container_name: banksystem-kafka
+    restart: unless-stopped
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_NUM_PARTITIONS: 3
+    ports:
+      - "29092:29092"
+    networks:
+      - banksystem-rede
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+  # ── Camunda Platform 7 ─────────────────────────────────────
+  camunda:
+    image: camunda/camunda-bpm-platform:7.21.0
+    container_name: banksystem-camunda
+    restart: unless-stopped
+    environment:
+      DB_DRIVER: org.h2.Driver
+      DB_URL: jdbc:h2:mem:camunda;DB_CLOSE_DELAY=-1
+      DB_USERNAME: sa
+      DB_PASSWORD: ""
+    ports:
+      - "8080:8080"
+    networks:
+      - banksystem-rede
+
+  # ── MailHog (SMTP fake para desenvolvimento) ───────────────
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: banksystem-mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - banksystem-rede
+
+  # ── Serviço de Contas ──────────────────────────────────────
+  servico-contas:
+    build:
+      context: ./servico-contas
+      dockerfile: Dockerfile
+    container_name: banksystem-contas
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mailhog:
+        condition: service_started
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://admin:senha123@mongodb:27017/banksystem?authSource=admin
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      SPRING_REDIS_PASSWORD: senha123
+      SPRING_MAIL_HOST: mailhog
+      SPRING_MAIL_PORT: 1025
+      JWT_SECRET: banksystem-jwt-secret-chave-super-segura-2024
+      JWT_EXPIRACAO: 86400000
+      APP_URL_BASE: http://localhost:8081
+    ports:
+      - "8081:8081"
+    networks:
+      - banksystem-rede
+
+  # ── Serviço de Transações ──────────────────────────────────
+  servico-transacoes:
+    build:
+      context: ./servico-transacoes
+      dockerfile: Dockerfile
+    container_name: banksystem-transacoes
+    restart: unless-stopped
+    depends_on:
+      kafka:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      servico-contas:
+        condition: service_started
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      SPRING_REDIS_PASSWORD: senha123
+      JWT_SECRET: banksystem-jwt-secret-chave-super-segura-2024
+      SERVICO_CONTAS_URL: http://servico-contas:8081
+    ports:
+      - "8082:8082"
+    networks:
+      - banksystem-rede
+
+  # ── Serviço de Extratos ────────────────────────────────────
+  servico-extratos:
+    build:
+      context: ./servico-extratos
+      dockerfile: Dockerfile
+    container_name: banksystem-extratos
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://admin:senha123@mongodb:27017/banksystem?authSource=admin
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      JWT_SECRET: banksystem-jwt-secret-chave-super-segura-2024
+    ports:
+      - "8083:8083"
+    networks:
+      - banksystem-rede
+
+  # ── Serviço de Notificações ────────────────────────────────
+  servico-notificacoes:
+    build:
+      context: ./servico-notificacoes
+      dockerfile: Dockerfile
+    container_name: banksystem-notificacoes
+    restart: unless-stopped
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      JWT_SECRET: banksystem-jwt-secret-chave-super-segura-2024
+    ports:
+      - "8084:8084"
+    networks:
+      - banksystem-rede
+
+  # ── Serviço de Fraudes ─────────────────────────────────────
+  servico-fraudes:
+    build:
+      context: ./servico-fraudes
+      dockerfile: Dockerfile
+    container_name: banksystem-fraudes
+    restart: unless-stopped
+    depends_on:
+      kafka:
+        condition: service_healthy
+      camunda:
+        condition: service_started
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      CAMUNDA_URL: http://camunda:8080/engine-rest
+      SERVICO_EXTRATOS_URL: http://servico-extratos:8083
+      SERVICO_NOTIFICACOES_URL: http://servico-notificacoes:8084
+    ports:
+      - "8085:8085"
+    networks:
+      - banksystem-rede
+
+volumes:
+  mongodb_dados:
+  redis_dados:
+
+networks:
+  banksystem-rede:
+    driver: bridge
