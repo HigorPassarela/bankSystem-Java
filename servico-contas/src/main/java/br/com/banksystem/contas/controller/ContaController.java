@@ -17,6 +17,12 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/api/contas")
+@CrossOrigin(
+        originPatterns = {"http://localhost:*", "https://*.lovable.app"}, // ← MUDANÇA AQUI
+        allowCredentials = "true",
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+        allowedHeaders = "*"
+)
 @Tag(name = "Contas", description = "Endpoints de gerenciamento e autenticação de contas bancárias")
 public class ContaController {
 

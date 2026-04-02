@@ -30,6 +30,12 @@ public class NotificacaoController {
     }
 
     @GetMapping(value = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @CrossOrigin(origins = {
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "http://localhost:4200",
+            "http://localhost:8088"  // ← ADICIONADO PARA O FRONTEND
+    }, allowCredentials = "true")
     @Operation(summary = "Endpoint SSE para notificações em tempo real (token via query param)")
     public SseEmitter conectarSse(@RequestParam String token) {
         if (!jwtUtil.validarToken(token)) {
