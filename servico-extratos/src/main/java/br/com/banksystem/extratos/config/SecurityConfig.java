@@ -9,45 +9,28 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private final JwtFiltroAutenticacao jwtFiltroAutenticacao;
-    public SecurityConfig(JwtFiltroAutenticacao jwtFiltroAutenticacao) { this.jwtFiltroAutenticacao = jwtFiltroAutenticacao; }
 
-    @Bean
-    public SecurityFilterChain filtroSeguranca(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-            .cors(c -> c.configurationSource(configuracaoCors()))
-            .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(a -> a
-                .requestMatchers("/swagger-ui.html","/swagger-ui/**","/api-docs/**","/actuator/health").permitAll()
-                .anyRequest().authenticated())
-            .addFilterBefore(jwtFiltroAutenticacao, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
+    private final JwtFiltroAutenticacao jwtFiltroAutenticacao;
+
+    public SecurityConfig(JwtFiltroAutenticacao jwtFiltroAutenticacao) {
+        this.jwtFiltroAutenticacao = jwtFiltroAutenticacao;
     }
 
     @Bean
-    public CorsConfigurationSource configuracaoCors() {
-        CorsConfiguration cfg = new CorsConfiguration();
-        cfg.setAllowedOrigins(List.of(
-                "http://localhost:3000",
-                "http://localhost:5173",
-                "http://localhost:4200",
-                "http://localhost:8088"  // ← ADICIONADO PARA O FRONTEND
-        ));
-        cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"));
-        cfg.setAllowedHeaders(List.of("*"));
-        cfg.setAllowCredentials(true);
-        cfg.setMaxAge(3600L);
+    public SecurityFilterChain filtroSeguranca(HttpSecurity http) throws Exception {
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(AbstractHttpConfigurer::disable) // Proxy vai resolver CORS
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/api-docs/**", "/actuator/health").permitAll()
+                        .anyRequest().authenticated())
+                .addFilterBefore(jwtFiltroAutenticacao, UsernamePasswordAuthenticationFilter.class);
 
-        UrlBasedCorsConfigurationSource fonte = new UrlBasedCorsConfigurationSource();
-        fonte.registerCorsConfiguration("/**", cfg);
-        return fonte;
+        return http.build();
     }
 }

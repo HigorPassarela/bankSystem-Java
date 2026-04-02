@@ -16,6 +16,13 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/api/transacoes")
+//@CrossOrigin(
+//        origins = {"http://localhost:8088", "http://localhost:3000", "http://localhost:5173"},
+//        allowCredentials = "true",
+//        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+//        allowedHeaders = "*",
+//        maxAge = 3600
+//)
 @Tag(name = "Transações", description = "Depósito, débito, crédito, transferências e consulta de saldo")
 public class TransacaoController {
 
@@ -27,9 +34,9 @@ public class TransacaoController {
 
     @PostMapping("/deposito")
     @Operation(
-        summary = "Depositar valor em conta",
-        description = "Credita o valor diretamente no saldo disponível. Não exige PIN de transferência.",
-        security = @SecurityRequirement(name = "bearerAuth")
+            summary = "Depositar valor em conta",
+            description = "Credita o valor diretamente no saldo disponível. Não exige PIN de transferência.",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     public ResponseEntity<RespostaDTO<TransacaoRespostaDTO>> deposito(
             @AuthenticationPrincipal String numeroConta,
@@ -40,30 +47,36 @@ public class TransacaoController {
     }
 
     @PostMapping("/debito")
-    @Operation(summary = "Débito no saldo da conta",
-               security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(
+            summary = "Débito no saldo da conta",
+            description = "Debita valor do saldo disponível. Falha se saldo insuficiente.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
     public ResponseEntity<RespostaDTO<TransacaoRespostaDTO>> debito(
             @AuthenticationPrincipal String numeroConta,
             @Valid @RequestBody DebitoDTO dto) {
-        return ResponseEntity.ok(RespostaDTO.sucesso(
-                transacaoService.processarDebito(numeroConta, dto), "Débito processado com sucesso"));
+        TransacaoRespostaDTO resultado = transacaoService.processarDebito(numeroConta, dto);
+        return ResponseEntity.ok(RespostaDTO.sucesso(resultado, "Débito processado com sucesso"));
     }
 
     @PostMapping("/credito")
-    @Operation(summary = "Crédito usando limite da conta (pagar depois)",
-               security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(
+            summary = "Crédito usando limite da conta",
+            description = "Usa o limite disponível (modalidade 'pagar depois').",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
     public ResponseEntity<RespostaDTO<TransacaoRespostaDTO>> credito(
             @AuthenticationPrincipal String numeroConta,
             @Valid @RequestBody CreditoDTO dto) {
-        return ResponseEntity.ok(RespostaDTO.sucesso(
-                transacaoService.processarCredito(numeroConta, dto), "Crédito processado com sucesso"));
+        TransacaoRespostaDTO resultado = transacaoService.processarCredito(numeroConta, dto);
+        return ResponseEntity.ok(RespostaDTO.sucesso(resultado, "Crédito processado com sucesso"));
     }
 
     @PostMapping("/transferencia")
     @Operation(
-        summary = "Transferência entre contas (requer PIN de 4 dígitos)",
-        description = "Transfere saldo para outra conta. Requer o PIN de 4 dígitos cadastrado na criação da conta.",
-        security = @SecurityRequirement(name = "bearerAuth")
+            summary = "Transferência entre contas",
+            description = "Transfere saldo para outra conta. Requer PIN de 4 dígitos cadastrado na criação da conta.",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     public ResponseEntity<RespostaDTO<TransferenciaRespostaDTO>> transferencia(
             @AuthenticationPrincipal String numeroConta,
@@ -75,25 +88,31 @@ public class TransacaoController {
     }
 
     @GetMapping("/saldo")
-    @Operation(summary = "Consultar saldo e limite disponíveis",
-               security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(
+            summary = "Consultar saldo e limite disponíveis",
+            description = "Retorna saldo disponível e limite de crédito da conta.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
     public ResponseEntity<RespostaDTO<SaldoDTO>> consultarSaldo(
             @AuthenticationPrincipal String numeroConta) {
-        return ResponseEntity.ok(RespostaDTO.sucesso(
-                transacaoService.consultarSaldo(numeroConta), "Saldo consultado com sucesso"));
+        SaldoDTO saldo = transacaoService.consultarSaldo(numeroConta);
+        return ResponseEntity.ok(RespostaDTO.sucesso(saldo, "Saldo consultado com sucesso"));
     }
 
     @GetMapping("/limite")
-    @Operation(summary = "Consultar limite de crédito disponível",
-               security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(
+            summary = "Consultar limite de crédito disponível",
+            description = "Retorna o limite de crédito disponível (mesmo que /saldo).",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
     public ResponseEntity<RespostaDTO<SaldoDTO>> consultarLimite(
             @AuthenticationPrincipal String numeroConta) {
-        return ResponseEntity.ok(RespostaDTO.sucesso(
-                transacaoService.consultarSaldo(numeroConta), "Limite consultado com sucesso"));
+        SaldoDTO limite = transacaoService.consultarSaldo(numeroConta);
+        return ResponseEntity.ok(RespostaDTO.sucesso(limite, "Limite consultado com sucesso"));
     }
 
     private String extrairToken(HttpServletRequest request) {
-        String h = request.getHeader("Authorization");
-        return (h != null && h.startsWith("Bearer ")) ? h.substring(7) : "";
+        String header = request.getHeader("Authorization");
+        return (header != null && header.startsWith("Bearer ")) ? header.substring(7) : "";
     }
 }

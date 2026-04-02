@@ -21,6 +21,12 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/extratos")
+//@CrossOrigin(
+//        originPatterns = {"http://localhost:*", "https://*.lovable.app"},
+//        allowCredentials = "true",
+//        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+//        allowedHeaders = "*"
+//)
 @Tag(name = "Extratos", description = "Consulta de extrato e download de PDF")
 public class ExtratoController {
 

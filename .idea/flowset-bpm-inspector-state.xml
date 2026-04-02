@@ -47,7 +47,17 @@
                 <map>
                   <entry key="processoAnaliseFraude">
                     <value>
-                      <ExpandedItems />
+                      <ExpandedItems>
+                        <option name="items">
+                          <option value="Process" />
+                          <option value="Process|General" />
+                          <option value="Process|History cleanup" />
+                          <option value="Process|Tasklist" />
+                          <option value="Process|Candidate starter" />
+                          <option value="Process|External Task" />
+                          <option value="Process|Job Execution" />
+                        </option>
+                      </ExpandedItems>
                     </value>
                   </entry>
                 </map>
