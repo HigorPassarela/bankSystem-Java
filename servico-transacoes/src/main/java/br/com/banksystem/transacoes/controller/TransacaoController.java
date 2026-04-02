@@ -16,12 +16,13 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/api/transacoes")
-@CrossOrigin(
-        originPatterns = {"http://localhost:*", "https://*.lovable.app"},
-        allowCredentials = "true",
-        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
-        allowedHeaders = "*"
-)
+//@CrossOrigin(
+//        origins = {"http://localhost:8088", "http://localhost:3000", "http://localhost:5173"},
+//        allowCredentials = "true",
+//        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+//        allowedHeaders = "*",
+//        maxAge = 3600
+//)
 @Tag(name = "Transações", description = "Depósito, débito, crédito, transferências e consulta de saldo")
 public class TransacaoController {
 
