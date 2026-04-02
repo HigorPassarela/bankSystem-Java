@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="openbpm-bpm-inspector-state">
+    <option name="statesByFile">
+      <map>
+        <entry key="$PROJECT_DIR$/camunda-workflows/processos/analise-fraude.bpmn">
+          <value>
+            <FileInspectorState>
+              <option name="statesByElementId">
+                <map>
+                  <entry key="processoAnaliseFraude">
+                    <value>
+                      <ExpandedItems>
+                        <option name="items">
+                          <option value="Process" />
+                          <option value="Process|General" />
+                          <option value="Process|History cleanup" />
+                          <option value="Process|Tasklist" />
+                          <option value="Process|Candidate starter" />
+                          <option value="Process|External Task" />
+                          <option value="Process|Job Execution" />
+                        </option>
+                      </ExpandedItems>
+                    </value>
+                  </entry>
+                  <entry key="verificarRisco">
+                    <value>
+                      <ExpandedItems>
+                        <option name="items">
+                          <option value="Service Task" />
+                          <option value="Service Task|General" />
+                          <option value="Service Task|Implementation" />
+                          <option value="Service Task|Multi Instance" />
+                        </option>
+                      </ExpandedItems>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </FileInspectorState>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/servico-fraudes/src/main/resources/processos/analise-fraude.bpmn">
+          <value>
+            <FileInspectorState>
+              <option name="statesByElementId">
+                <map>
+                  <entry key="processoAnaliseFraude">
+                    <value>
+                      <ExpandedItems />
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </FileInspectorState>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

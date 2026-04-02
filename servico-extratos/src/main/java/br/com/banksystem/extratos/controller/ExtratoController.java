@@ -32,9 +32,9 @@ public class ExtratoController {
 
     @GetMapping("/conta/{numeroConta}")
     @Operation(
-        summary = "Listar todas as transações de uma conta",
-        description = "Retorna o histórico completo de transações ordenado por data decrescente.",
-        security = @SecurityRequirement(name = "bearerAuth")
+            summary = "Listar todas as transações de uma conta",
+            description = "Retorna o histórico completo de transações ordenado por data decrescente.",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     public ResponseEntity<RespostaDTO<List<TransacaoDTO>>> listarPorConta(
             @PathVariable String numeroConta) {
@@ -45,9 +45,9 @@ public class ExtratoController {
 
     @GetMapping("/conta/{numeroConta}/paginado")
     @Operation(
-        summary = "Listar transações paginadas",
-        description = "Útil para listas longas. Padrão: página 0, 20 itens por página.",
-        security = @SecurityRequirement(name = "bearerAuth")
+            summary = "Listar transações paginadas",
+            description = "Útil para listas longas. Padrão: página 0, 20 itens por página.",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     public ResponseEntity<RespostaDTO<Page<TransacaoDTO>>> listarPaginado(
             @PathVariable String numeroConta,
@@ -61,9 +61,9 @@ public class ExtratoController {
 
     @GetMapping("/periodo")
     @Operation(
-        summary = "Extrato por período",
-        description = "Filtra as transações entre duas datas. Formato ISO: 2024-01-01T00:00:00",
-        security = @SecurityRequirement(name = "bearerAuth")
+            summary = "Extrato por período",
+            description = "Filtra as transações entre duas datas. Formato ISO: 2024-01-01T00:00:00",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     public ResponseEntity<RespostaDTO<List<TransacaoDTO>>> listarPorPeriodo(
             @RequestParam String numeroConta,
@@ -76,9 +76,9 @@ public class ExtratoController {
 
     @GetMapping("/tipo")
     @Operation(
-        summary = "Filtrar por tipo de transação",
-        description = "Tipos: DEPOSITO | DEBITO | CREDITO | TRANSFERENCIA_SAIDA | TRANSFERENCIA_ENTRADA",
-        security = @SecurityRequirement(name = "bearerAuth")
+            summary = "Filtrar por tipo de transação",
+            description = "Tipos: DEPOSITO | DEBITO | CREDITO | TRANSFERENCIA_SAIDA | TRANSFERENCIA_ENTRADA",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     public ResponseEntity<RespostaDTO<List<TransacaoDTO>>> listarPorTipo(
             @RequestParam String numeroConta,
@@ -90,9 +90,9 @@ public class ExtratoController {
 
     @GetMapping("/pdf/{numeroConta}")
     @Operation(
-        summary = "Download PDF — extrato completo",
-        description = "Gera e faz download do PDF com histórico completo da conta.",
-        security = @SecurityRequirement(name = "bearerAuth")
+            summary = "Download PDF — extrato completo",
+            description = "Gera e faz download do PDF com histórico completo da conta.",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     public ResponseEntity<byte[]> downloadPdfCompleto(@PathVariable String numeroConta) {
         byte[] pdf = extratoService.gerarPdf(numeroConta);
@@ -105,9 +105,9 @@ public class ExtratoController {
 
     @GetMapping("/pdf/{numeroConta}/periodo")
     @Operation(
-        summary = "Download PDF — extrato por período",
-        description = "Gera PDF filtrando as transações entre as datas informadas.",
-        security = @SecurityRequirement(name = "bearerAuth")
+            summary = "Download PDF — extrato por período",
+            description = "Gera PDF filtrando as transações entre as datas informadas.",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     public ResponseEntity<byte[]> downloadPdfPorPeriodo(
             @PathVariable String numeroConta,
