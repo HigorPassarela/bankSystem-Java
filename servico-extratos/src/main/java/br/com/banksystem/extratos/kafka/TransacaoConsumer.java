@@ -24,28 +24,33 @@ public class TransacaoConsumer {
     private final TransacaoMapper transacaoMapper;
 
     public TransacaoConsumer(TransacaoRepository transacaoRepository,
-                              TransacaoMapper transacaoMapper) {
+                             TransacaoMapper transacaoMapper) {
         this.transacaoRepository = transacaoRepository;
         this.transacaoMapper = transacaoMapper;
     }
 
-    @KafkaListener(topics = "transacoes-aprovadas", groupId = "servico-extratos")
+    @KafkaListener(
+            topics = "transacoes-aprovadas",
+            groupId = "servico-extratos",
+            containerFactory = "kafkaListenerContainerFactory"
+    )
     public void consumirTransacaoAprovada(TransacaoEventoDTO evento) {
         log.info("Recebendo transação aprovada do Kafka: {} | tipo: {} | conta: {}",
                 evento.idTransacao(), evento.tipo(), evento.numeroConta());
         persistirSeNaoExistir(evento);
     }
 
-    @KafkaListener(topics = "transacoes-reprovadas", groupId = "servico-extratos")
+    @KafkaListener(
+            topics = "transacoes-reprovadas",
+            groupId = "servico-extratos",
+            containerFactory = "kafkaListenerContainerFactory"
+    )
     public void consumirTransacaoReprovada(TransacaoEventoDTO evento) {
         log.info("Recebendo transação reprovada do Kafka: {} | tipo: {} | conta: {}",
                 evento.idTransacao(), evento.tipo(), evento.numeroConta());
         persistirSeNaoExistir(evento);
     }
 
-    /**
-     * Persiste a transação no MongoDB apenas se não existir ainda (idempotência).
-     */
     private void persistirSeNaoExistir(TransacaoEventoDTO evento) {
         if (evento.idTransacao() == null) {
             log.warn("Transação recebida sem ID — ignorando");
@@ -64,7 +69,7 @@ public class TransacaoConsumer {
                     evento.idTransacao(), evento.tipo(), evento.valor());
         } catch (Exception ex) {
             log.error("Erro ao persistir transação {}: {}", evento.idTransacao(), ex.getMessage(), ex);
-            throw ex; // permite retry do Kafka
+            throw ex;
         }
     }
 }
