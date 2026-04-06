@@ -21,7 +21,11 @@ public class NotificacaoConsumer {
         this.sseEmitterService = sseEmitterService;
     }
 
-    @KafkaListener(topics = "transacoes-aprovadas", groupId = "servico-notificacoes")
+    @KafkaListener(
+            topics = "transacoes-aprovadas",
+            groupId = "servico-notificacoes",
+            containerFactory = "kafkaListenerContainerFactory"
+    )
     public void consumirAprovada(TransacaoEventoDTO evento) {
         log.info("Notificando transação aprovada: {} - conta: {}", evento.idTransacao(), evento.numeroConta());
         String msg = String.format("Transação de %s no valor de R$ %.2f aprovada com sucesso",
@@ -30,7 +34,11 @@ public class NotificacaoConsumer {
                 NotificacaoDTO.criar("TRANSACAO_APROVADA", msg, evento));
     }
 
-    @KafkaListener(topics = "transacoes-reprovadas", groupId = "servico-notificacoes")
+    @KafkaListener(
+            topics = "transacoes-aprovadas",
+            groupId = "servico-notificacoes",
+            containerFactory = "kafkaListenerContainerFactory"
+    )
     public void consumirReprovada(TransacaoEventoDTO evento) {
         log.info("Notificando transação reprovada: {} - conta: {}", evento.idTransacao(), evento.numeroConta());
         String msg = String.format("Transação de %s no valor de R$ %.2f reprovada por saldo insuficiente",
