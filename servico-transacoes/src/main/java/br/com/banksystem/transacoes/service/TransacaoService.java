@@ -65,7 +65,14 @@ public class TransacaoService {
 
         String idTransacao = UUID.randomUUID().toString();
         String descricao   = dto.descricao() != null ? dto.descricao() : "Depósito em conta";
-        publicarAprovada(idTransacao, numeroConta, dto.valor(), "DEPOSITO", descricao);
+        publicarAprovada(
+                idTransacao,
+                numeroConta,
+                dto.valor(),
+                "DEPOSITO",
+                descricao,
+                fromCentavos(novoSaldo)
+        );
 
         log.info("Depósito aprovado. ID: {} | Novo saldo: R$ {}", idTransacao, fromCentavos(novoSaldo));
         return new TransacaoRespostaDTO(idTransacao, numeroConta, dto.valor(),
@@ -91,7 +98,14 @@ public class TransacaoService {
         redisTemplate.opsForValue().decrement(chaveSaldo, valorCentavos);
         long novoSaldo     = saldoAtual - valorCentavos;
         String idTransacao = UUID.randomUUID().toString();
-        publicarAprovada(idTransacao, numeroConta, dto.valor(), "DEBITO", dto.descricao());
+        publicarAprovada(
+                idTransacao,
+                numeroConta,
+                dto.valor(),
+                "DEBITO",
+                dto.descricao(),
+                fromCentavos(novoSaldo)
+        );
 
         return new TransacaoRespostaDTO(idTransacao, numeroConta, dto.valor(),
                 "DEBITO", "APROVADA", fromCentavos(novoSaldo), LocalDateTime.now());
@@ -116,7 +130,14 @@ public class TransacaoService {
         redisTemplate.opsForValue().decrement(chaveLimite, valorCentavos);
         long novoLimite    = limiteAtual - valorCentavos;
         String idTransacao = UUID.randomUUID().toString();
-        publicarAprovada(idTransacao, numeroConta, dto.valor(), "CREDITO", dto.descricao());
+        publicarAprovada(
+                idTransacao,
+                numeroConta,
+                dto.valor(),
+                "CREDITO",
+                dto.descricao(),
+                fromCentavos(novoLimite)
+        );
 
         return new TransacaoRespostaDTO(idTransacao, numeroConta, dto.valor(),
                 "CREDITO", "APROVADA", fromCentavos(novoLimite), LocalDateTime.now());
@@ -132,8 +153,8 @@ public class TransacaoService {
      * 4. Publica dois eventos Kafka (SAIDA e ENTRADA)
      */
     public TransferenciaRespostaDTO processarTransferencia(String contaOrigem,
-                                                            TransferenciaDTO dto,
-                                                            String jwtToken) {
+                                                           TransferenciaDTO dto,
+                                                           String jwtToken) {
         log.info("Transferência de {} → {} | R$ {}", contaOrigem, dto.contaDestino(), dto.valor());
 
         if (contaOrigem.equals(dto.contaDestino()))
@@ -144,33 +165,57 @@ public class TransacaoService {
         if (!pinValido)
             throw new TransferenciaInvalidaException("Senha de transferência (PIN) inválida");
 
-        long valorCentavos      = toCentavos(dto.valor());
-        String chaveSaldoOrigem = "saldo:" + contaOrigem;
+        long valorCentavos       = toCentavos(dto.valor());
+        String chaveSaldoOrigem  = "saldo:" + contaOrigem;
         String chaveSaldoDestino = "saldo:" + dto.contaDestino();
-        long saldoOrigem        = getSaldo(chaveSaldoOrigem);
+
+        long saldoOrigem  = getSaldo(chaveSaldoOrigem);
+        long saldoDestino = getSaldo(chaveSaldoDestino);
 
         if (saldoOrigem < valorCentavos)
             throw new SaldoInsuficienteException(
                     "Saldo insuficiente para transferência. Disponível: R$ " + fromCentavos(saldoOrigem));
 
-        // Operação atômica
         redisTemplate.opsForValue().decrement(chaveSaldoOrigem, valorCentavos);
         redisTemplate.opsForValue().increment(chaveSaldoDestino, valorCentavos);
 
-        long novoSaldoOrigem = saldoOrigem - valorCentavos;
-        String idTxOrigem    = UUID.randomUUID().toString();
-        String idTxDestino   = UUID.randomUUID().toString();
-        String desc          = dto.descricao() != null ? " — " + dto.descricao() : "";
+        long novoSaldoOrigem  = saldoOrigem - valorCentavos;
+        long novoSaldoDestino = saldoDestino + valorCentavos;
 
-        publicarAprovada(idTxOrigem,  contaOrigem,      dto.valor(),
-                "TRANSFERENCIA_SAIDA",  "Transferência para conta "    + dto.contaDestino() + desc);
-        publicarAprovada(idTxDestino, dto.contaDestino(), dto.valor(),
-                "TRANSFERENCIA_ENTRADA","Transferência recebida da conta " + contaOrigem + desc);
+        String idTxOrigem  = UUID.randomUUID().toString();
+        String idTxDestino = UUID.randomUUID().toString();
+        String desc        = dto.descricao() != null ? " — " + dto.descricao() : "";
+
+        publicarAprovada(
+                idTxOrigem,
+                contaOrigem,
+                dto.valor(),
+                "TRANSFERENCIA_SAIDA",
+                "Transferência para conta " + dto.contaDestino() + desc,
+                fromCentavos(novoSaldoOrigem)
+        );
+
+        publicarAprovada(
+                idTxDestino,
+                dto.contaDestino(),
+                dto.valor(),
+                "TRANSFERENCIA_ENTRADA",
+                "Transferência recebida da conta " + contaOrigem + desc,
+                fromCentavos(novoSaldoDestino)
+        );
 
         log.info("Transferência aprovada. ID: {} | Novo saldo origem: R$ {}",
                 idTxOrigem, fromCentavos(novoSaldoOrigem));
-        return new TransferenciaRespostaDTO(idTxOrigem, contaOrigem, dto.contaDestino(),
-                dto.valor(), "APROVADA", fromCentavos(novoSaldoOrigem), LocalDateTime.now());
+
+        return new TransferenciaRespostaDTO(
+                idTxOrigem,
+                contaOrigem,
+                dto.contaDestino(),
+                dto.valor(),
+                "APROVADA",
+                fromCentavos(novoSaldoOrigem),
+                LocalDateTime.now()
+        );
     }
 
     // ── CONSULTA ──────────────────────────────────────────────────────────────
