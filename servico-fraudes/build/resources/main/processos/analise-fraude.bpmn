@@ -5,7 +5,7 @@
                   xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
                   xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  id="Definitions_1"
+                  id="Definitions_AnaliseFraude"
                   targetNamespace="http://banksystem.com.br/fraudes"
                   exporter="Camunda Modeler"
                   exporterVersion="5.0.0">
@@ -16,61 +16,69 @@
                   camunda:historyTimeToLive="P30D"
                   camunda:versionTag="v1.0">
 
-        <!-- Evento de Início -->
+        <!-- Start -->
         <bpmn:startEvent id="inicioProcesso" name="Transação Recebida">
             <bpmn:outgoing>fluxo1</bpmn:outgoing>
         </bpmn:startEvent>
 
-        <!-- Fluxo para verificação de risco -->
+        <!-- Flow -->
         <bpmn:sequenceFlow id="fluxo1" sourceRef="inicioProcesso" targetRef="verificarRisco"/>
 
-        <!-- Service Task: Verificar Risco -->
+        <!-- External Task: verificar risco -->
         <bpmn:serviceTask id="verificarRisco"
                           name="Verificar Risco da Transação"
-                          camunda:delegateExpression="${verificarRiscoDelegate}">
+                          camunda:type="external"
+                          camunda:topic="verificar-risco">
             <bpmn:incoming>fluxo1</bpmn:incoming>
             <bpmn:outgoing>fluxo2</bpmn:outgoing>
         </bpmn:serviceTask>
 
-        <!-- Fluxo para decisão -->
         <bpmn:sequenceFlow id="fluxo2" sourceRef="verificarRisco" targetRef="decisaoRisco"/>
 
-        <!-- Gateway Exclusivo: Decisão de Risco -->
+        <!-- Gateway -->
         <bpmn:exclusiveGateway id="decisaoRisco" name="Alto Risco?" default="fluxoBaixoRisco">
             <bpmn:incoming>fluxo2</bpmn:incoming>
             <bpmn:outgoing>fluxoAltoRisco</bpmn:outgoing>
             <bpmn:outgoing>fluxoBaixoRisco</bpmn:outgoing>
         </bpmn:exclusiveGateway>
 
-        <!-- Fluxo para alto risco -->
-        <bpmn:sequenceFlow id="fluxoAltoRisco" name="Sim" sourceRef="decisaoRisco" targetRef="bloquearTransacao">
+        <!-- High risk -->
+        <bpmn:sequenceFlow id="fluxoAltoRisco"
+                           name="Sim"
+                           sourceRef="decisaoRisco"
+                           targetRef="bloquearTransacao">
             <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${altoRisco == true}</bpmn:conditionExpression>
         </bpmn:sequenceFlow>
 
-        <!-- Fluxo para baixo risco (padrão) -->
-        <bpmn:sequenceFlow id="fluxoBaixoRisco" name="Não" sourceRef="decisaoRisco" targetRef="aprovarTransacao"/>
+        <!-- Low risk -->
+        <bpmn:sequenceFlow id="fluxoBaixoRisco"
+                           name="Não"
+                           sourceRef="decisaoRisco"
+                           targetRef="aprovarTransacao"/>
 
-        <!-- Service Task: Bloquear Transação -->
+        <!-- External Task: bloquear -->
         <bpmn:serviceTask id="bloquearTransacao"
                           name="Bloquear e Notificar Fraude"
-                          camunda:delegateExpression="${bloquearTransacaoDelegate}">
+                          camunda:type="external"
+                          camunda:topic="bloquear-transacao">
             <bpmn:incoming>fluxoAltoRisco</bpmn:incoming>
             <bpmn:outgoing>fluxo3</bpmn:outgoing>
         </bpmn:serviceTask>
 
-        <!-- Service Task: Aprovar Transação -->
+        <!-- External Task: aprovar -->
         <bpmn:serviceTask id="aprovarTransacao"
                           name="Aprovar e Notificar"
-                          camunda:delegateExpression="${aprovarTransacaoDelegate}">
+                          camunda:type="external"
+                          camunda:topic="aprovar-transacao">
             <bpmn:incoming>fluxoBaixoRisco</bpmn:incoming>
             <bpmn:outgoing>fluxo4</bpmn:outgoing>
         </bpmn:serviceTask>
 
-        <!-- Fluxos para o fim -->
+        <!-- End flows -->
         <bpmn:sequenceFlow id="fluxo3" sourceRef="bloquearTransacao" targetRef="fimProcesso"/>
         <bpmn:sequenceFlow id="fluxo4" sourceRef="aprovarTransacao" targetRef="fimProcesso"/>
 
-        <!-- Evento de Fim -->
+        <!-- End -->
         <bpmn:endEvent id="fimProcesso" name="Processo Concluído">
             <bpmn:incoming>fluxo3</bpmn:incoming>
             <bpmn:incoming>fluxo4</bpmn:incoming>
@@ -78,92 +86,99 @@
 
     </bpmn:process>
 
-    <!-- Diagrama BPMN -->
-    <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-        <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="processoAnaliseFraude">
+    <!-- BPMN DI -->
+    <bpmndi:BPMNDiagram id="BPMNDiagram_AnaliseFraude">
+        <bpmndi:BPMNPlane id="BPMNPlane_AnaliseFraude" bpmnElement="processoAnaliseFraude">
 
-            <!-- Start Event -->
-            <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="inicioProcesso">
-                <dc:Bounds x="152" y="102" width="36" height="36"/>
+            <!-- Start -->
+            <bpmndi:BPMNShape id="inicioProcesso_di" bpmnElement="inicioProcesso">
+                <dc:Bounds x="120" y="160" width="36" height="36"/>
                 <bpmndi:BPMNLabel>
-                    <dc:Bounds x="134" y="145" width="72" height="14"/>
+                    <dc:Bounds x="92" y="202" width="92" height="14"/>
                 </bpmndi:BPMNLabel>
             </bpmndi:BPMNShape>
 
-            <!-- Service Task: Verificar Risco -->
-            <bpmndi:BPMNShape id="ServiceTask_1_di" bpmnElement="verificarRisco">
-                <dc:Bounds x="240" y="80" width="100" height="80"/>
+            <!-- verificarRisco -->
+            <bpmndi:BPMNShape id="verificarRisco_di" bpmnElement="verificarRisco">
+                <dc:Bounds x="220" y="138" width="120" height="80"/>
             </bpmndi:BPMNShape>
 
-            <!-- Exclusive Gateway -->
-            <bpmndi:BPMNShape id="ExclusiveGateway_1_di" bpmnElement="decisaoRisco" isMarkerVisible="true">
-                <dc:Bounds x="395" y="95" width="50" height="50"/>
+            <!-- gateway -->
+            <bpmndi:BPMNShape id="decisaoRisco_di" bpmnElement="decisaoRisco" isMarkerVisible="true">
+                <dc:Bounds x="390" y="153" width="50" height="50"/>
                 <bpmndi:BPMNLabel>
-                    <dc:Bounds x="390" y="71" width="60" height="14"/>
+                    <dc:Bounds x="380" y="124" width="70" height="14"/>
                 </bpmndi:BPMNLabel>
             </bpmndi:BPMNShape>
 
-            <!-- Service Task: Bloquear -->
-            <bpmndi:BPMNShape id="ServiceTask_2_di" bpmnElement="bloquearTransacao">
-                <dc:Bounds x="520" y="80" width="100" height="80"/>
+            <!-- bloquear -->
+            <bpmndi:BPMNShape id="bloquearTransacao_di" bpmnElement="bloquearTransacao">
+                <dc:Bounds x="520" y="80" width="140" height="80"/>
             </bpmndi:BPMNShape>
 
-            <!-- Service Task: Aprovar -->
-            <bpmndi:BPMNShape id="ServiceTask_3_di" bpmnElement="aprovarTransacao">
-                <dc:Bounds x="520" y="200" width="100" height="80"/>
+            <!-- aprovar -->
+            <bpmndi:BPMNShape id="aprovarTransacao_di" bpmnElement="aprovarTransacao">
+                <dc:Bounds x="520" y="240" width="140" height="80"/>
             </bpmndi:BPMNShape>
 
-            <!-- End Event -->
-            <bpmndi:BPMNShape id="EndEvent_1_di" bpmnElement="fimProcesso">
-                <dc:Bounds x="692" y="142" width="36" height="36"/>
+            <!-- end -->
+            <bpmndi:BPMNShape id="fimProcesso_di" bpmnElement="fimProcesso">
+                <dc:Bounds x="740" y="160" width="36" height="36"/>
                 <bpmndi:BPMNLabel>
-                    <dc:Bounds x="674" y="185" width="72" height="14"/>
+                    <dc:Bounds x="700" y="202" width="116" height="14"/>
                 </bpmndi:BPMNLabel>
             </bpmndi:BPMNShape>
 
-            <!-- Sequence Flows -->
-            <bpmndi:BPMNEdge id="SequenceFlow_1_di" bpmnElement="fluxo1">
-                <di:waypoint x="188" y="120"/>
-                <di:waypoint x="240" y="120"/>
+            <!-- fluxo1 -->
+            <bpmndi:BPMNEdge id="fluxo1_di" bpmnElement="fluxo1">
+                <di:waypoint x="156" y="178"/>
+                <di:waypoint x="220" y="178"/>
             </bpmndi:BPMNEdge>
 
-            <bpmndi:BPMNEdge id="SequenceFlow_2_di" bpmnElement="fluxo2">
-                <di:waypoint x="340" y="120"/>
-                <di:waypoint x="395" y="120"/>
+            <!-- fluxo2 -->
+            <bpmndi:BPMNEdge id="fluxo2_di" bpmnElement="fluxo2">
+                <di:waypoint x="340" y="178"/>
+                <di:waypoint x="390" y="178"/>
             </bpmndi:BPMNEdge>
 
-            <bpmndi:BPMNEdge id="SequenceFlow_3_di" bpmnElement="fluxoAltoRisco">
-                <di:waypoint x="445" y="120"/>
+            <!-- fluxoAltoRisco -->
+            <bpmndi:BPMNEdge id="fluxoAltoRisco_di" bpmnElement="fluxoAltoRisco">
+                <di:waypoint x="440" y="178"/>
+                <di:waypoint x="470" y="178"/>
+                <di:waypoint x="470" y="120"/>
                 <di:waypoint x="520" y="120"/>
                 <bpmndi:BPMNLabel>
-                    <dc:Bounds x="475" y="102" width="20" height="14"/>
+                    <dc:Bounds x="470" y="140" width="20" height="14"/>
                 </bpmndi:BPMNLabel>
             </bpmndi:BPMNEdge>
 
-            <bpmndi:BPMNEdge id="SequenceFlow_4_di" bpmnElement="fluxoBaixoRisco">
-                <di:waypoint x="420" y="145"/>
-                <di:waypoint x="420" y="240"/>
-                <di:waypoint x="520" y="240"/>
+            <!-- fluxoBaixoRisco -->
+            <bpmndi:BPMNEdge id="fluxoBaixoRisco_di" bpmnElement="fluxoBaixoRisco">
+                <di:waypoint x="440" y="178"/>
+                <di:waypoint x="470" y="178"/>
+                <di:waypoint x="470" y="280"/>
+                <di:waypoint x="520" y="280"/>
                 <bpmndi:BPMNLabel>
-                    <dc:Bounds x="426" y="190" width="20" height="14"/>
+                    <dc:Bounds x="470" y="228" width="24" height="14"/>
                 </bpmndi:BPMNLabel>
             </bpmndi:BPMNEdge>
 
-            <bpmndi:BPMNEdge id="SequenceFlow_5_di" bpmnElement="fluxo3">
-                <di:waypoint x="620" y="120"/>
-                <di:waypoint x="656" y="120"/>
-                <di:waypoint x="656" y="160"/>
-                <di:waypoint x="692" y="160"/>
+            <!-- fluxo3 -->
+            <bpmndi:BPMNEdge id="fluxo3_di" bpmnElement="fluxo3">
+                <di:waypoint x="660" y="120"/>
+                <di:waypoint x="700" y="120"/>
+                <di:waypoint x="700" y="178"/>
+                <di:waypoint x="740" y="178"/>
             </bpmndi:BPMNEdge>
 
-            <bpmndi:BPMNEdge id="SequenceFlow_6_di" bpmnElement="fluxo4">
-                <di:waypoint x="620" y="240"/>
-                <di:waypoint x="656" y="240"/>
-                <di:waypoint x="656" y="160"/>
-                <di:waypoint x="692" y="160"/>
+            <!-- fluxo4 -->
+            <bpmndi:BPMNEdge id="fluxo4_di" bpmnElement="fluxo4">
+                <di:waypoint x="660" y="280"/>
+                <di:waypoint x="700" y="280"/>
+                <di:waypoint x="700" y="178"/>
+                <di:waypoint x="740" y="178"/>
             </bpmndi:BPMNEdge>
 
         </bpmndi:BPMNPlane>
     </bpmndi:BPMNDiagram>
-
 </bpmn:definitions>

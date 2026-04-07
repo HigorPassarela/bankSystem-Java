@@ -21,14 +21,6 @@ spring:
       auto-offset-reset: earliest
       properties:
         spring.json.trusted.packages: "*"
-#  web:
-#    cors:
-#      allowed-origins:
-#        - "http://localhost:8088"
-#      allowed-methods: "GET,POST,PUT,DELETE,OPTIONS,HEAD,PATCH"
-#      allowed-headers: "*"
-#      allow-credentials: true
-#      max-age: 3600
 
 camunda:
   bpm:
@@ -44,6 +36,8 @@ servico:
     url: ${SERVICO_EXTRATOS_URL:http://localhost:8083}
   notificacoes:
     url: ${SERVICO_NOTIFICACOES_URL:http://localhost:8084}
+  camunda:
+    url: ${SERVICO_CAMUNDA_URL:http://camunda:8080/engine-rest}
 
 springdoc:
   api-docs:

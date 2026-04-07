@@ -25,6 +25,8 @@ Caso queira recriar os serviços por conta de atualização:
 ```bash
 docker compose up -d --force-recreate
 ```
+---
+## Subir apenas a infraestrutura
 
 Subir apenas infraestrutura:
 ```bash

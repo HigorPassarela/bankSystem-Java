@@ -264,10 +264,11 @@ services:
     networks:
       - banksystem-rede
 
+networks:
+  banksystem-rede:
+    driver: bridge
+
 volumes:
   mongodb_dados:
   redis_dados:
 
-networks:
-  banksystem-rede:
-    driver: bridge
