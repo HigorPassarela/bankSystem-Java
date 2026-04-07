@@ -1,1 +1,27 @@
+# Ignorar arquivos de template e recursos estáticos
 *.html linguist-detectable=false
+*.css linguist-detectable=false
+*.js linguist-detectable=false
+*.scss linguist-detectable=false
+*.less linguist-detectable=false
+
+# Ignorar arquivos de configuração e build
+*.xml linguist-detectable=false
+*.yml linguist-detectable=false
+*.yaml linguist-detectable=false
+*.properties linguist-detectable=false
+*.json linguist-detectable=false
+
+# Marcar diretórios específicos do Spring Boot
+src/main/resources/static/* linguist-vendored
+src/main/resources/templates/* linguist-vendored
+src/main/resources/public/* linguist-vendored
+
+# Garantir que Java seja detectado
+*.java linguist-detectable=true
+
+# Ignorar arquivos de build e dependências
+target/* linguist-generated
+.mvn/* linguist-vendored
+mvnw linguist-vendored
+mvnw.cmd linguist-vendored
