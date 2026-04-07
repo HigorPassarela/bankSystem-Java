@@ -297,18 +297,21 @@ public class ExtratoService {
     // ── HELPERS ───────────────────────────────────────────────────────────────
 
     private boolean isEntrada(String tipo) {
-        return "DEPOSITO".equals(tipo) || "TRANSFERENCIA_ENTRADA".equals(tipo);
+        return "DEPOSITO".equals(tipo)
+                || "TRANSFERENCIA_ENTRADA".equals(tipo)
+                || "ESTORNO_FRAUDE".equals(tipo);
     }
 
     private String formatarTipo(String tipo) {
         if (tipo == null) return "-";
         return switch (tipo) {
-            case "DEPOSITO"             -> "Depósito";
-            case "DEBITO"               -> "Débito";
-            case "CREDITO"              -> "Crédito";
-            case "TRANSFERENCIA_SAIDA"  -> "Transf. Envio";
-            case "TRANSFERENCIA_ENTRADA"-> "Transf. Recebida";
-            default                     -> tipo;
+            case "DEPOSITO"              -> "Depósito";
+            case "DEBITO"                -> "Débito";
+            case "CREDITO"               -> "Crédito";
+            case "TRANSFERENCIA_SAIDA"   -> "Transf. Envio";
+            case "TRANSFERENCIA_ENTRADA" -> "Transf. Recebida";
+            case "ESTORNO_FRAUDE"        -> "Estorno Fraude";
+            default                      -> tipo;
         };
     }
 
