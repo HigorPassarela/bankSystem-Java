@@ -4,8 +4,29 @@ Sistema bancário completo em Spring Boot 3, Camunda 7, Kafka, Redis e MongoDB.
 
 ---
 
-## Subir a infraestrutura
+## Subir a infraestrutura + serviços
 
+Build .jar para baixar imagens no Docker:
+```bash
+cd servico-contas && ./gradlew clean bootJar -x test
+cd ../servico-transacoes && ./gradlew clean bootJar -x test 
+cd ../servico-extratos && ./gradlew clean bootJar -x test 
+cd ../servico-notificacoes && ./gradlew clean bootJar -x test 
+cd ../servico-fraudes && ./gradlew clean bootJar -x test 
+cd ..
+```
+
+Subir todos os servicos junto a infraestrutura:
+```bash
+docker compose up -d --build
+```
+
+Caso queira recriar os serviços por conta de atualização:
+```bash
+docker compose up -d --force-recreate
+```
+
+Subir apenas infraestrutura:
 ```bash
 docker-compose up -d
 ```
