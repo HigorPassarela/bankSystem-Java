@@ -239,17 +239,43 @@ public class ExtratoService {
 
         BigDecimal saldoLiquido = totalEntradas.subtract(totalSaidas);
 
-        Table totais = new Table(UnitValue.createPercentArray(new float[]{1, 1, 1}))
+        BigDecimal saldoFinalConhecido = transacoes.stream()
+                .map(TransacaoDTO::saldoAposTransacao)
+                .filter(v -> v != null)
+                .findFirst()
+                .orElse(null);
+
+        Table totais = new Table(UnitValue.createPercentArray(
+                saldoFinalConhecido != null ? new float[]{1, 1, 1, 1} : new float[]{1, 1, 1}
+        ))
                 .setWidth(UnitValue.createPercentValue(100))
                 .setMarginBottom(20);
 
-        totais.addCell(criarCelulaTotalizador("Total de Entradas",
-                "R$ " + totalEntradas.toPlainString(), COR_ENTRADA));
-        totais.addCell(criarCelulaTotalizador("Total de Saídas",
-                "R$ " + totalSaidas.toPlainString(), COR_SAIDA));
-        totais.addCell(criarCelulaTotalizador("Saldo do Período",
+        totais.addCell(criarCelulaTotalizador(
+                "Total de Entradas",
+                "R$ " + totalEntradas.toPlainString(),
+                COR_ENTRADA
+        ));
+
+        totais.addCell(criarCelulaTotalizador(
+                "Total de Saídas",
+                "R$ " + totalSaidas.toPlainString(),
+                COR_SAIDA
+        ));
+
+        totais.addCell(criarCelulaTotalizador(
+                "Saldo do Período",
                 "R$ " + saldoLiquido.toPlainString(),
-                saldoLiquido.compareTo(BigDecimal.ZERO) >= 0 ? COR_ENTRADA : COR_SAIDA));
+                saldoLiquido.compareTo(BigDecimal.ZERO) >= 0 ? COR_ENTRADA : COR_SAIDA
+        ));
+
+        if (saldoFinalConhecido != null) {
+            totais.addCell(criarCelulaTotalizador(
+                    "Saldo Final",
+                    "R$ " + saldoFinalConhecido.toPlainString(),
+                    COR_SUBHEADER
+            ));
+        }
 
         doc.add(new Paragraph("Resumo do Período").setBold().setFontSize(13).setMarginBottom(6));
         doc.add(totais);
@@ -271,18 +297,21 @@ public class ExtratoService {
     // ── HELPERS ───────────────────────────────────────────────────────────────
 
     private boolean isEntrada(String tipo) {
-        return "DEPOSITO".equals(tipo) || "TRANSFERENCIA_ENTRADA".equals(tipo);
+        return "DEPOSITO".equals(tipo)
+                || "TRANSFERENCIA_ENTRADA".equals(tipo)
+                || "ESTORNO_FRAUDE".equals(tipo);
     }
 
     private String formatarTipo(String tipo) {
         if (tipo == null) return "-";
         return switch (tipo) {
-            case "DEPOSITO"             -> "Depósito";
-            case "DEBITO"               -> "Débito";
-            case "CREDITO"              -> "Crédito";
-            case "TRANSFERENCIA_SAIDA"  -> "Transf. Envio";
-            case "TRANSFERENCIA_ENTRADA"-> "Transf. Recebida";
-            default                     -> tipo;
+            case "DEPOSITO"              -> "Depósito";
+            case "DEBITO"                -> "Débito";
+            case "CREDITO"               -> "Crédito";
+            case "TRANSFERENCIA_SAIDA"   -> "Transf. Envio";
+            case "TRANSFERENCIA_ENTRADA" -> "Transf. Recebida";
+            case "ESTORNO_FRAUDE"        -> "Estorno Fraude";
+            default                      -> tipo;
         };
     }
 

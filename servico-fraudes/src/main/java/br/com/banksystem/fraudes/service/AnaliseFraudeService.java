@@ -35,6 +35,8 @@ public class AnaliseFraudeService {
             variaveis.put("valor", evento.valor().doubleValue());
             variaveis.put("tipo", evento.tipo());
             variaveis.put("dataHora", evento.dataHora() != null ? evento.dataHora().toString() : "");
+            variaveis.put("contaOrigem", evento.contaOrigem());
+            variaveis.put("contaDestino", evento.contaDestino());
 
             runtimeService.startProcessInstanceByKey(PROCESSO_FRAUDE, evento.idTransacao(), variaveis);
             log.info("Processo de análise de fraude iniciado para transação: {}", evento.idTransacao());

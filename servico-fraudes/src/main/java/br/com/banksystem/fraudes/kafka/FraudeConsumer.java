@@ -20,7 +20,11 @@ public class FraudeConsumer {
         this.analiseFraudeService = analiseFraudeService;
     }
 
-    @KafkaListener(topics = "transacoes-aprovadas", groupId = "servico-fraudes")
+    @KafkaListener(
+            topics = "transacoes-aprovadas",
+            groupId = "servico-fraudes",
+            containerFactory = "kafkaListenerContainerFactory"
+    )
     public void consumirTransacaoAprovada(TransacaoEventoDTO evento) {
         log.info("Iniciando análise de fraude para transação: {}", evento.idTransacao());
         analiseFraudeService.iniciarAnalise(evento);

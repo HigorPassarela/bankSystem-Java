@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
 /**
  * Documento MongoDB que representa uma transação persistida no extrato.
  *
- * Tipos possíveis: DEPOSITO | DEBITO | CREDITO | TRANSFERENCIA_SAIDA | TRANSFERENCIA_ENTRADA
+ * Tipos possíveis:
+ * DEPOSITO | DEBITO | CREDITO | TRANSFERENCIA_SAIDA | TRANSFERENCIA_ENTRADA | ESTORNO_FRAUDE
  * Status possíveis: APROVADA | REPROVADA
  *
  * Índices compostos otimizam as consultas mais comuns:

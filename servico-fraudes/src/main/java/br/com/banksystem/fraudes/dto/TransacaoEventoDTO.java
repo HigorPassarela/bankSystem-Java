@@ -14,5 +14,7 @@ public record TransacaoEventoDTO(
         String status,
         String descricao,
         LocalDateTime dataHora,
-        BigDecimal saldoAposTransacao
+        BigDecimal saldoAposTransacao,
+        String contaOrigem,
+        String contaDestino
 ) {}

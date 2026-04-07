@@ -41,7 +41,7 @@ public class TransacaoService {
                             ContasClient contasClient) {
         this.redisTemplate = redisTemplate;
         this.kafkaTemplate = kafkaTemplate;
-        this.contasClient  = contasClient;
+        this.contasClient = contasClient;
     }
 
     // ── DEPÓSITO ──────────────────────────────────────────────────────────────
@@ -55,16 +55,16 @@ public class TransacaoService {
         log.info("Processando depósito de R$ {} na conta {}", dto.valor(), numeroConta);
 
         long valorCentavos = toCentavos(dto.valor());
-        String chaveSaldo  = "saldo:" + numeroConta;
+        String chaveSaldo = "saldo:" + numeroConta;
 
-        // Incremento atômico no Redis
         redisTemplate.opsForValue().increment(chaveSaldo, valorCentavos);
 
         String saldoStr = redisTemplate.opsForValue().get(chaveSaldo);
-        long novoSaldo  = saldoStr != null ? Long.parseLong(saldoStr) : valorCentavos;
+        long novoSaldo = saldoStr != null ? Long.parseLong(saldoStr) : valorCentavos;
 
         String idTransacao = UUID.randomUUID().toString();
-        String descricao   = dto.descricao() != null ? dto.descricao() : "Depósito em conta";
+        String descricao = dto.descricao() != null ? dto.descricao() : "Depósito em conta";
+
         publicarAprovada(
                 idTransacao,
                 numeroConta,
@@ -75,19 +75,29 @@ public class TransacaoService {
         );
 
         log.info("Depósito aprovado. ID: {} | Novo saldo: R$ {}", idTransacao, fromCentavos(novoSaldo));
-        return new TransacaoRespostaDTO(idTransacao, numeroConta, dto.valor(),
-                "DEPOSITO", "APROVADA", fromCentavos(novoSaldo), LocalDateTime.now());
+
+        return new TransacaoRespostaDTO(
+                idTransacao,
+                numeroConta,
+                dto.valor(),
+                "DEPOSITO",
+                "APROVADA",
+                fromCentavos(novoSaldo),
+                LocalDateTime.now()
+        );
     }
 
     // ── DÉBITO ────────────────────────────────────────────────────────────────
 
-    /** Débito no saldo disponível — verifica saldo antes de descontar. */
+    /**
+     * Débito no saldo disponível — verifica saldo antes de descontar.
+     */
     public TransacaoRespostaDTO processarDebito(String numeroConta, DebitoDTO dto) {
         log.info("Processando débito de R$ {} na conta {}", dto.valor(), numeroConta);
 
         long valorCentavos = toCentavos(dto.valor());
-        String chaveSaldo  = "saldo:" + numeroConta;
-        long saldoAtual    = getSaldo(chaveSaldo);
+        String chaveSaldo = "saldo:" + numeroConta;
+        long saldoAtual = getSaldo(chaveSaldo);
 
         if (saldoAtual < valorCentavos) {
             publicarReprovada(numeroConta, dto.valor(), "DEBITO", dto.descricao());
@@ -96,8 +106,9 @@ public class TransacaoService {
         }
 
         redisTemplate.opsForValue().decrement(chaveSaldo, valorCentavos);
-        long novoSaldo     = saldoAtual - valorCentavos;
+        long novoSaldo = saldoAtual - valorCentavos;
         String idTransacao = UUID.randomUUID().toString();
+
         publicarAprovada(
                 idTransacao,
                 numeroConta,
@@ -107,19 +118,28 @@ public class TransacaoService {
                 fromCentavos(novoSaldo)
         );
 
-        return new TransacaoRespostaDTO(idTransacao, numeroConta, dto.valor(),
-                "DEBITO", "APROVADA", fromCentavos(novoSaldo), LocalDateTime.now());
+        return new TransacaoRespostaDTO(
+                idTransacao,
+                numeroConta,
+                dto.valor(),
+                "DEBITO",
+                "APROVADA",
+                fromCentavos(novoSaldo),
+                LocalDateTime.now()
+        );
     }
 
     // ── CRÉDITO ───────────────────────────────────────────────────────────────
 
-    /** Crédito usando limite disponível (modalidade "pagar depois"). */
+    /**
+     * Crédito usando limite disponível (modalidade "pagar depois").
+     */
     public TransacaoRespostaDTO processarCredito(String numeroConta, CreditoDTO dto) {
         log.info("Processando crédito de R$ {} na conta {}", dto.valor(), numeroConta);
 
         long valorCentavos = toCentavos(dto.valor());
         String chaveLimite = "limite:" + numeroConta;
-        long limiteAtual   = getSaldo(chaveLimite);
+        long limiteAtual = getSaldo(chaveLimite);
 
         if (limiteAtual < valorCentavos) {
             publicarReprovada(numeroConta, dto.valor(), "CREDITO", dto.descricao());
@@ -128,8 +148,9 @@ public class TransacaoService {
         }
 
         redisTemplate.opsForValue().decrement(chaveLimite, valorCentavos);
-        long novoLimite    = limiteAtual - valorCentavos;
+        long novoLimite = limiteAtual - valorCentavos;
         String idTransacao = UUID.randomUUID().toString();
+
         publicarAprovada(
                 idTransacao,
                 numeroConta,
@@ -139,8 +160,15 @@ public class TransacaoService {
                 fromCentavos(novoLimite)
         );
 
-        return new TransacaoRespostaDTO(idTransacao, numeroConta, dto.valor(),
-                "CREDITO", "APROVADA", fromCentavos(novoLimite), LocalDateTime.now());
+        return new TransacaoRespostaDTO(
+                idTransacao,
+                numeroConta,
+                dto.valor(),
+                "CREDITO",
+                "APROVADA",
+                fromCentavos(novoLimite),
+                LocalDateTime.now()
+        );
     }
 
     // ── TRANSFERÊNCIA ─────────────────────────────────────────────────────────
@@ -157,34 +185,38 @@ public class TransacaoService {
                                                            String jwtToken) {
         log.info("Transferência de {} → {} | R$ {}", contaOrigem, dto.contaDestino(), dto.valor());
 
-        if (contaOrigem.equals(dto.contaDestino()))
+        if (contaOrigem.equals(dto.contaDestino())) {
             throw new TransferenciaInvalidaException("Não é possível transferir para a própria conta");
+        }
 
         boolean pinValido = contasClient.validarSenhaTransferencia(
                 contaOrigem, dto.senhaTransferencia(), jwtToken);
-        if (!pinValido)
-            throw new TransferenciaInvalidaException("Senha de transferência (PIN) inválida");
 
-        long valorCentavos       = toCentavos(dto.valor());
-        String chaveSaldoOrigem  = "saldo:" + contaOrigem;
+        if (!pinValido) {
+            throw new TransferenciaInvalidaException("Senha de transferência (PIN) inválida");
+        }
+
+        long valorCentavos = toCentavos(dto.valor());
+        String chaveSaldoOrigem = "saldo:" + contaOrigem;
         String chaveSaldoDestino = "saldo:" + dto.contaDestino();
 
-        long saldoOrigem  = getSaldo(chaveSaldoOrigem);
+        long saldoOrigem = getSaldo(chaveSaldoOrigem);
         long saldoDestino = getSaldo(chaveSaldoDestino);
 
-        if (saldoOrigem < valorCentavos)
+        if (saldoOrigem < valorCentavos) {
             throw new SaldoInsuficienteException(
                     "Saldo insuficiente para transferência. Disponível: R$ " + fromCentavos(saldoOrigem));
+        }
 
         redisTemplate.opsForValue().decrement(chaveSaldoOrigem, valorCentavos);
         redisTemplate.opsForValue().increment(chaveSaldoDestino, valorCentavos);
 
-        long novoSaldoOrigem  = saldoOrigem - valorCentavos;
+        long novoSaldoOrigem = saldoOrigem - valorCentavos;
         long novoSaldoDestino = saldoDestino + valorCentavos;
 
-        String idTxOrigem  = UUID.randomUUID().toString();
+        String idTxOrigem = UUID.randomUUID().toString();
         String idTxDestino = UUID.randomUUID().toString();
-        String desc        = dto.descricao() != null ? " — " + dto.descricao() : "";
+        String desc = dto.descricao() != null ? " — " + dto.descricao() : "";
 
         publicarAprovada(
                 idTxOrigem,
@@ -192,7 +224,9 @@ public class TransacaoService {
                 dto.valor(),
                 "TRANSFERENCIA_SAIDA",
                 "Transferência para conta " + dto.contaDestino() + desc,
-                fromCentavos(novoSaldoOrigem)
+                fromCentavos(novoSaldoOrigem),
+                contaOrigem,
+                dto.contaDestino()
         );
 
         publicarAprovada(
@@ -201,7 +235,9 @@ public class TransacaoService {
                 dto.valor(),
                 "TRANSFERENCIA_ENTRADA",
                 "Transferência recebida da conta " + contaOrigem + desc,
-                fromCentavos(novoSaldoDestino)
+                fromCentavos(novoSaldoDestino),
+                contaOrigem,
+                dto.contaDestino()
         );
 
         log.info("Transferência aprovada. ID: {} | Novo saldo origem: R$ {}",
@@ -221,7 +257,7 @@ public class TransacaoService {
     // ── CONSULTA ──────────────────────────────────────────────────────────────
 
     public SaldoDTO consultarSaldo(String numeroConta) {
-        long saldo  = getSaldo("saldo:"  + numeroConta);
+        long saldo = getSaldo("saldo:" + numeroConta);
         long limite = getSaldo("limite:" + numeroConta);
         return new SaldoDTO(numeroConta, fromCentavos(saldo), fromCentavos(limite));
     }
@@ -229,22 +265,50 @@ public class TransacaoService {
     // ── HELPERS ───────────────────────────────────────────────────────────────
 
     private void publicarAprovada(String id, String numeroConta,
-                                   BigDecimal valor, String tipo, String descricao) {
-        publicarAprovada(id, numeroConta, valor, tipo, descricao, null);
+                                  BigDecimal valor, String tipo, String descricao) {
+        publicarAprovada(id, numeroConta, valor, tipo, descricao, null, numeroConta, null);
     }
 
     private void publicarAprovada(String id, String numeroConta,
-                                   BigDecimal valor, String tipo, String descricao,
-                                   BigDecimal saldoApos) {
+                                  BigDecimal valor, String tipo, String descricao,
+                                  BigDecimal saldoApos) {
+        publicarAprovada(id, numeroConta, valor, tipo, descricao, saldoApos, numeroConta, null);
+    }
+
+    private void publicarAprovada(String id, String numeroConta,
+                                  BigDecimal valor, String tipo, String descricao,
+                                  BigDecimal saldoApos,
+                                  String contaOrigem,
+                                  String contaDestino) {
         kafkaTemplate.send("transacoes-aprovadas", numeroConta,
-                new TransacaoEventoDTO(id, numeroConta, valor, tipo,
-                        "APROVADA", descricao, LocalDateTime.now(), saldoApos));
+                new TransacaoEventoDTO(
+                        id,
+                        numeroConta,
+                        valor,
+                        tipo,
+                        "APROVADA",
+                        descricao,
+                        LocalDateTime.now(),
+                        saldoApos,
+                        contaOrigem,
+                        contaDestino
+                ));
     }
 
     private void publicarReprovada(String numeroConta, BigDecimal valor, String tipo, String descricao) {
         kafkaTemplate.send("transacoes-reprovadas", numeroConta,
-                new TransacaoEventoDTO(UUID.randomUUID().toString(), numeroConta,
-                        valor, tipo, "REPROVADA", descricao, LocalDateTime.now(), null));
+                new TransacaoEventoDTO(
+                        UUID.randomUUID().toString(),
+                        numeroConta,
+                        valor,
+                        tipo,
+                        "REPROVADA",
+                        descricao,
+                        LocalDateTime.now(),
+                        null,
+                        numeroConta,
+                        null
+                ));
     }
 
     private long toCentavos(BigDecimal valor) {
