@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * DTO do evento Kafka de transação.
+ * DTO do evento Kafka consumido pelo serviço de notificações.
  */
 public record TransacaoEventoDTO(
         String idTransacao,
@@ -14,5 +14,7 @@ public record TransacaoEventoDTO(
         String status,
         String descricao,
         LocalDateTime dataHora,
-        BigDecimal saldoAposTransacao
+        BigDecimal saldoAposTransacao,
+        String contaOrigem,
+        String contaDestino
 ) {}
