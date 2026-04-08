@@ -19,13 +19,6 @@ spring:
     properties:
       mail.smtp.auth: false
       mail.smtp.starttls.enable: false
-#  web:
-#    cors:
-#      allowed-origins: "*"
-#      allowed-methods: "GET,POST,PUT,DELETE,OPTIONS,HEAD,PATCH"
-#      allowed-headers: "*"
-#      allow-credentials: true
-#      max-age: 3600
 
 jwt:
   secret: ${JWT_SECRET:banksystem-jwt-secret-chave-super-segura-2024}

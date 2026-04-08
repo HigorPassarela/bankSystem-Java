@@ -8,6 +8,17 @@
             <FileInspectorState>
               <option name="statesByElementId">
                 <map>
+                  <entry key="fluxo3">
+                    <value>
+                      <ExpandedItems>
+                        <option name="items">
+                          <option value="Sequence Flow" />
+                          <option value="Sequence Flow|General" />
+                          <option value="Sequence Flow|Condition" />
+                        </option>
+                      </ExpandedItems>
+                    </value>
+                  </entry>
                   <entry key="processoAnaliseFraude">
                     <value>
                       <ExpandedItems>
@@ -45,6 +56,17 @@
             <FileInspectorState>
               <option name="statesByElementId">
                 <map>
+                  <entry key="fluxo3">
+                    <value>
+                      <ExpandedItems>
+                        <option name="items">
+                          <option value="Sequence Flow" />
+                          <option value="Sequence Flow|General" />
+                          <option value="Sequence Flow|Condition" />
+                        </option>
+                      </ExpandedItems>
+                    </value>
+                  </entry>
                   <entry key="processoAnaliseFraude">
                     <value>
                       <ExpandedItems>

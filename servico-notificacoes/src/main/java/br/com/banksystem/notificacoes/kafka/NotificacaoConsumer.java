@@ -27,23 +27,75 @@ public class NotificacaoConsumer {
             containerFactory = "kafkaListenerContainerFactory"
     )
     public void consumirAprovada(TransacaoEventoDTO evento) {
+        // Não notificar TRANSFERENCIA_ENTRADA para evitar confusão
+        if ("TRANSFERENCIA_ENTRADA".equals(evento.tipo())) {
+            log.info("Notificação ignorada para TRANSFERENCIA_ENTRADA da conta {}", evento.numeroConta());
+            return;
+        }
+
         log.info("Notificando transação aprovada: {} - conta: {}", evento.idTransacao(), evento.numeroConta());
-        String msg = String.format("Transação de %s no valor de R$ %.2f aprovada com sucesso",
-                evento.tipo(), evento.valor());
-        sseEmitterService.enviarNotificacao(evento.numeroConta(),
-                NotificacaoDTO.criar("TRANSACAO_APROVADA", msg, evento));
+
+        String msg = switch (evento.tipo()) {
+            case "DEPOSITO" -> String.format(
+                    "Depósito no valor de R$ %.2f realizado com sucesso",
+                    evento.valor()
+            );
+            case "DEBITO" -> String.format(
+                    "Débito no valor de R$ %.2f realizado com sucesso",
+                    evento.valor()
+            );
+            case "CREDITO" -> String.format(
+                    "Crédito no valor de R$ %.2f realizado com sucesso",
+                    evento.valor()
+            );
+            case "TRANSFERENCIA_SAIDA" -> String.format(
+                    "Transferência no valor de R$ %.2f realizada com sucesso",
+                    evento.valor()
+            );
+            default -> String.format(
+                    "Transação de %s no valor de R$ %.2f aprovada com sucesso",
+                    evento.tipo(),
+                    evento.valor()
+            );
+        };
+
+        sseEmitterService.enviarNotificacao(
+                evento.numeroConta(),
+                NotificacaoDTO.criar("TRANSACAO_APROVADA", msg, evento)
+        );
     }
 
     @KafkaListener(
-            topics = "transacoes-aprovadas",
+            topics = "transacoes-reprovadas",
             groupId = "servico-notificacoes",
             containerFactory = "kafkaListenerContainerFactory"
     )
     public void consumirReprovada(TransacaoEventoDTO evento) {
         log.info("Notificando transação reprovada: {} - conta: {}", evento.idTransacao(), evento.numeroConta());
-        String msg = String.format("Transação de %s no valor de R$ %.2f reprovada por saldo insuficiente",
-                evento.tipo(), evento.valor());
-        sseEmitterService.enviarNotificacao(evento.numeroConta(),
-                NotificacaoDTO.criar("TRANSACAO_REPROVADA", msg, evento));
+
+        String msg = switch (evento.tipo()) {
+            case "DEBITO" -> String.format(
+                    "Débito no valor de R$ %.2f não foi realizado por saldo insuficiente",
+                    evento.valor()
+            );
+            case "CREDITO" -> String.format(
+                    "Crédito no valor de R$ %.2f não foi realizado por limite insuficiente",
+                    evento.valor()
+            );
+            case "TRANSFERENCIA_SAIDA" -> String.format(
+                    "Transferência no valor de R$ %.2f não foi realizada por saldo insuficiente",
+                    evento.valor()
+            );
+            default -> String.format(
+                    "Transação de %s no valor de R$ %.2f foi reprovada",
+                    evento.tipo(),
+                    evento.valor()
+            );
+        };
+
+        sseEmitterService.enviarNotificacao(
+                evento.numeroConta(),
+                NotificacaoDTO.criar("TRANSACAO_REPROVADA", msg, evento)
+        );
     }
 }
