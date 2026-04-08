@@ -1,9 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module version="4">
   <component name="OpenBpmProjectModulesStateV2">
+    <option name="hasState" value="true" />
     <option name="moduleState">
       <JmixModuleStateV2>
+        <option name="artifactGroup" value="br.com.banksystem" />
+        <option name="artifactName" value="servico-contas" />
+        <option name="artifactVersion" value="1.0.0" />
+        <option name="buildFilePath" value="C:\Users\higor.passarela\Downloads\bankSystem2\servico-contas\build.gradle" />
+        <option name="buildScriptDependencies">
+          <Dependency configuration="classpath" group="org.springframework.boot" name="spring-boot-gradle-plugin" version="3.2.0" />
+          <Dependency configuration="classpath" group="io.spring.gradle" name="dependency-management-plugin" version="1.1.4" />
+        </option>
+        <option name="buildSystemName" value="Gradle" />
+        <option name="classesDir" value="C:\Users\higor.passarela\Downloads\bankSystem2\servico-contas\build\classes\java\main" />
+        <option name="dependencies">
+          <Dependency configuration="implementation" group="org.springframework.boot" name="spring-boot-starter-web" />
+          <Dependency configuration="implementation" group="org.springframework.boot" name="spring-boot-starter-security" />
+          <Dependency configuration="implementation" group="org.springframework.boot" name="spring-boot-starter-data-mongodb" />
+          <Dependency configuration="implementation" group="org.springframework.boot" name="spring-boot-starter-data-redis" />
+          <Dependency configuration="implementation" group="org.springframework.boot" name="spring-boot-starter-validation" />
+          <Dependency configuration="implementation" group="org.springframework.boot" name="spring-boot-starter-actuator" />
+          <Dependency configuration="implementation" group="io.jsonwebtoken" name="jjwt-api" version="0.12.5" />
+          <Dependency configuration="implementation" group="org.springframework.boot" name="spring-boot-starter-mail" />
+          <Dependency configuration="implementation" group="org.springframework.boot" name="spring-boot-starter-thymeleaf" />
+          <Dependency configuration="implementation" group="org.springdoc" name="springdoc-openapi-starter-webmvc-ui" version="2.5.0" />
+          <Dependency configuration="runtimeOnly" group="io.jsonwebtoken" name="jjwt-impl" version="0.12.5" />
+          <Dependency configuration="runtimeOnly" group="io.jsonwebtoken" name="jjwt-jackson" version="0.12.5" />
+          <Dependency configuration="testImplementation" group="org.springframework.boot" name="spring-boot-starter-test" />
+          <Dependency configuration="testImplementation" group="org.springframework.security" name="spring-security-test" />
+          <Dependency configuration="testImplementation" group="de.flapdoodle.embed" name="de.flapdoodle.embed.mongo.spring30x" version="4.7.0" />
+        </option>
+        <option name="jarFile" value="C:\Users\higor.passarela\Downloads\bankSystem2\servico-contas\build\libs\servico-contas-1.0.0-plain.jar" />
+        <option name="mavenLocalURI" value="file:/$MAVEN_REPOSITORY$/" />
         <option name="moduleName" value="servico-contas" />
+        <option name="rootBuildFilePath" value="C:\Users\higor.passarela\Downloads\bankSystem2\servico-contas\build.gradle" />
+        <option name="rootProjectName" value="servico-contas" />
+        <option name="stateBuildScriptRepositories">
+          <Repository url="http://maven.aliyun.com/nexus/content/groups/public/" />
+          <Repository url="http://maven.aliyun.com/nexus/content/repositories/gradle-plugin" />
+          <Repository url="https://plugins.gradle.org/m2" />
+          <Repository url="https://repo.maven.apache.org/maven2/" />
+        </option>
+        <option name="stateRepositories">
+          <Repository url="http://maven.aliyun.com/nexus/content/groups/public/" />
+          <Repository url="https://repo.maven.apache.org/maven2/" />
+        </option>
       </JmixModuleStateV2>
     </option>
   </component>

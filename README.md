@@ -157,5 +157,3 @@ As duas senhas são independentes e armazenadas com BCrypt.
 ## Documentação
 
 - [Endpoints da API](docs/api-endpoints.md)
-- [Integração Frontend](docs/frontend-integration.md)
-- [Prompt Lovable (geração do frontend)](docs/lovable-prompt.md)
