@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="br.com.banksystem.transacoes.security.JwtUtilTest" tests="19" skipped="0" failures="0" errors="0" timestamp="2026-04-09T18:38:26.723Z" hostname="NB-608211" time="2.628">
+  <properties/>
+  <testcase name="deveExtrairNumeroContaComCaracteresEspeciais()" classname="br.com.banksystem.transacoes.security.JwtUtilTest" time="2.524"/>
+  <testcase name="deveRetornarFalsoParaTokenNull()" classname="br.com.banksystem.transacoes.security.JwtUtilTest" time="0.008"/>
+  <testcase name="deveLancarExcecaoAoExtrairNumeroContaDeTokenInvalido()" classname="br.com.banksystem.transacoes.security.JwtUtilTest" time="0.005"/>
+  <testcase name="deveValidarTokenSemDataDeExpiracao()" classname="br.com.banksystem.transacoes.security.JwtUtilTest" time="0.007"/>
+  <testcase name="deveValidarTokenValidoComSucesso()" classname="br.com.banksystem.transacoes.security.JwtUtilTest" time="0.005"/>
+  <testcase name="deveRetornarFalsoParaTokenMalformado()" classname="br.com.banksystem.transacoes.security.JwtUtilTest" time="0.005"/>
+  <testcase name="deveRetornarFalsoParaTokenVazio()" classname="br.com.banksystem.transacoes.security.JwtUtilTest" time="0.003"/>
+  <testcase name="deveRetornarFalsoParaTokenExpirado()" classname="br.com.banksystem.transacoes.security.JwtUtilTest" time="0.009"/>
+  <testcase name="deveLancarExcecaoAoExtrairNumeroContaDeTokenComEspacosEmBranco()" classname="br.com.banksystem.transacoes.security.JwtUtilTest" time="0.003"/>
+  <testcase name="deveLancarExcecaoAoExtrairNumeroContaDeTokenNull()" classname="br.com.banksystem.transacoes.security.JwtUtilTest" time="0.003"/>
+  <testcase name="deveLancarExcecaoAoExtrairNumeroContaDeTokenExpirado()" classname="br.com.banksystem.transacoes.security.JwtUtilTest" time="0.006"/>
+  <testcase name="deveLancarExcecaoParaTokenMalformadoNaExtracao()" classname="br.com.banksystem.transacoes.security.JwtUtilTest" time="0.002"/>
+  <testcase name="deveRetornarFalsoParaTokenComEspacosEmBranco()" classname="br.com.banksystem.transacoes.security.JwtUtilTest" time="0.002"/>
+  <testcase name="deveLancarExcecaoAoExtrairNumeroContaDeTokenVazio()" classname="br.com.banksystem.transacoes.security.JwtUtilTest" time="0.003"/>
+  <testcase name="deveRetornarFalsoParaTokenComAssinaturaInvalida()" classname="br.com.banksystem.transacoes.security.JwtUtilTest" time="0.004"/>
+  <testcase name="deveExtrairNumeroContaComSucesso()" classname="br.com.banksystem.transacoes.security.JwtUtilTest" time="0.005"/>
+  <testcase name="deveLancarExcecaoParaTokenComAssinaturaInvalidaNaExtracao()" classname="br.com.banksystem.transacoes.security.JwtUtilTest" time="0.003"/>
+  <testcase name="deveValidarTokenComDiferentesNumerosDeConta()" classname="br.com.banksystem.transacoes.security.JwtUtilTest" time="0.009"/>
+  <testcase name="deveRetornarFalsoParaTokenInvalido()" classname="br.com.banksystem.transacoes.security.JwtUtilTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[WARNING: A Java agent has been loaded dynamically (C:\Users\higor.passarela\.gradle\caches\modules-2\files-2.1\net.bytebuddy\byte-buddy-agent\1.14.10\90ed94ac044ea8953b224304c762316e91fd6b31\byte-buddy-agent-1.14.10.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
+</testsuite>

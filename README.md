@@ -28,7 +28,7 @@ docker compose up -d --force-recreate
 ---
 ## Subir apenas a infraestrutura
 
-Subir apenas infraestrutura:
+obs: lembre-se de tirar os serviços do docker-compose para isso!
 ```bash
 docker-compose up -d
 ```

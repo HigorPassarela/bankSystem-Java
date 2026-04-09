@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransacaoService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">servico-transacoes</a> &gt; <a href="index.source.html" class="el_package">br.com.banksystem.transacoes.service</a> &gt; <span class="el_source">TransacaoService.java</span></div><h1>TransacaoService.java</h1><pre class="source lang-java linenums">package br.com.banksystem.transacoes.service;
+
+import br.com.banksystem.transacoes.client.ContasClient;
+import br.com.banksystem.transacoes.dto.*;
+import br.com.banksystem.transacoes.exception.SaldoInsuficienteException;
+import br.com.banksystem.transacoes.exception.TransferenciaInvalidaException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+/**
+ * Serviço de processamento de transações bancárias.
+ *
+ * Operações disponíveis:
+ *  - Depósito     → credita no saldo (INCR Redis)
+ *  - Débito       → debita do saldo  (DECR Redis, valida saldo)
+ *  - Crédito      → usa limite       (DECR Redis limite)
+ *  - Transferência → débito origem + crédito destino (atômico, exige PIN)
+ *
+ * Todas publicam evento no Kafka → extratos + notificações + fraudes.
+ */
+@Service
+public class TransacaoService {
+
+<span class="nc" id="L32">    private static final Logger log = LoggerFactory.getLogger(TransacaoService.class);</span>
+<span class="nc" id="L33">    private static final BigDecimal CENTAVOS = new BigDecimal(&quot;100&quot;);</span>
+
+    private final RedisTemplate&lt;String, String&gt; redisTemplate;
+    private final KafkaTemplate&lt;String, TransacaoEventoDTO&gt; kafkaTemplate;
+    private final ContasClient contasClient;
+
+    public TransacaoService(RedisTemplate&lt;String, String&gt; redisTemplate,
+                            KafkaTemplate&lt;String, TransacaoEventoDTO&gt; kafkaTemplate,
+<span class="nc" id="L41">                            ContasClient contasClient) {</span>
+<span class="nc" id="L42">        this.redisTemplate = redisTemplate;</span>
+<span class="nc" id="L43">        this.kafkaTemplate = kafkaTemplate;</span>
+<span class="nc" id="L44">        this.contasClient = contasClient;</span>
+<span class="nc" id="L45">    }</span>
+
+    // ── DEPÓSITO ──────────────────────────────────────────────────────────────
+
+    /**
+     * Realiza depósito em conta — incrementa o saldo disponível no Redis.
+     * Não exige PIN de transferência, apenas autenticação JWT.
+     * Publica evento DEPOSITO no tópico transacoes-aprovadas.
+     */
+    public TransacaoRespostaDTO processarDeposito(String numeroConta, DepositoDTO dto) {
+<span class="nc" id="L55">        log.info(&quot;Processando depósito de R$ {} na conta {}&quot;, dto.valor(), numeroConta);</span>
+
+<span class="nc" id="L57">        long valorCentavos = toCentavos(dto.valor());</span>
+<span class="nc" id="L58">        String chaveSaldo = &quot;saldo:&quot; + numeroConta;</span>
+
+<span class="nc" id="L60">        redisTemplate.opsForValue().increment(chaveSaldo, valorCentavos);</span>
+
+<span class="nc" id="L62">        String saldoStr = redisTemplate.opsForValue().get(chaveSaldo);</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        long novoSaldo = saldoStr != null ? Long.parseLong(saldoStr) : valorCentavos;</span>
+
+<span class="nc" id="L65">        String idTransacao = UUID.randomUUID().toString();</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">        String descricao = dto.descricao() != null ? dto.descricao() : &quot;Depósito em conta&quot;;</span>
+
+<span class="nc" id="L68">        publicarAprovada(</span>
+                idTransacao,
+                numeroConta,
+<span class="nc" id="L71">                dto.valor(),</span>
+                &quot;DEPOSITO&quot;,
+                descricao,
+<span class="nc" id="L74">                fromCentavos(novoSaldo)</span>
+        );
+
+<span class="nc" id="L77">        log.info(&quot;Depósito aprovado. ID: {} | Novo saldo: R$ {}&quot;, idTransacao, fromCentavos(novoSaldo));</span>
+
+<span class="nc" id="L79">        return new TransacaoRespostaDTO(</span>
+                idTransacao,
+                numeroConta,
+<span class="nc" id="L82">                dto.valor(),</span>
+                &quot;DEPOSITO&quot;,
+                &quot;APROVADA&quot;,
+<span class="nc" id="L85">                fromCentavos(novoSaldo),</span>
+<span class="nc" id="L86">                LocalDateTime.now()</span>
+        );
+    }
+
+    // ── DÉBITO ────────────────────────────────────────────────────────────────
+
+    /**
+     * Débito no saldo disponível — verifica saldo antes de descontar.
+     */
+    public TransacaoRespostaDTO processarDebito(String numeroConta, DebitoDTO dto) {
+<span class="nc" id="L96">        log.info(&quot;Processando débito de R$ {} na conta {}&quot;, dto.valor(), numeroConta);</span>
+
+<span class="nc" id="L98">        long valorCentavos = toCentavos(dto.valor());</span>
+<span class="nc" id="L99">        String chaveSaldo = &quot;saldo:&quot; + numeroConta;</span>
+<span class="nc" id="L100">        long saldoAtual = getSaldo(chaveSaldo);</span>
+
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        if (saldoAtual &lt; valorCentavos) {</span>
+<span class="nc" id="L103">            publicarReprovada(numeroConta, dto.valor(), &quot;DEBITO&quot;, dto.descricao());</span>
+<span class="nc" id="L104">            throw new SaldoInsuficienteException(</span>
+<span class="nc" id="L105">                    &quot;Saldo insuficiente. Disponível: R$ &quot; + fromCentavos(saldoAtual));</span>
+        }
+
+<span class="nc" id="L108">        redisTemplate.opsForValue().decrement(chaveSaldo, valorCentavos);</span>
+<span class="nc" id="L109">        long novoSaldo = saldoAtual - valorCentavos;</span>
+<span class="nc" id="L110">        String idTransacao = UUID.randomUUID().toString();</span>
+
+<span class="nc" id="L112">        publicarAprovada(</span>
+                idTransacao,
+                numeroConta,
+<span class="nc" id="L115">                dto.valor(),</span>
+                &quot;DEBITO&quot;,
+<span class="nc" id="L117">                dto.descricao(),</span>
+<span class="nc" id="L118">                fromCentavos(novoSaldo)</span>
+        );
+
+<span class="nc" id="L121">        return new TransacaoRespostaDTO(</span>
+                idTransacao,
+                numeroConta,
+<span class="nc" id="L124">                dto.valor(),</span>
+                &quot;DEBITO&quot;,
+                &quot;APROVADA&quot;,
+<span class="nc" id="L127">                fromCentavos(novoSaldo),</span>
+<span class="nc" id="L128">                LocalDateTime.now()</span>
+        );
+    }
+
+    // ── CRÉDITO ───────────────────────────────────────────────────────────────
+
+    /**
+     * Crédito usando limite disponível (modalidade &quot;pagar depois&quot;).
+     */
+    public TransacaoRespostaDTO processarCredito(String numeroConta, CreditoDTO dto) {
+<span class="nc" id="L138">        log.info(&quot;Processando crédito de R$ {} na conta {}&quot;, dto.valor(), numeroConta);</span>
+
+<span class="nc" id="L140">        long valorCentavos = toCentavos(dto.valor());</span>
+<span class="nc" id="L141">        String chaveLimite = &quot;limite:&quot; + numeroConta;</span>
+<span class="nc" id="L142">        long limiteAtual = getSaldo(chaveLimite);</span>
+
+<span class="nc bnc" id="L144" title="All 2 branches missed.">        if (limiteAtual &lt; valorCentavos) {</span>
+<span class="nc" id="L145">            publicarReprovada(numeroConta, dto.valor(), &quot;CREDITO&quot;, dto.descricao());</span>
+<span class="nc" id="L146">            throw new SaldoInsuficienteException(</span>
+<span class="nc" id="L147">                    &quot;Limite insuficiente. Disponível: R$ &quot; + fromCentavos(limiteAtual));</span>
+        }
+
+<span class="nc" id="L150">        redisTemplate.opsForValue().decrement(chaveLimite, valorCentavos);</span>
+<span class="nc" id="L151">        long novoLimite = limiteAtual - valorCentavos;</span>
+<span class="nc" id="L152">        String idTransacao = UUID.randomUUID().toString();</span>
+
+<span class="nc" id="L154">        publicarAprovada(</span>
+                idTransacao,
+                numeroConta,
+<span class="nc" id="L157">                dto.valor(),</span>
+                &quot;CREDITO&quot;,
+<span class="nc" id="L159">                dto.descricao(),</span>
+<span class="nc" id="L160">                fromCentavos(novoLimite)</span>
+        );
+
+<span class="nc" id="L163">        return new TransacaoRespostaDTO(</span>
+                idTransacao,
+                numeroConta,
+<span class="nc" id="L166">                dto.valor(),</span>
+                &quot;CREDITO&quot;,
+                &quot;APROVADA&quot;,
+<span class="nc" id="L169">                fromCentavos(novoLimite),</span>
+<span class="nc" id="L170">                LocalDateTime.now()</span>
+        );
+    }
+
+    // ── TRANSFERÊNCIA ─────────────────────────────────────────────────────────
+
+    /**
+     * Transferência entre contas.
+     * 1. Valida PIN de 4 dígitos junto ao servico-contas
+     * 2. Verifica saldo da origem
+     * 3. Debita origem + credita destino (atômico via Redis)
+     * 4. Publica dois eventos Kafka (SAIDA e ENTRADA)
+     */
+    public TransferenciaRespostaDTO processarTransferencia(String contaOrigem,
+                                                           TransferenciaDTO dto,
+                                                           String jwtToken) {
+<span class="nc" id="L186">        log.info(&quot;Transferência de {} → {} | R$ {}&quot;, contaOrigem, dto.contaDestino(), dto.valor());</span>
+
+<span class="nc bnc" id="L188" title="All 2 branches missed.">        if (contaOrigem.equals(dto.contaDestino())) {</span>
+<span class="nc" id="L189">            throw new TransferenciaInvalidaException(&quot;Não é possível transferir para a própria conta&quot;);</span>
+        }
+
+<span class="nc" id="L192">        boolean pinValido = contasClient.validarSenhaTransferencia(</span>
+<span class="nc" id="L193">                contaOrigem, dto.senhaTransferencia(), jwtToken);</span>
+
+<span class="nc bnc" id="L195" title="All 2 branches missed.">        if (!pinValido) {</span>
+<span class="nc" id="L196">            throw new TransferenciaInvalidaException(&quot;Senha de transferência (PIN) inválida&quot;);</span>
+        }
+
+<span class="nc" id="L199">        long valorCentavos = toCentavos(dto.valor());</span>
+<span class="nc" id="L200">        String chaveSaldoOrigem = &quot;saldo:&quot; + contaOrigem;</span>
+<span class="nc" id="L201">        String chaveSaldoDestino = &quot;saldo:&quot; + dto.contaDestino();</span>
+
+<span class="nc" id="L203">        long saldoOrigem = getSaldo(chaveSaldoOrigem);</span>
+<span class="nc" id="L204">        long saldoDestino = getSaldo(chaveSaldoDestino);</span>
+
+<span class="nc bnc" id="L206" title="All 2 branches missed.">        if (saldoOrigem &lt; valorCentavos) {</span>
+<span class="nc" id="L207">            throw new SaldoInsuficienteException(</span>
+<span class="nc" id="L208">                    &quot;Saldo insuficiente para transferência. Disponível: R$ &quot; + fromCentavos(saldoOrigem));</span>
+        }
+
+<span class="nc" id="L211">        redisTemplate.opsForValue().decrement(chaveSaldoOrigem, valorCentavos);</span>
+<span class="nc" id="L212">        redisTemplate.opsForValue().increment(chaveSaldoDestino, valorCentavos);</span>
+
+<span class="nc" id="L214">        long novoSaldoOrigem = saldoOrigem - valorCentavos;</span>
+<span class="nc" id="L215">        long novoSaldoDestino = saldoDestino + valorCentavos;</span>
+
+<span class="nc" id="L217">        String idTxOrigem = UUID.randomUUID().toString();</span>
+<span class="nc" id="L218">        String idTxDestino = UUID.randomUUID().toString();</span>
+<span class="nc bnc" id="L219" title="All 2 branches missed.">        String desc = dto.descricao() != null ? &quot; — &quot; + dto.descricao() : &quot;&quot;;</span>
+
+<span class="nc" id="L221">        publicarAprovada(</span>
+                idTxOrigem,
+                contaOrigem,
+<span class="nc" id="L224">                dto.valor(),</span>
+                &quot;TRANSFERENCIA_SAIDA&quot;,
+<span class="nc" id="L226">                &quot;Transferência para conta &quot; + dto.contaDestino() + desc,</span>
+<span class="nc" id="L227">                fromCentavos(novoSaldoOrigem),</span>
+                contaOrigem,
+<span class="nc" id="L229">                dto.contaDestino()</span>
+        );
+
+<span class="nc" id="L232">        publicarAprovada(</span>
+                idTxDestino,
+<span class="nc" id="L234">                dto.contaDestino(),</span>
+<span class="nc" id="L235">                dto.valor(),</span>
+                &quot;TRANSFERENCIA_ENTRADA&quot;,
+                &quot;Transferência recebida da conta &quot; + contaOrigem + desc,
+<span class="nc" id="L238">                fromCentavos(novoSaldoDestino),</span>
+                contaOrigem,
+<span class="nc" id="L240">                dto.contaDestino()</span>
+        );
+
+<span class="nc" id="L243">        log.info(&quot;Transferência aprovada. ID: {} | Novo saldo origem: R$ {}&quot;,</span>
+<span class="nc" id="L244">                idTxOrigem, fromCentavos(novoSaldoOrigem));</span>
+
+<span class="nc" id="L246">        return new TransferenciaRespostaDTO(</span>
+                idTxOrigem,
+                contaOrigem,
+<span class="nc" id="L249">                dto.contaDestino(),</span>
+<span class="nc" id="L250">                dto.valor(),</span>
+                &quot;APROVADA&quot;,
+<span class="nc" id="L252">                fromCentavos(novoSaldoOrigem),</span>
+<span class="nc" id="L253">                LocalDateTime.now()</span>
+        );
+    }
+
+    // ── CONSULTA ──────────────────────────────────────────────────────────────
+
+    public SaldoDTO consultarSaldo(String numeroConta) {
+<span class="nc" id="L260">        long saldo = getSaldo(&quot;saldo:&quot; + numeroConta);</span>
+<span class="nc" id="L261">        long limite = getSaldo(&quot;limite:&quot; + numeroConta);</span>
+<span class="nc" id="L262">        return new SaldoDTO(numeroConta, fromCentavos(saldo), fromCentavos(limite));</span>
+    }
+
+    // ── HELPERS ───────────────────────────────────────────────────────────────
+
+    private void publicarAprovada(String id, String numeroConta,
+                                  BigDecimal valor, String tipo, String descricao) {
+<span class="nc" id="L269">        publicarAprovada(id, numeroConta, valor, tipo, descricao, null, numeroConta, null);</span>
+<span class="nc" id="L270">    }</span>
+
+    private void publicarAprovada(String id, String numeroConta,
+                                  BigDecimal valor, String tipo, String descricao,
+                                  BigDecimal saldoApos) {
+<span class="nc" id="L275">        publicarAprovada(id, numeroConta, valor, tipo, descricao, saldoApos, numeroConta, null);</span>
+<span class="nc" id="L276">    }</span>
+
+    private void publicarAprovada(String id, String numeroConta,
+                                  BigDecimal valor, String tipo, String descricao,
+                                  BigDecimal saldoApos,
+                                  String contaOrigem,
+                                  String contaDestino) {
+<span class="nc" id="L283">        kafkaTemplate.send(&quot;transacoes-aprovadas&quot;, numeroConta,</span>
+                new TransacaoEventoDTO(
+                        id,
+                        numeroConta,
+                        valor,
+                        tipo,
+                        &quot;APROVADA&quot;,
+                        descricao,
+<span class="nc" id="L291">                        LocalDateTime.now(),</span>
+                        saldoApos,
+                        contaOrigem,
+                        contaDestino
+                ));
+<span class="nc" id="L296">    }</span>
+
+    private void publicarReprovada(String numeroConta, BigDecimal valor, String tipo, String descricao) {
+<span class="nc" id="L299">        kafkaTemplate.send(&quot;transacoes-reprovadas&quot;, numeroConta,</span>
+                new TransacaoEventoDTO(
+<span class="nc" id="L301">                        UUID.randomUUID().toString(),</span>
+                        numeroConta,
+                        valor,
+                        tipo,
+                        &quot;REPROVADA&quot;,
+                        descricao,
+<span class="nc" id="L307">                        LocalDateTime.now(),</span>
+                        null,
+                        numeroConta,
+                        null
+                ));
+<span class="nc" id="L312">    }</span>
+
+    private long toCentavos(BigDecimal valor) {
+<span class="nc" id="L315">        return valor.multiply(CENTAVOS).longValue();</span>
+    }
+
+    private BigDecimal fromCentavos(long centavos) {
+<span class="nc" id="L319">        return BigDecimal.valueOf(centavos).divide(CENTAVOS, 2, RoundingMode.HALF_UP);</span>
+    }
+
+    private long getSaldo(String chave) {
+<span class="nc" id="L323">        String v = redisTemplate.opsForValue().get(chave);</span>
+<span class="nc bnc" id="L324" title="All 2 branches missed.">        return v != null ? Long.parseLong(v) : 0L;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

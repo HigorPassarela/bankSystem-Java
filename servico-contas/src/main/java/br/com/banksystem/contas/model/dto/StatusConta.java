@@ -1,4 +1,4 @@
-package br.com.banksystem.contas.model;
+package br.com.banksystem.contas.model.dto;
 
 /**
  * Status do ciclo de vida de uma conta bancária.

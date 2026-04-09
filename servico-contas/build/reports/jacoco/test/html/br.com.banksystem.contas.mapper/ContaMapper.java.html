@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ContaMapper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">servico-contas</a> &gt; <a href="index.source.html" class="el_package">br.com.banksystem.contas.mapper</a> &gt; <span class="el_source">ContaMapper.java</span></div><h1>ContaMapper.java</h1><pre class="source lang-java linenums">package br.com.banksystem.contas.mapper;
+
+import br.com.banksystem.contas.dto.CriarContaDTO;
+import br.com.banksystem.contas.dto.PerfilContaDTO;
+import br.com.banksystem.contas.model.Conta;
+import br.com.banksystem.contas.model.dto.StatusConta;
+import org.springframework.stereotype.Component;
+import java.time.LocalDateTime;
+
+/**
+ * Mapper manual — converte entre entidade Conta e seus DTOs.
+ */
+@Component
+<span class="nc" id="L14">public class ContaMapper {</span>
+
+    public Conta paraEntidade(CriarContaDTO dto, String senhaHash,
+                               String senhaTransferenciaHash, String numeroConta) {
+<span class="nc" id="L18">        Conta conta = new Conta();</span>
+<span class="nc" id="L19">        conta.setNumeroConta(numeroConta);</span>
+<span class="nc" id="L20">        conta.setNomeCompleto(dto.nomeCompleto());</span>
+<span class="nc" id="L21">        conta.setCpf(dto.cpf());</span>
+<span class="nc" id="L22">        conta.setEmail(dto.email());</span>
+<span class="nc" id="L23">        conta.setTelefone(dto.telefone());</span>
+<span class="nc" id="L24">        conta.setSenhaHash(senhaHash);</span>
+<span class="nc" id="L25">        conta.setSenhaTransferenciaHash(senhaTransferenciaHash);</span>
+<span class="nc" id="L26">        conta.setRole(&quot;ROLE_USUARIO&quot;);</span>
+<span class="nc" id="L27">        conta.setStatus(StatusConta.PENDENTE_EMAIL);   // começa pendente</span>
+<span class="nc" id="L28">        conta.setEmailVerificado(false);</span>
+<span class="nc" id="L29">        conta.setDataCriacao(LocalDateTime.now());</span>
+<span class="nc" id="L30">        conta.setDataAtualizacao(LocalDateTime.now());</span>
+<span class="nc" id="L31">        return conta;</span>
+    }
+
+    public PerfilContaDTO paraPerfilDTO(Conta conta) {
+<span class="nc" id="L35">        return new PerfilContaDTO(</span>
+<span class="nc" id="L36">                conta.getNumeroConta(),</span>
+<span class="nc" id="L37">                conta.getNomeCompleto(),</span>
+<span class="nc" id="L38">                conta.getCpf(),</span>
+<span class="nc" id="L39">                conta.getEmail(),</span>
+<span class="nc" id="L40">                conta.getTelefone(),</span>
+<span class="nc" id="L41">                conta.getStatus(),</span>
+<span class="nc" id="L42">                conta.getAtiva(),</span>
+<span class="nc" id="L43">                conta.getEmailVerificado(),</span>
+<span class="nc" id="L44">                conta.getDataCriacao()</span>
+        );
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ContaController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">servico-contas</a> &gt; <a href="index.source.html" class="el_package">br.com.banksystem.contas.controller</a> &gt; <span class="el_source">ContaController.java</span></div><h1>ContaController.java</h1><pre class="source lang-java linenums">package br.com.banksystem.contas.controller;
+
+import br.com.banksystem.contas.dto.*;
+import br.com.banksystem.contas.service.ContaService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * Controller REST para gerenciamento de contas bancárias.
+ */
+@RestController
+@RequestMapping(&quot;/api/contas&quot;)
+//@CrossOrigin(
+//        originPatterns = {&quot;http://localhost:*&quot;, &quot;https://*.lovable.app&quot;}, // ← MUDANÇA AQUI
+//        allowCredentials = &quot;true&quot;,
+//        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+//        allowedHeaders = &quot;*&quot;
+//)
+@Tag(name = &quot;Contas&quot;, description = &quot;Endpoints de gerenciamento e autenticação de contas bancárias&quot;)
+public class ContaController {
+
+    private final ContaService contaService;
+
+<span class="nc" id="L31">    public ContaController(ContaService contaService) {</span>
+<span class="nc" id="L32">        this.contaService = contaService;</span>
+<span class="nc" id="L33">    }</span>
+
+    @PostMapping(&quot;/criar&quot;)
+    @Operation(summary = &quot;Criar nova conta bancária (envia e-mail de verificação via MailHog)&quot;)
+    public ResponseEntity&lt;RespostaDTO&lt;PerfilContaDTO&gt;&gt; criarConta(@Valid @RequestBody CriarContaDTO dto) {
+<span class="nc" id="L38">        PerfilContaDTO perfil = contaService.criarConta(dto);</span>
+<span class="nc" id="L39">        return ResponseEntity.status(HttpStatus.CREATED)</span>
+<span class="nc" id="L40">                .body(RespostaDTO.sucesso(perfil, &quot;Conta criada! Verifique seu e-mail para ativar a conta.&quot;));</span>
+    }
+
+    @GetMapping(&quot;/verificar-email&quot;)
+    @Operation(summary = &quot;Verificar e-mail via token recebido no link (MailHog)&quot;)
+    public ResponseEntity&lt;RespostaDTO&lt;VerificarEmailDTO&gt;&gt; verificarEmail(@RequestParam String token) {
+<span class="nc" id="L46">        VerificarEmailDTO resultado = contaService.verificarEmail(token);</span>
+<span class="nc" id="L47">        return ResponseEntity.ok(RespostaDTO.sucesso(resultado, resultado.mensagem()));</span>
+    }
+
+    @PostMapping(&quot;/reenviar-verificacao&quot;)
+    @Operation(summary = &quot;Reenviar e-mail de verificação&quot;)
+    public ResponseEntity&lt;RespostaDTO&lt;Void&gt;&gt; reenviarVerificacao(@RequestParam String email) {
+<span class="nc" id="L53">        contaService.reenviarVerificacao(email);</span>
+<span class="nc" id="L54">        return ResponseEntity.ok(RespostaDTO.sucesso(null, &quot;E-mail de verificação reenviado com sucesso&quot;));</span>
+    }
+
+    @PostMapping(&quot;/login&quot;)
+    @Operation(summary = &quot;Autenticar conta e obter token JWT (requer e-mail verificado)&quot;)
+    public ResponseEntity&lt;RespostaDTO&lt;TokenDTO&gt;&gt; login(@Valid @RequestBody LoginDTO dto) {
+<span class="nc" id="L60">        TokenDTO token = contaService.autenticar(dto);</span>
+<span class="nc" id="L61">        return ResponseEntity.ok(RespostaDTO.sucesso(token, &quot;Login realizado com sucesso&quot;));</span>
+    }
+
+    @GetMapping(&quot;/perfil&quot;)
+    @Operation(summary = &quot;Obter perfil da conta autenticada&quot;, security = @SecurityRequirement(name = &quot;bearerAuth&quot;))
+    public ResponseEntity&lt;RespostaDTO&lt;PerfilContaDTO&gt;&gt; obterPerfil(
+            @AuthenticationPrincipal UserDetails userDetails) {
+<span class="nc" id="L68">        PerfilContaDTO perfil = contaService.obterPerfil(userDetails.getUsername());</span>
+<span class="nc" id="L69">        return ResponseEntity.ok(RespostaDTO.sucesso(perfil, &quot;Perfil obtido com sucesso&quot;));</span>
+    }
+
+    @PutMapping(&quot;/atualizar&quot;)
+    @Operation(summary = &quot;Atualizar dados da conta&quot;, security = @SecurityRequirement(name = &quot;bearerAuth&quot;))
+    public ResponseEntity&lt;RespostaDTO&lt;PerfilContaDTO&gt;&gt; atualizarConta(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Valid @RequestBody AtualizarContaDTO dto) {
+<span class="nc" id="L77">        PerfilContaDTO perfil = contaService.atualizarConta(userDetails.getUsername(), dto);</span>
+<span class="nc" id="L78">        return ResponseEntity.ok(RespostaDTO.sucesso(perfil, &quot;Conta atualizada com sucesso&quot;));</span>
+    }
+
+    @PutMapping(&quot;/senha-transferencia&quot;)
+    @Operation(summary = &quot;Atualizar PIN de 4 dígitos para transferências&quot;, security = @SecurityRequirement(name = &quot;bearerAuth&quot;))
+    public ResponseEntity&lt;RespostaDTO&lt;Void&gt;&gt; atualizarSenhaTransferencia(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Valid @RequestBody AtualizarSenhaTransferenciaDTO dto) {
+<span class="nc" id="L86">        contaService.atualizarSenhaTransferencia(userDetails.getUsername(), dto);</span>
+<span class="nc" id="L87">        return ResponseEntity.ok(RespostaDTO.sucesso(null, &quot;Senha de transferência atualizada com sucesso&quot;));</span>
+    }
+
+    @GetMapping(&quot;/buscar/{numeroConta}&quot;)
+    @Operation(summary = &quot;Buscar dados de conta por número (para transferências)&quot;, security = @SecurityRequirement(name = &quot;bearerAuth&quot;))
+    public ResponseEntity&lt;RespostaDTO&lt;PerfilContaDTO&gt;&gt; buscarConta(@PathVariable String numeroConta) {
+<span class="nc" id="L93">        PerfilContaDTO perfil = contaService.buscarContaPorNumero(numeroConta);</span>
+<span class="nc" id="L94">        return ResponseEntity.ok(RespostaDTO.sucesso(perfil, &quot;Conta encontrada&quot;));</span>
+    }
+
+    @PostMapping(&quot;/validar-senha-transferencia&quot;)
+    @Operation(summary = &quot;Validar PIN de transferência (uso interno entre serviços)&quot;, security = @SecurityRequirement(name = &quot;bearerAuth&quot;))
+    public ResponseEntity&lt;RespostaDTO&lt;Boolean&gt;&gt; validarSenhaTransferencia(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam String senhaTransferencia) {
+<span class="nc" id="L102">        boolean valido = contaService.validarSenhaTransferencia(userDetails.getUsername(), senhaTransferencia);</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">        return ResponseEntity.ok(RespostaDTO.sucesso(valido, valido ? &quot;Senha válida&quot; : &quot;Senha inválida&quot;));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
