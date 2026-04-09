@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Testes do RespostaDTO" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-04-09T19:17:24.067Z" hostname="NB-608211" time="0.005">
+  <properties/>
+  <testcase name="Deve criar record manualmente" classname="br.com.banksystem.contas.dto.RespostaDTOTest" time="0.001"/>
+  <testcase name="Deve criar resposta de sucesso" classname="br.com.banksystem.contas.dto.RespostaDTOTest" time="0.001"/>
+  <testcase name="Deve criar resposta de erro" classname="br.com.banksystem.contas.dto.RespostaDTOTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

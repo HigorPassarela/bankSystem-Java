@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Testes do LoginDTO" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-04-09T19:17:24.037Z" hostname="NB-608211" time="0.012">
+  <properties/>
+  <testcase name="Deve aceitar DTO válido" classname="br.com.banksystem.contas.dto.LoginDTOTest" time="0.006"/>
+  <testcase name="Deve rejeitar senha em branco" classname="br.com.banksystem.contas.dto.LoginDTOTest" time="0.002"/>
+  <testcase name="Deve rejeitar número da conta em branco" classname="br.com.banksystem.contas.dto.LoginDTOTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

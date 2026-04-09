@@ -18,50 +18,50 @@ import java.util.Map;
  * Tratamento global de exceções para o Serviço de Contas.
  */
 @RestControllerAdvice
-<span class="nc" id="L21">public class GlobalExceptionHandler {</span>
+<span class="fc" id="L21">public class GlobalExceptionHandler {</span>
 
-<span class="nc" id="L23">    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);</span>
+<span class="fc" id="L23">    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);</span>
 
     @ExceptionHandler(ContaNaoEncontradaException.class)
     public ResponseEntity&lt;RespostaDTO&lt;Void&gt;&gt; tratarContaNaoEncontrada(ContaNaoEncontradaException ex) {
-<span class="nc" id="L27">        log.warn(&quot;Conta não encontrada: {}&quot;, ex.getMessage());</span>
-<span class="nc" id="L28">        return ResponseEntity.status(HttpStatus.NOT_FOUND)</span>
-<span class="nc" id="L29">                .body(RespostaDTO.erro(ex.getMessage()));</span>
+<span class="fc" id="L27">        log.warn(&quot;Conta não encontrada: {}&quot;, ex.getMessage());</span>
+<span class="fc" id="L28">        return ResponseEntity.status(HttpStatus.NOT_FOUND)</span>
+<span class="fc" id="L29">                .body(RespostaDTO.erro(ex.getMessage()));</span>
     }
 
     @ExceptionHandler(ContaJaExisteException.class)
     public ResponseEntity&lt;RespostaDTO&lt;Void&gt;&gt; tratarContaJaExiste(ContaJaExisteException ex) {
-<span class="nc" id="L34">        log.warn(&quot;Conflito ao criar conta: {}&quot;, ex.getMessage());</span>
-<span class="nc" id="L35">        return ResponseEntity.status(HttpStatus.CONFLICT)</span>
-<span class="nc" id="L36">                .body(RespostaDTO.erro(ex.getMessage()));</span>
+<span class="fc" id="L34">        log.warn(&quot;Conflito ao criar conta: {}&quot;, ex.getMessage());</span>
+<span class="fc" id="L35">        return ResponseEntity.status(HttpStatus.CONFLICT)</span>
+<span class="fc" id="L36">                .body(RespostaDTO.erro(ex.getMessage()));</span>
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity&lt;RespostaDTO&lt;Void&gt;&gt; tratarCredenciaisInvalidas(BadCredentialsException ex) {
-<span class="nc" id="L41">        log.warn(&quot;Tentativa de login com credenciais inválidas&quot;);</span>
-<span class="nc" id="L42">        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)</span>
-<span class="nc" id="L43">                .body(RespostaDTO.erro(&quot;Número da conta ou senha inválidos&quot;));</span>
+<span class="fc" id="L41">        log.warn(&quot;Tentativa de login com credenciais inválidas&quot;);</span>
+<span class="fc" id="L42">        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)</span>
+<span class="fc" id="L43">                .body(RespostaDTO.erro(&quot;Número da conta ou senha inválidos&quot;));</span>
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity&lt;RespostaDTO&lt;Map&lt;String, String&gt;&gt;&gt; tratarValidacao(MethodArgumentNotValidException ex) {
-<span class="nc" id="L48">        Map&lt;String, String&gt; erros = new HashMap&lt;&gt;();</span>
-<span class="nc" id="L49">        ex.getBindingResult().getAllErrors().forEach(error -&gt; {</span>
-<span class="nc" id="L50">            String campo = ((FieldError) error).getField();</span>
-<span class="nc" id="L51">            String mensagem = error.getDefaultMessage();</span>
-<span class="nc" id="L52">            erros.put(campo, mensagem);</span>
-<span class="nc" id="L53">        });</span>
-<span class="nc" id="L54">        log.warn(&quot;Erro de validação nos campos: {}&quot;, erros.keySet());</span>
-<span class="nc" id="L55">        return ResponseEntity.status(HttpStatus.BAD_REQUEST)</span>
-<span class="nc" id="L56">                .body(new RespostaDTO&lt;&gt;(false, erros, &quot;Erro de validação nos campos informados&quot;,</span>
-<span class="nc" id="L57">                        java.time.LocalDateTime.now()));</span>
+<span class="fc" id="L48">        Map&lt;String, String&gt; erros = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L49">        ex.getBindingResult().getAllErrors().forEach(error -&gt; {</span>
+<span class="fc" id="L50">            String campo = ((FieldError) error).getField();</span>
+<span class="fc" id="L51">            String mensagem = error.getDefaultMessage();</span>
+<span class="fc" id="L52">            erros.put(campo, mensagem);</span>
+<span class="fc" id="L53">        });</span>
+<span class="fc" id="L54">        log.warn(&quot;Erro de validação nos campos: {}&quot;, erros.keySet());</span>
+<span class="fc" id="L55">        return ResponseEntity.status(HttpStatus.BAD_REQUEST)</span>
+<span class="fc" id="L56">                .body(new RespostaDTO&lt;&gt;(false, erros, &quot;Erro de validação nos campos informados&quot;,</span>
+<span class="fc" id="L57">                        java.time.LocalDateTime.now()));</span>
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity&lt;RespostaDTO&lt;Void&gt;&gt; tratarExcecaoGeral(Exception ex) {
-<span class="nc" id="L62">        log.error(&quot;Erro interno no serviço de contas: {}&quot;, ex.getMessage(), ex);</span>
-<span class="nc" id="L63">        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
-<span class="nc" id="L64">                .body(RespostaDTO.erro(&quot;Erro interno no servidor. Tente novamente mais tarde.&quot;));</span>
+<span class="fc" id="L62">        log.error(&quot;Erro interno no serviço de contas: {}&quot;, ex.getMessage(), ex);</span>
+<span class="fc" id="L63">        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="fc" id="L64">                .body(RespostaDTO.erro(&quot;Erro interno no servidor. Tente novamente mais tarde.&quot;));</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

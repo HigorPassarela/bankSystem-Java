@@ -11,37 +11,37 @@ import java.time.LocalDateTime;
  * Mapper manual — converte entre entidade Conta e seus DTOs.
  */
 @Component
-<span class="nc" id="L14">public class ContaMapper {</span>
+<span class="fc" id="L14">public class ContaMapper {</span>
 
     public Conta paraEntidade(CriarContaDTO dto, String senhaHash,
                                String senhaTransferenciaHash, String numeroConta) {
-<span class="nc" id="L18">        Conta conta = new Conta();</span>
-<span class="nc" id="L19">        conta.setNumeroConta(numeroConta);</span>
-<span class="nc" id="L20">        conta.setNomeCompleto(dto.nomeCompleto());</span>
-<span class="nc" id="L21">        conta.setCpf(dto.cpf());</span>
-<span class="nc" id="L22">        conta.setEmail(dto.email());</span>
-<span class="nc" id="L23">        conta.setTelefone(dto.telefone());</span>
-<span class="nc" id="L24">        conta.setSenhaHash(senhaHash);</span>
-<span class="nc" id="L25">        conta.setSenhaTransferenciaHash(senhaTransferenciaHash);</span>
-<span class="nc" id="L26">        conta.setRole(&quot;ROLE_USUARIO&quot;);</span>
-<span class="nc" id="L27">        conta.setStatus(StatusConta.PENDENTE_EMAIL);   // começa pendente</span>
-<span class="nc" id="L28">        conta.setEmailVerificado(false);</span>
-<span class="nc" id="L29">        conta.setDataCriacao(LocalDateTime.now());</span>
-<span class="nc" id="L30">        conta.setDataAtualizacao(LocalDateTime.now());</span>
-<span class="nc" id="L31">        return conta;</span>
+<span class="fc" id="L18">        Conta conta = new Conta();</span>
+<span class="fc" id="L19">        conta.setNumeroConta(numeroConta);</span>
+<span class="fc" id="L20">        conta.setNomeCompleto(dto.nomeCompleto());</span>
+<span class="fc" id="L21">        conta.setCpf(dto.cpf());</span>
+<span class="fc" id="L22">        conta.setEmail(dto.email());</span>
+<span class="fc" id="L23">        conta.setTelefone(dto.telefone());</span>
+<span class="fc" id="L24">        conta.setSenhaHash(senhaHash);</span>
+<span class="fc" id="L25">        conta.setSenhaTransferenciaHash(senhaTransferenciaHash);</span>
+<span class="fc" id="L26">        conta.setRole(&quot;ROLE_USUARIO&quot;);</span>
+<span class="fc" id="L27">        conta.setStatus(StatusConta.PENDENTE_EMAIL);   // começa pendente</span>
+<span class="fc" id="L28">        conta.setEmailVerificado(false);</span>
+<span class="fc" id="L29">        conta.setDataCriacao(LocalDateTime.now());</span>
+<span class="fc" id="L30">        conta.setDataAtualizacao(LocalDateTime.now());</span>
+<span class="fc" id="L31">        return conta;</span>
     }
 
     public PerfilContaDTO paraPerfilDTO(Conta conta) {
-<span class="nc" id="L35">        return new PerfilContaDTO(</span>
-<span class="nc" id="L36">                conta.getNumeroConta(),</span>
-<span class="nc" id="L37">                conta.getNomeCompleto(),</span>
-<span class="nc" id="L38">                conta.getCpf(),</span>
-<span class="nc" id="L39">                conta.getEmail(),</span>
-<span class="nc" id="L40">                conta.getTelefone(),</span>
-<span class="nc" id="L41">                conta.getStatus(),</span>
-<span class="nc" id="L42">                conta.getAtiva(),</span>
-<span class="nc" id="L43">                conta.getEmailVerificado(),</span>
-<span class="nc" id="L44">                conta.getDataCriacao()</span>
+<span class="fc" id="L35">        return new PerfilContaDTO(</span>
+<span class="fc" id="L36">                conta.getNumeroConta(),</span>
+<span class="fc" id="L37">                conta.getNomeCompleto(),</span>
+<span class="fc" id="L38">                conta.getCpf(),</span>
+<span class="fc" id="L39">                conta.getEmail(),</span>
+<span class="fc" id="L40">                conta.getTelefone(),</span>
+<span class="fc" id="L41">                conta.getStatus(),</span>
+<span class="fc" id="L42">                conta.getAtiva(),</span>
+<span class="fc" id="L43">                conta.getEmailVerificado(),</span>
+<span class="fc" id="L44">                conta.getDataCriacao()</span>
         );
     }
 }

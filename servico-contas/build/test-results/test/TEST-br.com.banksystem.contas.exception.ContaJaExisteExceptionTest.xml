@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" tests="19" skipped="0" failures="0" errors="0" timestamp="2026-04-09T18:54:14.948Z" hostname="NB-608211" time="0.11">
+<testsuite name="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" tests="19" skipped="0" failures="0" errors="0" timestamp="2026-04-09T19:17:24.081Z" hostname="NB-608211" time="0.042">
   <properties/>
-  <testcase name="getCause_SemCausaDefinida_DeveRetornarNull()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.037"/>
-  <testcase name="toString_DeveConterInformacoesRelevantes()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.005"/>
+  <testcase name="getCause_SemCausaDefinida_DeveRetornarNull()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.006"/>
+  <testcase name="toString_DeveConterInformacoesRelevantes()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.002"/>
   <testcase name="heranca_DeveSerRuntimeException()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.001"/>
-  <testcase name="construtor_CenarioRealista_ContaComNumero()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.01"/>
+  <testcase name="construtor_CenarioRealista_ContaComNumero()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.004"/>
   <testcase name="construtor_ComMensagemVazia_DeveDefinirMensagemVazia()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.001"/>
-  <testcase name="getStackTrace_DeveConterInformacoes()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.003"/>
-  <testcase name="excecao_DevePodSerCapturada()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.002"/>
+  <testcase name="getStackTrace_DeveConterInformacoes()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.001"/>
+  <testcase name="excecao_DevePodSerCapturada()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.001"/>
   <testcase name="construtor_ComMensagemComEspacos_DevePreservarEspacos()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.001"/>
   <testcase name="construtor_CenarioRealista_ContaComCPF()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.001"/>
-  <testcase name="construtor_MensagemComCaracteresEspeciais_DevePreservarCaracteres()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.002"/>
-  <testcase name="excecao_ComoRuntimeException_DevePodSerCapturadaComoRuntimeException()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.002"/>
+  <testcase name="construtor_MensagemComCaracteresEspeciais_DevePreservarCaracteres()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.001"/>
+  <testcase name="excecao_ComoRuntimeException_DevePodSerCapturadaComoRuntimeException()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.001"/>
   <testcase name="construtor_CenarioRealista_ContaComEmail()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.001"/>
   <testcase name="excecao_DevePodSerLancada()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.004"/>
   <testcase name="equals_MesmaExcecao_DeveSerIgual()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.001"/>
-  <testcase name="construtor_ComMensagem_DeveDefinirMensagemCorretamente()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.002"/>
+  <testcase name="construtor_ComMensagem_DeveDefinirMensagemCorretamente()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.001"/>
   <testcase name="construtor_ComMensagemNula_DeveAceitarMensagemNula()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.001"/>
-  <testcase name="excecao_EmContextoTryCatch_DeveManterComportamentoEsperado()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.001"/>
+  <testcase name="excecao_EmContextoTryCatch_DeveManterComportamentoEsperado()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.0"/>
   <testcase name="getMessage_DeveRetornarMensagemOriginal()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.001"/>
   <testcase name="construtor_MensagemLonga_DevePreservarConteudoCompleto()" classname="br.com.banksystem.contas.exception.ContaJaExisteExceptionTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>

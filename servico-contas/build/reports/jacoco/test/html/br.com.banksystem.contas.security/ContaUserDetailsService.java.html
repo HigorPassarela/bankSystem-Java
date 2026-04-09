@@ -20,24 +20,24 @@ public class ContaUserDetailsService implements UserDetailsService {
 
     private final ContaRepository contaRepository;
 
-<span class="nc" id="L23">    public ContaUserDetailsService(ContaRepository contaRepository) {</span>
-<span class="nc" id="L24">        this.contaRepository = contaRepository;</span>
-<span class="nc" id="L25">    }</span>
+<span class="fc" id="L23">    public ContaUserDetailsService(ContaRepository contaRepository) {</span>
+<span class="fc" id="L24">        this.contaRepository = contaRepository;</span>
+<span class="fc" id="L25">    }</span>
 
     @Override
     public UserDetails loadUserByUsername(String numeroConta) throws UsernameNotFoundException {
-<span class="nc" id="L29">        Conta conta = contaRepository.findByNumeroConta(numeroConta)</span>
-<span class="nc" id="L30">                .orElseThrow(() -&gt; new UsernameNotFoundException(</span>
+<span class="fc" id="L29">        Conta conta = contaRepository.findByNumeroConta(numeroConta)</span>
+<span class="fc" id="L30">                .orElseThrow(() -&gt; new UsernameNotFoundException(</span>
                         &quot;Conta não encontrada: &quot; + numeroConta));
 
-<span class="nc bnc" id="L33" title="All 2 branches missed.">        if (!conta.getAtiva()) {</span>
-<span class="nc" id="L34">            throw new UsernameNotFoundException(&quot;Conta inativa: &quot; + numeroConta);</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        if (!conta.getAtiva()) {</span>
+<span class="fc" id="L34">            throw new UsernameNotFoundException(&quot;Conta inativa: &quot; + numeroConta);</span>
         }
 
-<span class="nc" id="L37">        return new User(</span>
-<span class="nc" id="L38">                conta.getNumeroConta(),</span>
-<span class="nc" id="L39">                conta.getSenhaHash(),</span>
-<span class="nc" id="L40">                List.of(new SimpleGrantedAuthority(conta.getRole()))</span>
+<span class="fc" id="L37">        return new User(</span>
+<span class="fc" id="L38">                conta.getNumeroConta(),</span>
+<span class="fc" id="L39">                conta.getSenhaHash(),</span>
+<span class="fc" id="L40">                List.of(new SimpleGrantedAuthority(conta.getRole()))</span>
         );
     }
 }

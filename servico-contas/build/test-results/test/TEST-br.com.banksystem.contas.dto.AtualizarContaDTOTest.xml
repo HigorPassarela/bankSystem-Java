@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Testes do AtualizarContaDTO" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-04-09T19:17:23.793Z" hostname="NB-608211" time="0.162">
+  <properties/>
+  <testcase name="Deve aceitar DTO válido" classname="br.com.banksystem.contas.dto.AtualizarContaDTOTest" time="0.135"/>
+  <testcase name="Deve rejeitar nome com menos de 3 caracteres" classname="br.com.banksystem.contas.dto.AtualizarContaDTOTest" time="0.013"/>
+  <testcase name="Deve rejeitar nova senha com menos de 6 caracteres" classname="br.com.banksystem.contas.dto.AtualizarContaDTOTest" time="0.002"/>
+  <testcase name="Deve rejeitar telefone inválido" classname="br.com.banksystem.contas.dto.AtualizarContaDTOTest" time="0.003"/>
+  <testcase name="Deve rejeitar email inválido" classname="br.com.banksystem.contas.dto.AtualizarContaDTOTest" time="0.002"/>
+  <testcase name="Deve permitir campos nulos" classname="br.com.banksystem.contas.dto.AtualizarContaDTOTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

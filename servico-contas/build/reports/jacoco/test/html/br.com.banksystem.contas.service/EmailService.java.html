@@ -16,16 +16,16 @@ import jakarta.mail.internet.MimeMessage;
 @Service
 public class EmailService {
 
-<span class="nc" id="L19">    private static final Logger log = LoggerFactory.getLogger(EmailService.class);</span>
+<span class="fc" id="L19">    private static final Logger log = LoggerFactory.getLogger(EmailService.class);</span>
 
     private final JavaMailSender mailSender;
 
     @Value(&quot;${app.url-base}&quot;)
     private String urlBase;
 
-<span class="nc" id="L26">    public EmailService(JavaMailSender mailSender) {</span>
-<span class="nc" id="L27">        this.mailSender = mailSender;</span>
-<span class="nc" id="L28">    }</span>
+<span class="fc" id="L26">    public EmailService(JavaMailSender mailSender) {</span>
+<span class="fc" id="L27">        this.mailSender = mailSender;</span>
+<span class="fc" id="L28">    }</span>
 
     /**
      * Envia e-mail de verificação com link de ativação da conta.
@@ -33,15 +33,15 @@ public class EmailService {
     public void enviarVerificacaoEmail(String destinatario, String nomeCompleto,
                                        String numeroConta, String token) {
         try {
-<span class="nc" id="L36">            MimeMessage mensagem = mailSender.createMimeMessage();</span>
-<span class="nc" id="L37">            MimeMessageHelper helper = new MimeMessageHelper(mensagem, true, &quot;UTF-8&quot;);</span>
+<span class="fc" id="L36">            MimeMessage mensagem = mailSender.createMimeMessage();</span>
+<span class="fc" id="L37">            MimeMessageHelper helper = new MimeMessageHelper(mensagem, true, &quot;UTF-8&quot;);</span>
 
-<span class="nc" id="L39">            helper.setFrom(&quot;noreply@banksystem.com.br&quot;);</span>
-<span class="nc" id="L40">            helper.setTo(destinatario);</span>
-<span class="nc" id="L41">            helper.setSubject(&quot;BankSystem — Verifique seu e-mail para ativar sua conta&quot;);</span>
+<span class="fc" id="L39">            helper.setFrom(&quot;noreply@banksystem.com.br&quot;);</span>
+<span class="fc" id="L40">            helper.setTo(destinatario);</span>
+<span class="fc" id="L41">            helper.setSubject(&quot;BankSystem — Verifique seu e-mail para ativar sua conta&quot;);</span>
 
-<span class="nc" id="L43">            String linkVerificacao = urlBase + &quot;/api/contas/verificar-email?token=&quot; + token;</span>
-<span class="nc" id="L44">            String html = &quot;&quot;&quot;</span>
+<span class="fc" id="L43">            String linkVerificacao = urlBase + &quot;/api/contas/verificar-email?token=&quot; + token;</span>
+<span class="fc" id="L44">            String html = &quot;&quot;&quot;</span>
                     &lt;html&gt;&lt;body style=&quot;font-family: Arial, sans-serif; max-width: 600px; margin: auto;&quot;&gt;
                     &lt;div style=&quot;background: #1a56db; padding: 20px; border-radius: 8px 8px 0 0;&quot;&gt;
                       &lt;h1 style=&quot;color: white; margin: 0;&quot;&gt;BankSystem&lt;/h1&gt;
@@ -63,16 +63,16 @@ public class EmailService {
                       &lt;p style=&quot;color: #9ca3af; font-size: 12px; text-align: center;&quot;&gt;© 2024 BankSystem. Todos os direitos reservados.&lt;/p&gt;
                     &lt;/div&gt;
                     &lt;/body&gt;&lt;/html&gt;
-<span class="nc" id="L66">                    &quot;&quot;&quot;.formatted(nomeCompleto, numeroConta, linkVerificacao);</span>
+<span class="fc" id="L66">                    &quot;&quot;&quot;.formatted(nomeCompleto, numeroConta, linkVerificacao);</span>
 
-<span class="nc" id="L68">            helper.setText(html, true);</span>
-<span class="nc" id="L69">            mailSender.send(mensagem);</span>
-<span class="nc" id="L70">            log.info(&quot;E-mail de verificação enviado para: {}&quot;, destinatario);</span>
+<span class="fc" id="L68">            helper.setText(html, true);</span>
+<span class="fc" id="L69">            mailSender.send(mensagem);</span>
+<span class="fc" id="L70">            log.info(&quot;E-mail de verificação enviado para: {}&quot;, destinatario);</span>
 <span class="nc" id="L71">        } catch (MessagingException ex) {</span>
 <span class="nc" id="L72">            log.error(&quot;Erro ao enviar e-mail de verificação para {}: {}&quot;, destinatario, ex.getMessage());</span>
 <span class="nc" id="L73">            throw new RuntimeException(&quot;Falha ao enviar e-mail de verificação&quot;, ex);</span>
-<span class="nc" id="L74">        }</span>
-<span class="nc" id="L75">    }</span>
+<span class="fc" id="L74">        }</span>
+<span class="fc" id="L75">    }</span>
 
     /**
      * Envia e-mail de notificação de transferência recebida.
@@ -81,14 +81,14 @@ public class EmailService {
                                                 String numeroConta, String valorFormatado,
                                                 String nomeRemetente) {
         try {
-<span class="nc" id="L84">            MimeMessage mensagem = mailSender.createMimeMessage();</span>
-<span class="nc" id="L85">            MimeMessageHelper helper = new MimeMessageHelper(mensagem, true, &quot;UTF-8&quot;);</span>
+<span class="fc" id="L84">            MimeMessage mensagem = mailSender.createMimeMessage();</span>
+<span class="fc" id="L85">            MimeMessageHelper helper = new MimeMessageHelper(mensagem, true, &quot;UTF-8&quot;);</span>
 
-<span class="nc" id="L87">            helper.setFrom(&quot;noreply@banksystem.com.br&quot;);</span>
-<span class="nc" id="L88">            helper.setTo(destinatario);</span>
-<span class="nc" id="L89">            helper.setSubject(&quot;BankSystem — Você recebeu uma transferência de R$ &quot; + valorFormatado);</span>
+<span class="fc" id="L87">            helper.setFrom(&quot;noreply@banksystem.com.br&quot;);</span>
+<span class="fc" id="L88">            helper.setTo(destinatario);</span>
+<span class="fc" id="L89">            helper.setSubject(&quot;BankSystem — Você recebeu uma transferência de R$ &quot; + valorFormatado);</span>
 
-<span class="nc" id="L91">            String html = &quot;&quot;&quot;</span>
+<span class="fc" id="L91">            String html = &quot;&quot;&quot;</span>
                     &lt;html&gt;&lt;body style=&quot;font-family: Arial, sans-serif; max-width: 600px; margin: auto;&quot;&gt;
                     &lt;div style=&quot;background: #059669; padding: 20px; border-radius: 8px 8px 0 0;&quot;&gt;
                       &lt;h1 style=&quot;color: white; margin: 0;&quot;&gt;💰 Transferência Recebida&lt;/h1&gt;
@@ -104,14 +104,14 @@ public class EmailService {
                       &lt;p style=&quot;color: #6b7280; font-size: 14px;&quot;&gt;Acesse o app para ver seu extrato atualizado.&lt;/p&gt;
                     &lt;/div&gt;
                     &lt;/body&gt;&lt;/html&gt;
-<span class="nc" id="L107">                    &quot;&quot;&quot;.formatted(nomeDestinatario, numeroConta, valorFormatado, nomeRemetente);</span>
+<span class="fc" id="L107">                    &quot;&quot;&quot;.formatted(nomeDestinatario, numeroConta, valorFormatado, nomeRemetente);</span>
 
-<span class="nc" id="L109">            helper.setText(html, true);</span>
-<span class="nc" id="L110">            mailSender.send(mensagem);</span>
-<span class="nc" id="L111">            log.info(&quot;Notificação de transferência enviada para: {}&quot;, destinatario);</span>
+<span class="fc" id="L109">            helper.setText(html, true);</span>
+<span class="fc" id="L110">            mailSender.send(mensagem);</span>
+<span class="fc" id="L111">            log.info(&quot;Notificação de transferência enviada para: {}&quot;, destinatario);</span>
 <span class="nc" id="L112">        } catch (MessagingException ex) {</span>
 <span class="nc" id="L113">            log.error(&quot;Erro ao enviar notificação de transferência: {}&quot;, ex.getMessage());</span>
-<span class="nc" id="L114">        }</span>
-<span class="nc" id="L115">    }</span>
+<span class="fc" id="L114">        }</span>
+<span class="fc" id="L115">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

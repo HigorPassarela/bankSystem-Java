@@ -5,18 +5,18 @@ import java.time.LocalDateTime;
 /**
  * DTO de resposta padronizada para todas as APIs.
  */
-<span class="nc" id="L8">public record RespostaDTO&lt;T&gt;(</span>
+<span class="fc" id="L8">public record RespostaDTO&lt;T&gt;(</span>
         boolean sucesso,
         T dados,
         String mensagem,
         LocalDateTime timestamp
 ) {
     public static &lt;T&gt; RespostaDTO&lt;T&gt; sucesso(T dados, String mensagem) {
-<span class="nc" id="L15">        return new RespostaDTO&lt;&gt;(true, dados, mensagem, LocalDateTime.now());</span>
+<span class="fc" id="L15">        return new RespostaDTO&lt;&gt;(true, dados, mensagem, LocalDateTime.now());</span>
     }
 
     public static &lt;T&gt; RespostaDTO&lt;T&gt; erro(String mensagem) {
-<span class="nc" id="L19">        return new RespostaDTO&lt;&gt;(false, null, mensagem, LocalDateTime.now());</span>
+<span class="fc" id="L19">        return new RespostaDTO&lt;&gt;(false, null, mensagem, LocalDateTime.now());</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

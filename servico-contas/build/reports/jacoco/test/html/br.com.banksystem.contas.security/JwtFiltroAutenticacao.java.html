@@ -22,34 +22,34 @@ public class JwtFiltroAutenticacao extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final ContaUserDetailsService userDetailsService;
 
-<span class="nc" id="L25">    public JwtFiltroAutenticacao(JwtUtil jwtUtil, ContaUserDetailsService userDetailsService) {</span>
-<span class="nc" id="L26">        this.jwtUtil = jwtUtil;</span>
-<span class="nc" id="L27">        this.userDetailsService = userDetailsService;</span>
-<span class="nc" id="L28">    }</span>
+<span class="fc" id="L25">    public JwtFiltroAutenticacao(JwtUtil jwtUtil, ContaUserDetailsService userDetailsService) {</span>
+<span class="fc" id="L26">        this.jwtUtil = jwtUtil;</span>
+<span class="fc" id="L27">        this.userDetailsService = userDetailsService;</span>
+<span class="fc" id="L28">    }</span>
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-<span class="nc" id="L34">        String cabecalhoAutorizacao = request.getHeader(&quot;Authorization&quot;);</span>
+<span class="fc" id="L34">        String cabecalhoAutorizacao = request.getHeader(&quot;Authorization&quot;);</span>
 
-<span class="nc bnc" id="L36" title="All 4 branches missed.">        if (cabecalhoAutorizacao != null &amp;&amp; cabecalhoAutorizacao.startsWith(&quot;Bearer &quot;)) {</span>
-<span class="nc" id="L37">            String token = cabecalhoAutorizacao.substring(7);</span>
+<span class="fc bfc" id="L36" title="All 4 branches covered.">        if (cabecalhoAutorizacao != null &amp;&amp; cabecalhoAutorizacao.startsWith(&quot;Bearer &quot;)) {</span>
+<span class="fc" id="L37">            String token = cabecalhoAutorizacao.substring(7);</span>
 
-<span class="nc bnc" id="L39" title="All 2 branches missed.">            if (jwtUtil.validarToken(token)) {</span>
-<span class="nc" id="L40">                String numeroConta = jwtUtil.extrairNumeroConta(token);</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">            if (jwtUtil.validarToken(token)) {</span>
+<span class="fc" id="L40">                String numeroConta = jwtUtil.extrairNumeroConta(token);</span>
 
-<span class="nc bnc" id="L42" title="All 4 branches missed.">                if (numeroConta != null &amp;&amp; SecurityContextHolder.getContext().getAuthentication() == null) {</span>
-<span class="nc" id="L43">                    UserDetails userDetails = userDetailsService.loadUserByUsername(numeroConta);</span>
-<span class="nc" id="L44">                    UsernamePasswordAuthenticationToken autenticacao =</span>
-<span class="nc" id="L45">                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());</span>
-<span class="nc" id="L46">                    autenticacao.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));</span>
-<span class="nc" id="L47">                    SecurityContextHolder.getContext().setAuthentication(autenticacao);</span>
+<span class="fc bfc" id="L42" title="All 4 branches covered.">                if (numeroConta != null &amp;&amp; SecurityContextHolder.getContext().getAuthentication() == null) {</span>
+<span class="fc" id="L43">                    UserDetails userDetails = userDetailsService.loadUserByUsername(numeroConta);</span>
+<span class="fc" id="L44">                    UsernamePasswordAuthenticationToken autenticacao =</span>
+<span class="fc" id="L45">                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());</span>
+<span class="fc" id="L46">                    autenticacao.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));</span>
+<span class="fc" id="L47">                    SecurityContextHolder.getContext().setAuthentication(autenticacao);</span>
                 }
             }
         }
 
-<span class="nc" id="L52">        filterChain.doFilter(request, response);</span>
-<span class="nc" id="L53">    }</span>
+<span class="fc" id="L52">        filterChain.doFilter(request, response);</span>
+<span class="fc" id="L53">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  * DTO para solicitação de depósito em conta.
  * Depósito credita diretamente no saldo disponível (não no limite).
  */
-<span class="nc" id="L12">public record DepositoDTO(</span>
+<span class="fc" id="L12">public record DepositoDTO(</span>
         @NotNull(message = &quot;Valor é obrigatório&quot;)
         @DecimalMin(value = &quot;0.01&quot;, message = &quot;Valor mínimo de depósito é R$ 0,01&quot;)
         @DecimalMax(value = &quot;100000.00&quot;, message = &quot;Valor máximo por depósito é R$ 100.000,00&quot;)

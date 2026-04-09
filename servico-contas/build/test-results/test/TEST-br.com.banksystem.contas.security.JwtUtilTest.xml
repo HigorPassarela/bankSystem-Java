@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Testes para JwtUtil" tests="13" skipped="0" failures="0" errors="0" timestamp="2026-04-09T19:17:25.188Z" hostname="NB-608211" time="0.284">
+  <properties/>
+  <testcase name="Deve lançar exceção ao extrair número da conta de token inválido" classname="br.com.banksystem.contas.security.JwtUtilTest" time="0.12"/>
+  <testcase name="Deve gerar tokens diferentes para contas diferentes" classname="br.com.banksystem.contas.security.JwtUtilTest" time="0.089"/>
+  <testcase name="Deve gerar token com data de expiração correta" classname="br.com.banksystem.contas.security.JwtUtilTest" time="0.006"/>
+  <testcase name="Deve retornar false para token malformado" classname="br.com.banksystem.contas.security.JwtUtilTest" time="0.002"/>
+  <testcase name="Deve retornar tempo de expiração configurado" classname="br.com.banksystem.contas.security.JwtUtilTest" time="0.001"/>
+  <testcase name="Deve extrair número da conta do token válido" classname="br.com.banksystem.contas.security.JwtUtilTest" time="0.005"/>
+  <testcase name="Deve lançar exceção ao extrair número da conta de token nulo" classname="br.com.banksystem.contas.security.JwtUtilTest" time="0.003"/>
+  <testcase name="Deve lançar exceção ao extrair número da conta de token vazio" classname="br.com.banksystem.contas.security.JwtUtilTest" time="0.003"/>
+  <testcase name="Deve gerar token JWT válido com todas as claims" classname="br.com.banksystem.contas.security.JwtUtilTest" time="0.028"/>
+  <testcase name="Deve validar token válido" classname="br.com.banksystem.contas.security.JwtUtilTest" time="0.004"/>
+  <testcase name="Deve retornar false para token expirado" classname="br.com.banksystem.contas.security.JwtUtilTest" time="0.007"/>
+  <testcase name="Deve gerar token com claims customizadas corretas" classname="br.com.banksystem.contas.security.JwtUtilTest" time="0.004"/>
+  <testcase name="Deve retornar false para token com assinatura inválida" classname="br.com.banksystem.contas.security.JwtUtilTest" time="0.004"/>
+  <system-out><![CDATA[16:17:25.408 [Test worker] WARN br.com.banksystem.contas.security.JwtUtil -- Token JWT inválido: Malformed protected header JSON: Unable to deserialize: Unexpected character ('�' (code 65533 / 0xfffd)): expected a valid value (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (InputStreamReader); line: 1, column: 2]
+16:17:25.463 [Test worker] WARN br.com.banksystem.contas.security.JwtUtil -- Token JWT inválido: JWT expired 3600460 milliseconds ago at 2026-04-09T18:17:25.000Z. Current time: 2026-04-09T19:17:25.460Z. Allowed clock skew: 0 milliseconds.
+16:17:25.473 [Test worker] WARN br.com.banksystem.contas.security.JwtUtil -- Token JWT inválido: JWT signature does not match locally computed signature. JWT validity cannot be asserted and should not be trusted.
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

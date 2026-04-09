@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Testes do TransferenciaDTO" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-04-09T19:31:49.710Z" hostname="NB-608211" time="0.096">
+  <properties/>
+  <testcase name="Deve rejeitar valor nulo" classname="br.com.banksystem.transacoes.dto.TransferenciaDTOTest" time="0.044"/>
+  <testcase name="Deve rejeitar conta destino fora do padrão" classname="br.com.banksystem.transacoes.dto.TransferenciaDTOTest" time="0.006"/>
+  <testcase name="Deve aceitar DTO válido" classname="br.com.banksystem.transacoes.dto.TransferenciaDTOTest" time="0.003"/>
+  <testcase name="Deve rejeitar senha de transferência fora do padrão" classname="br.com.banksystem.transacoes.dto.TransferenciaDTOTest" time="0.003"/>
+  <testcase name="Deve rejeitar senha de transferência em branco" classname="br.com.banksystem.transacoes.dto.TransferenciaDTOTest" time="0.004"/>
+  <testcase name="Deve rejeitar valor acima do máximo" classname="br.com.banksystem.transacoes.dto.TransferenciaDTOTest" time="0.004"/>
+  <testcase name="Deve rejeitar valor abaixo do mínimo" classname="br.com.banksystem.transacoes.dto.TransferenciaDTOTest" time="0.007"/>
+  <testcase name="Deve rejeitar conta destino em branco" classname="br.com.banksystem.transacoes.dto.TransferenciaDTOTest" time="0.006"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

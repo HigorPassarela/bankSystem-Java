@@ -6,7 +6,7 @@ import jakarta.validation.constraints.*;
  * DTO para criação de nova conta bancária.
  * senhaTransferencia: PIN de 4 dígitos exclusivo para transferências.
  */
-<span class="nc" id="L9">public record CriarContaDTO(</span>
+<span class="fc" id="L9">public record CriarContaDTO(</span>
         @NotBlank(message = &quot;Nome completo é obrigatório&quot;)
         @Size(min = 3, max = 100, message = &quot;Nome deve ter entre 3 e 100 caracteres&quot;)
         String nomeCompleto,

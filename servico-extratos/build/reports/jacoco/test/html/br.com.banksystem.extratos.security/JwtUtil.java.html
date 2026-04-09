@@ -9,24 +9,24 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 
 @Component
-<span class="fc" id="L12">public class JwtUtil {</span>
+<span class="nc" id="L12">public class JwtUtil {</span>
     @Value(&quot;${jwt.secret}&quot;)
     private String segredo;
 
     private SecretKey obterChave() {
-<span class="fc" id="L17">        return Keys.hmacShaKeyFor(segredo.getBytes(StandardCharsets.UTF_8));</span>
+<span class="nc" id="L17">        return Keys.hmacShaKeyFor(segredo.getBytes(StandardCharsets.UTF_8));</span>
     }
 
     public String extrairNumeroConta(String token) {
-<span class="fc" id="L21">        return Jwts.parser().verifyWith(obterChave()).build().parseSignedClaims(token).getPayload().getSubject();</span>
+<span class="nc" id="L21">        return Jwts.parser().verifyWith(obterChave()).build().parseSignedClaims(token).getPayload().getSubject();</span>
     }
 
     public boolean validarToken(String token) {
         try {
-<span class="fc" id="L26">            Jwts.parser().verifyWith(obterChave()).build().parseSignedClaims(token);</span>
-<span class="fc" id="L27">            return true;</span>
-<span class="fc" id="L28">        } catch (JwtException ex) {</span>
-<span class="fc" id="L29">            return false;</span>
+<span class="nc" id="L26">            Jwts.parser().verifyWith(obterChave()).build().parseSignedClaims(token);</span>
+<span class="nc" id="L27">            return true;</span>
+<span class="nc" id="L28">        } catch (JwtException ex) {</span>
+<span class="nc" id="L29">            return false;</span>
         }
     }
 }

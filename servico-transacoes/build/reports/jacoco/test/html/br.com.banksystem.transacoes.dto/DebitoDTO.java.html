@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 /**
  * DTO para solicitação de transação de débito.
  */
-<span class="nc" id="L10">public record DebitoDTO(</span>
+<span class="fc" id="L10">public record DebitoDTO(</span>
         @NotNull(message = &quot;Valor é obrigatório&quot;)
         @DecimalMin(value = &quot;0.01&quot;, message = &quot;Valor mínimo é R$ 0,01&quot;)
         BigDecimal valor,

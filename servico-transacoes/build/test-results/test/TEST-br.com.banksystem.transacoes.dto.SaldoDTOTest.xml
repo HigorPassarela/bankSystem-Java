@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Testes do SaldoDTO" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-04-09T19:31:49.650Z" hostname="NB-608211" time="0.007">
+  <properties/>
+  <testcase name="Deve criar record corretamente" classname="br.com.banksystem.transacoes.dto.SaldoDTOTest" time="0.007"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

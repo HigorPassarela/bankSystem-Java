@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Testes do DepositoDTO" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-04-09T19:31:49.487Z" hostname="NB-608211" time="0.062">
+  <properties/>
+  <testcase name="Deve rejeitar valor nulo" classname="br.com.banksystem.transacoes.dto.DepositoDTOTest" time="0.041"/>
+  <testcase name="Deve aceitar DTO válido" classname="br.com.banksystem.transacoes.dto.DepositoDTOTest" time="0.002"/>
+  <testcase name="Deve rejeitar valor menor que o mínimo" classname="br.com.banksystem.transacoes.dto.DepositoDTOTest" time="0.004"/>
+  <testcase name="Deve rejeitar valor maior que o máximo" classname="br.com.banksystem.transacoes.dto.DepositoDTOTest" time="0.004"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

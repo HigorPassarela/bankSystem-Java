@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - ContaServiceTest</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>ContaServiceTest</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/br.com.banksystem.contas.service.html">br.com.banksystem.contas.service</a> &gt; ContaServiceTest</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">13</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">0.446s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="tab-container">
+<ul class="tabLinks">
+<li>
+<a href="#">Tests</a>
+</li>
+<li>
+<a href="#">Standard output</a>
+</li>
+</ul>
+<div class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">deveAutenticarContaAtivaComSucesso()</td>
+<td class="success">0.006s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">deveBloquearLoginQuandoContaEncerrada()</td>
+<td class="success">0.005s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">deveBloquearLoginQuandoContaPendenteEmail()</td>
+<td class="success">0.005s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">deveBloquearLoginQuandoContaSuspensa()</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">deveCriarContaComSucesso()</td>
+<td class="success">0.015s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">deveLancarErroQuandoContaNaoExisteNoLogin()</td>
+<td class="success">0.003s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">deveLancarExcecaoAoReenviarSeContaJaAtiva()</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">deveLancarExcecaoQuandoCpfJaExiste()</td>
+<td class="success">0.005s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">deveLancarExcecaoQuandoEmailJaExiste()</td>
+<td class="success">0.006s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">deveLancarExcecaoQuandoTokenExpirado()</td>
+<td class="success">0.003s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">deveReenviarVerificacaoComSucesso()</td>
+<td class="success">0.010s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">deveRetornarMensagemQuandoContaJaEstaAtivaAoVerificarEmail()</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">deveVerificarEmailComSucesso()</td>
+<td class="success">0.376s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre>16:17:25.853 [Test worker] INFO br.com.banksystem.contas.service.ContaService -- Conta ativada após verificação de e-mail: 12345678
+16:17:25.866 [Test worker] INFO br.com.banksystem.contas.service.ContaService -- E-mail de verificação reenviado para: joao@email.com
+16:17:25.872 [Test worker] INFO br.com.banksystem.contas.service.ContaService -- Criando conta para CPF: 12345678901
+16:17:25.885 [Test worker] INFO br.com.banksystem.contas.service.ContaService -- Criando conta para CPF: 12345678901
+16:17:25.887 [Test worker] INFO br.com.banksystem.contas.service.ContaService -- Conta criada com status PENDENTE_EMAIL: 38601190
+16:17:25.893 [Test worker] INFO br.com.banksystem.contas.service.ContaService -- Tentativa de login para conta: 12345678
+16:17:25.900 [Test worker] INFO br.com.banksystem.contas.service.ContaService -- Tentativa de login para conta: 12345678
+16:17:25.903 [Test worker] INFO br.com.banksystem.contas.service.ContaService -- Tentativa de login para conta: 12345678
+16:17:25.908 [Test worker] INFO br.com.banksystem.contas.service.ContaService -- Tentativa de login para conta: 12345678
+16:17:25.924 [Test worker] INFO br.com.banksystem.contas.service.ContaService -- Tentativa de login para conta: 12345678
+16:17:25.926 [Test worker] INFO br.com.banksystem.contas.service.ContaService -- Login realizado com sucesso: 12345678
+16:17:25.932 [Test worker] INFO br.com.banksystem.contas.service.ContaService -- Criando conta para CPF: 12345678901
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="https://www.gradle.org">Gradle 8.14</a> at 9 de abr. de 2026 16:17:26</p>
+</div>
+</div>
+</body>
+</html>

@@ -7,7 +7,7 @@ import java.math.BigDecimal;
  * DTO para solicitação de transferência entre contas.
  * Requer o PIN de 4 dígitos (senha de transferência) para autorização.
  */
-<span class="nc" id="L10">public record TransferenciaDTO(</span>
+<span class="fc" id="L10">public record TransferenciaDTO(</span>
         @NotBlank(message = &quot;Conta de destino é obrigatória&quot;)
         @Pattern(regexp = &quot;\\d{8}&quot;, message = &quot;Número de conta deve ter 8 dígitos&quot;)
         String contaDestino,

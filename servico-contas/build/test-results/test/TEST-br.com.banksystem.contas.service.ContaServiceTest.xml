@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="br.com.banksystem.contas.service.ContaServiceTest" tests="13" skipped="0" failures="0" errors="0" timestamp="2026-04-09T19:17:25.477Z" hostname="NB-608211" time="0.456">
+  <properties/>
+  <testcase name="deveVerificarEmailComSucesso()" classname="br.com.banksystem.contas.service.ContaServiceTest" time="0.376"/>
+  <testcase name="deveLancarExcecaoQuandoTokenExpirado()" classname="br.com.banksystem.contas.service.ContaServiceTest" time="0.003"/>
+  <testcase name="deveReenviarVerificacaoComSucesso()" classname="br.com.banksystem.contas.service.ContaServiceTest" time="0.01"/>
+  <testcase name="deveLancarExcecaoQuandoCpfJaExiste()" classname="br.com.banksystem.contas.service.ContaServiceTest" time="0.005"/>
+  <testcase name="deveCriarContaComSucesso()" classname="br.com.banksystem.contas.service.ContaServiceTest" time="0.015"/>
+  <testcase name="deveBloquearLoginQuandoContaEncerrada()" classname="br.com.banksystem.contas.service.ContaServiceTest" time="0.005"/>
+  <testcase name="deveBloquearLoginQuandoContaPendenteEmail()" classname="br.com.banksystem.contas.service.ContaServiceTest" time="0.005"/>
+  <testcase name="deveLancarErroQuandoContaNaoExisteNoLogin()" classname="br.com.banksystem.contas.service.ContaServiceTest" time="0.003"/>
+  <testcase name="deveBloquearLoginQuandoContaSuspensa()" classname="br.com.banksystem.contas.service.ContaServiceTest" time="0.004"/>
+  <testcase name="deveRetornarMensagemQuandoContaJaEstaAtivaAoVerificarEmail()" classname="br.com.banksystem.contas.service.ContaServiceTest" time="0.004"/>
+  <testcase name="deveLancarExcecaoAoReenviarSeContaJaAtiva()" classname="br.com.banksystem.contas.service.ContaServiceTest" time="0.004"/>
+  <testcase name="deveAutenticarContaAtivaComSucesso()" classname="br.com.banksystem.contas.service.ContaServiceTest" time="0.006"/>
+  <testcase name="deveLancarExcecaoQuandoEmailJaExiste()" classname="br.com.banksystem.contas.service.ContaServiceTest" time="0.006"/>
+  <system-out><![CDATA[16:17:25.853 [Test worker] INFO br.com.banksystem.contas.service.ContaService -- Conta ativada após verificação de e-mail: 12345678
+16:17:25.866 [Test worker] INFO br.com.banksystem.contas.service.ContaService -- E-mail de verificação reenviado para: joao@email.com
+16:17:25.872 [Test worker] INFO br.com.banksystem.contas.service.ContaService -- Criando conta para CPF: 12345678901
+16:17:25.885 [Test worker] INFO br.com.banksystem.contas.service.ContaService -- Criando conta para CPF: 12345678901
+16:17:25.887 [Test worker] INFO br.com.banksystem.contas.service.ContaService -- Conta criada com status PENDENTE_EMAIL: 38601190
+16:17:25.893 [Test worker] INFO br.com.banksystem.contas.service.ContaService -- Tentativa de login para conta: 12345678
+16:17:25.900 [Test worker] INFO br.com.banksystem.contas.service.ContaService -- Tentativa de login para conta: 12345678
+16:17:25.903 [Test worker] INFO br.com.banksystem.contas.service.ContaService -- Tentativa de login para conta: 12345678
+16:17:25.908 [Test worker] INFO br.com.banksystem.contas.service.ContaService -- Tentativa de login para conta: 12345678
+16:17:25.924 [Test worker] INFO br.com.banksystem.contas.service.ContaService -- Tentativa de login para conta: 12345678
+16:17:25.926 [Test worker] INFO br.com.banksystem.contas.service.ContaService -- Login realizado com sucesso: 12345678
+16:17:25.932 [Test worker] INFO br.com.banksystem.contas.service.ContaService -- Criando conta para CPF: 12345678901
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

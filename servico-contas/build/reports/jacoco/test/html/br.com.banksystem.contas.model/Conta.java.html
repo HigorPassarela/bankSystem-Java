@@ -38,43 +38,43 @@ public class Conta {
     private LocalDateTime dataCriacao;
     private LocalDateTime dataAtualizacao;
 
-<span class="nc" id="L41">    public Conta() {}</span>
+<span class="fc" id="L41">    public Conta() {}</span>
 
     // ── Getters e Setters ────────────────────────────────────
-<span class="nc" id="L44">    public String getId() { return id; }</span>
-<span class="nc" id="L45">    public void setId(String id) { this.id = id; }</span>
-<span class="nc" id="L46">    public String getNumeroConta() { return numeroConta; }</span>
-<span class="nc" id="L47">    public void setNumeroConta(String numeroConta) { this.numeroConta = numeroConta; }</span>
-<span class="nc" id="L48">    public String getNomeCompleto() { return nomeCompleto; }</span>
-<span class="nc" id="L49">    public void setNomeCompleto(String nomeCompleto) { this.nomeCompleto = nomeCompleto; }</span>
-<span class="nc" id="L50">    public String getCpf() { return cpf; }</span>
-<span class="nc" id="L51">    public void setCpf(String cpf) { this.cpf = cpf; }</span>
-<span class="nc" id="L52">    public String getEmail() { return email; }</span>
-<span class="nc" id="L53">    public void setEmail(String email) { this.email = email; }</span>
-<span class="nc" id="L54">    public String getTelefone() { return telefone; }</span>
-<span class="nc" id="L55">    public void setTelefone(String telefone) { this.telefone = telefone; }</span>
-<span class="nc" id="L56">    public String getSenhaHash() { return senhaHash; }</span>
-<span class="nc" id="L57">    public void setSenhaHash(String senhaHash) { this.senhaHash = senhaHash; }</span>
-<span class="nc" id="L58">    public String getSenhaTransferenciaHash() { return senhaTransferenciaHash; }</span>
-<span class="nc" id="L59">    public void setSenhaTransferenciaHash(String h) { this.senhaTransferenciaHash = h; }</span>
-<span class="nc" id="L60">    public String getRole() { return role; }</span>
-<span class="nc" id="L61">    public void setRole(String role) { this.role = role; }</span>
-<span class="nc" id="L62">    public StatusConta getStatus() { return status; }</span>
+<span class="fc" id="L44">    public String getId() { return id; }</span>
+<span class="fc" id="L45">    public void setId(String id) { this.id = id; }</span>
+<span class="fc" id="L46">    public String getNumeroConta() { return numeroConta; }</span>
+<span class="fc" id="L47">    public void setNumeroConta(String numeroConta) { this.numeroConta = numeroConta; }</span>
+<span class="fc" id="L48">    public String getNomeCompleto() { return nomeCompleto; }</span>
+<span class="fc" id="L49">    public void setNomeCompleto(String nomeCompleto) { this.nomeCompleto = nomeCompleto; }</span>
+<span class="fc" id="L50">    public String getCpf() { return cpf; }</span>
+<span class="fc" id="L51">    public void setCpf(String cpf) { this.cpf = cpf; }</span>
+<span class="fc" id="L52">    public String getEmail() { return email; }</span>
+<span class="fc" id="L53">    public void setEmail(String email) { this.email = email; }</span>
+<span class="fc" id="L54">    public String getTelefone() { return telefone; }</span>
+<span class="fc" id="L55">    public void setTelefone(String telefone) { this.telefone = telefone; }</span>
+<span class="fc" id="L56">    public String getSenhaHash() { return senhaHash; }</span>
+<span class="fc" id="L57">    public void setSenhaHash(String senhaHash) { this.senhaHash = senhaHash; }</span>
+<span class="fc" id="L58">    public String getSenhaTransferenciaHash() { return senhaTransferenciaHash; }</span>
+<span class="fc" id="L59">    public void setSenhaTransferenciaHash(String h) { this.senhaTransferenciaHash = h; }</span>
+<span class="fc" id="L60">    public String getRole() { return role; }</span>
+<span class="fc" id="L61">    public void setRole(String role) { this.role = role; }</span>
+<span class="fc" id="L62">    public StatusConta getStatus() { return status; }</span>
     public void setStatus(StatusConta status) {
-<span class="nc" id="L64">        this.status = status;</span>
-<span class="nc bnc" id="L65" title="All 2 branches missed.">        this.ativa = (status == StatusConta.ATIVA);</span>
-<span class="nc" id="L66">    }</span>
-<span class="nc" id="L67">    public Boolean getAtiva() { return ativa; }</span>
-<span class="nc" id="L68">    public void setAtiva(Boolean ativa) { this.ativa = ativa; }</span>
-<span class="nc" id="L69">    public Boolean getEmailVerificado() { return emailVerificado; }</span>
-<span class="nc" id="L70">    public void setEmailVerificado(Boolean emailVerificado) { this.emailVerificado = emailVerificado; }</span>
-<span class="nc" id="L71">    public String getTokenVerificacaoEmail() { return tokenVerificacaoEmail; }</span>
-<span class="nc" id="L72">    public void setTokenVerificacaoEmail(String t) { this.tokenVerificacaoEmail = t; }</span>
-<span class="nc" id="L73">    public LocalDateTime getTokenVerificacaoExpiracao() { return tokenVerificacaoExpiracao; }</span>
-<span class="nc" id="L74">    public void setTokenVerificacaoExpiracao(LocalDateTime t) { this.tokenVerificacaoExpiracao = t; }</span>
-<span class="nc" id="L75">    public LocalDateTime getDataCriacao() { return dataCriacao; }</span>
-<span class="nc" id="L76">    public void setDataCriacao(LocalDateTime dataCriacao) { this.dataCriacao = dataCriacao; }</span>
-<span class="nc" id="L77">    public LocalDateTime getDataAtualizacao() { return dataAtualizacao; }</span>
-<span class="nc" id="L78">    public void setDataAtualizacao(LocalDateTime dataAtualizacao) { this.dataAtualizacao = dataAtualizacao; }</span>
+<span class="fc" id="L64">        this.status = status;</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        this.ativa = (status == StatusConta.ATIVA);</span>
+<span class="fc" id="L66">    }</span>
+<span class="fc" id="L67">    public Boolean getAtiva() { return ativa; }</span>
+<span class="fc" id="L68">    public void setAtiva(Boolean ativa) { this.ativa = ativa; }</span>
+<span class="fc" id="L69">    public Boolean getEmailVerificado() { return emailVerificado; }</span>
+<span class="fc" id="L70">    public void setEmailVerificado(Boolean emailVerificado) { this.emailVerificado = emailVerificado; }</span>
+<span class="fc" id="L71">    public String getTokenVerificacaoEmail() { return tokenVerificacaoEmail; }</span>
+<span class="fc" id="L72">    public void setTokenVerificacaoEmail(String t) { this.tokenVerificacaoEmail = t; }</span>
+<span class="fc" id="L73">    public LocalDateTime getTokenVerificacaoExpiracao() { return tokenVerificacaoExpiracao; }</span>
+<span class="fc" id="L74">    public void setTokenVerificacaoExpiracao(LocalDateTime t) { this.tokenVerificacaoExpiracao = t; }</span>
+<span class="fc" id="L75">    public LocalDateTime getDataCriacao() { return dataCriacao; }</span>
+<span class="fc" id="L76">    public void setDataCriacao(LocalDateTime dataCriacao) { this.dataCriacao = dataCriacao; }</span>
+<span class="fc" id="L77">    public LocalDateTime getDataAtualizacao() { return dataAtualizacao; }</span>
+<span class="fc" id="L78">    public void setDataAtualizacao(LocalDateTime dataAtualizacao) { this.dataAtualizacao = dataAtualizacao; }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
