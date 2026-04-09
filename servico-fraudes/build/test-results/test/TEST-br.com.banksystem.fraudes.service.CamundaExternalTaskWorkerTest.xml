@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Testes frágeis do CamundaExternalTaskWorker" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-04-09T19:55:51.160Z" hostname="NB-608211" time="3.405">
+  <properties/>
+  <testcase name="Deve iniciar execução do worker e tentar buscar tarefas" classname="br.com.banksystem.fraudes.service.CamundaExternalTaskWorkerTest" time="3.07"/>
+  <testcase name="Não deve quebrar quando ocorrer erro no fetch and lock" classname="br.com.banksystem.fraudes.service.CamundaExternalTaskWorkerTest" time="0.327"/>
+  <system-out><![CDATA[16:55:54.259 [] ERROR br.com.banksystem.fraudes.service.CamundaExternalTaskWorker -- Erro no worker do tópico bloquear-transacao: Erro no Camunda
+java.lang.RuntimeException: Erro no Camunda
+	at org.springframework.web.client.RestTemplate.postForEntity(RestTemplate.java:527)
+	at br.com.banksystem.fraudes.service.CamundaExternalTaskWorker.lambda$startWorker$0(CamundaExternalTaskWorker.java:64)
+	at java.base/java.lang.VirtualThread.run(VirtualThread.java:329)
+16:55:54.259 [] ERROR br.com.banksystem.fraudes.service.CamundaExternalTaskWorker -- Erro no worker do tópico aprovar-transacao: Erro no Camunda
+java.lang.RuntimeException: Erro no Camunda
+	at org.springframework.web.client.RestTemplate.postForEntity(RestTemplate.java:527)
+	at br.com.banksystem.fraudes.service.CamundaExternalTaskWorker.lambda$startWorker$0(CamundaExternalTaskWorker.java:64)
+	at java.base/java.lang.VirtualThread.run(VirtualThread.java:329)
+16:55:54.259 [] ERROR br.com.banksystem.fraudes.service.CamundaExternalTaskWorker -- Erro no worker do tópico verificar-risco: Erro no Camunda
+java.lang.RuntimeException: Erro no Camunda
+	at org.springframework.web.client.RestTemplate.postForEntity(RestTemplate.java:527)
+	at br.com.banksystem.fraudes.service.CamundaExternalTaskWorker.lambda$startWorker$0(CamundaExternalTaskWorker.java:64)
+	at java.base/java.lang.VirtualThread.run(VirtualThread.java:329)
+]]></system-out>
+  <system-err><![CDATA[WARNING: A Java agent has been loaded dynamically (C:\Users\higor.passarela\.gradle\caches\modules-2\files-2.1\net.bytebuddy\byte-buddy-agent\1.14.10\90ed94ac044ea8953b224304c762316e91fd6b31\byte-buddy-agent-1.14.10.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
+</testsuite>
