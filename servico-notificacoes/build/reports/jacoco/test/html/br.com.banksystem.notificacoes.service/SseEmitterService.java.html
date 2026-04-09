@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SseEmitterService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">servico-notificacoes</a> &gt; <a href="index.source.html" class="el_package">br.com.banksystem.notificacoes.service</a> &gt; <span class="el_source">SseEmitterService.java</span></div><h1>SseEmitterService.java</h1><pre class="source lang-java linenums">package br.com.banksystem.notificacoes.service;
+
+import br.com.banksystem.notificacoes.dto.NotificacaoDTO;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+/**
+ * Gerencia os emissores SSE por número de conta para notificações em tempo real.
+ */
+@Service
+public class SseEmitterService {
+
+<span class="fc" id="L23">    private static final Logger log = LoggerFactory.getLogger(SseEmitterService.class);</span>
+
+<span class="fc" id="L25">    private final Map&lt;String, List&lt;SseEmitter&gt;&gt; emissoresPorConta = new ConcurrentHashMap&lt;&gt;();</span>
+<span class="fc" id="L26">    private final Map&lt;String, List&lt;NotificacaoDTO&gt;&gt; historicoPorConta = new ConcurrentHashMap&lt;&gt;();</span>
+    private final ObjectMapper objectMapper;
+
+<span class="fc" id="L29">    public SseEmitterService() {</span>
+<span class="fc" id="L30">        this.objectMapper = new ObjectMapper();</span>
+<span class="fc" id="L31">        this.objectMapper.registerModule(new JavaTimeModule());</span>
+<span class="fc" id="L32">    }</span>
+
+    public SseEmitter criarEmissor(String numeroConta) {
+<span class="fc" id="L35">        SseEmitter emissor = new SseEmitter(Long.MAX_VALUE);</span>
+
+<span class="fc" id="L37">        emissoresPorConta</span>
+<span class="fc" id="L38">                .computeIfAbsent(numeroConta, k -&gt; new CopyOnWriteArrayList&lt;&gt;())</span>
+<span class="fc" id="L39">                .add(emissor);</span>
+
+<span class="pc" id="L41">        emissor.onCompletion(() -&gt; removerEmissor(numeroConta, emissor));</span>
+<span class="pc" id="L42">        emissor.onTimeout(() -&gt; removerEmissor(numeroConta, emissor));</span>
+<span class="pc" id="L43">        emissor.onError(e -&gt; removerEmissor(numeroConta, emissor));</span>
+
+<span class="fc" id="L45">        log.info(&quot;Novo emitter SSE criado para conta: {}&quot;, numeroConta);</span>
+
+        try {
+<span class="fc" id="L48">            emissor.send(SseEmitter.event()</span>
+<span class="fc" id="L49">                    .name(&quot;connected&quot;)</span>
+<span class="fc" id="L50">                    .data(&quot;{\&quot;message\&quot;:\&quot;Conexão SSE estabelecida com sucesso\&quot;}&quot;));</span>
+<span class="nc" id="L51">        } catch (IOException e) {</span>
+<span class="nc" id="L52">            log.warn(&quot;Erro ao enviar mensagem inicial SSE para conta {}: {}&quot;, numeroConta, e.getMessage());</span>
+<span class="nc" id="L53">            removerEmissor(numeroConta, emissor);</span>
+<span class="fc" id="L54">        }</span>
+
+<span class="fc" id="L56">        return emissor;</span>
+    }
+
+    public void enviarNotificacao(String numeroConta, NotificacaoDTO notificacao) {
+<span class="fc" id="L60">        historicoPorConta</span>
+<span class="fc" id="L61">                .computeIfAbsent(numeroConta, k -&gt; new CopyOnWriteArrayList&lt;&gt;())</span>
+<span class="fc" id="L62">                .add(notificacao);</span>
+
+<span class="fc" id="L64">        List&lt;SseEmitter&gt; emissores = emissoresPorConta.get(numeroConta);</span>
+<span class="pc bpc" id="L65" title="1 of 4 branches missed.">        if (emissores == null || emissores.isEmpty()) {</span>
+<span class="fc" id="L66">            log.debug(&quot;Nenhum emitter ativo para conta: {}&quot;, numeroConta);</span>
+<span class="fc" id="L67">            return;</span>
+        }
+
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        for (SseEmitter emissor : emissores) {</span>
+            try {
+<span class="fc" id="L72">                String json = objectMapper.writeValueAsString(notificacao);</span>
+<span class="fc" id="L73">                emissor.send(SseEmitter.event().data(json));</span>
+<span class="fc" id="L74">                log.info(&quot;Notificação enviada via SSE para conta: {}&quot;, numeroConta);</span>
+<span class="nc" id="L75">            } catch (IOException ex) {</span>
+<span class="nc" id="L76">                log.warn(&quot;Erro ao enviar SSE para conta {}: {}&quot;, numeroConta, ex.getMessage());</span>
+<span class="nc" id="L77">                removerEmissor(numeroConta, emissor);</span>
+<span class="fc" id="L78">            }</span>
+<span class="fc" id="L79">        }</span>
+<span class="fc" id="L80">    }</span>
+
+    public List&lt;NotificacaoDTO&gt; obterHistorico(String numeroConta) {
+<span class="fc" id="L83">        return historicoPorConta.getOrDefault(numeroConta, List.of());</span>
+    }
+
+    private void removerEmissor(String numeroConta, SseEmitter emissor) {
+<span class="nc" id="L87">        List&lt;SseEmitter&gt; emissores = emissoresPorConta.get(numeroConta);</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">        if (emissores != null) {</span>
+<span class="nc" id="L89">            emissores.remove(emissor);</span>
+<span class="nc" id="L90">            log.info(&quot;Emitter SSE removido para conta: {}&quot;, numeroConta);</span>
+
+<span class="nc bnc" id="L92" title="All 2 branches missed.">            if (emissores.isEmpty()) {</span>
+<span class="nc" id="L93">                emissoresPorConta.remove(numeroConta);</span>
+            }
+        }
+<span class="nc" id="L96">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NotificacaoController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">servico-notificacoes</a> &gt; <a href="index.source.html" class="el_package">br.com.banksystem.notificacoes.controller</a> &gt; <span class="el_source">NotificacaoController.java</span></div><h1>NotificacaoController.java</h1><pre class="source lang-java linenums">package br.com.banksystem.notificacoes.controller;
+
+import br.com.banksystem.notificacoes.dto.NotificacaoDTO;
+import br.com.banksystem.notificacoes.dto.RespostaDTO;
+import br.com.banksystem.notificacoes.security.JwtUtil;
+import br.com.banksystem.notificacoes.service.SseEmitterService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.util.List;
+
+/**
+ * Controller para notificações em tempo real via SSE.
+ */
+@RestController
+@RequestMapping(&quot;/api/notificacoes&quot;)
+//@CrossOrigin(
+//        originPatterns = {&quot;http://localhost:*&quot;, &quot;https://*.lovable.app&quot;},
+//        allowCredentials = &quot;true&quot;,
+//        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+//        allowedHeaders = &quot;*&quot;
+//)
+@Tag(name = &quot;Notificações&quot;, description = &quot;Endpoints de notificações em tempo real via SSE&quot;)
+public class NotificacaoController {
+
+    private final SseEmitterService sseEmitterService;
+    private final JwtUtil jwtUtil;
+
+<span class="nc" id="L36">    public NotificacaoController(SseEmitterService sseEmitterService, JwtUtil jwtUtil) {</span>
+<span class="nc" id="L37">        this.sseEmitterService = sseEmitterService;</span>
+<span class="nc" id="L38">        this.jwtUtil = jwtUtil;</span>
+<span class="nc" id="L39">    }</span>
+
+    @GetMapping(value = &quot;/sse&quot;, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @Operation(
+            summary = &quot;Conectar ao stream SSE de notificações&quot;,
+            description = &quot;Estabelece conexão Server-Sent Events para receber notificações em tempo real. &quot; +
+                    &quot;Token JWT deve ser passado como query param (?token=...) pois SSE não suporta &quot; +
+                    &quot;headers Authorization no navegador.&quot;
+    )
+    public SseEmitter conectarSse(@RequestParam String token) {
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        if (!jwtUtil.validarToken(token)) {</span>
+<span class="nc" id="L50">            throw new SecurityException(&quot;Token JWT inválido ou expirado&quot;);</span>
+        }
+
+<span class="nc" id="L53">        String numeroConta = jwtUtil.extrairNumeroConta(token);</span>
+<span class="nc" id="L54">        return sseEmitterService.criarEmissor(numeroConta);</span>
+    }
+
+    @GetMapping(&quot;/historico&quot;)
+    @Operation(
+            summary = &quot;Obter histórico de notificações da sessão&quot;,
+            description = &quot;Retorna as notificações enviadas durante a sessão ativa do usuário&quot;,
+            security = @SecurityRequirement(name = &quot;bearerAuth&quot;)
+    )
+    public ResponseEntity&lt;RespostaDTO&lt;List&lt;NotificacaoDTO&gt;&gt;&gt; historico(
+            @AuthenticationPrincipal UserDetails userDetails) {
+<span class="nc" id="L65">        List&lt;NotificacaoDTO&gt; notificacoes = sseEmitterService.obterHistorico(userDetails.getUsername());</span>
+<span class="nc" id="L66">        return ResponseEntity.ok(RespostaDTO.sucesso(notificacoes,</span>
+<span class="nc" id="L67">                &quot;Histórico de &quot; + notificacoes.size() + &quot; notificação(ões) obtido com sucesso&quot;));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
