@@ -1,6 +1,6 @@
 package br.com.banksystem.contas.dto;
 
-import br.com.banksystem.contas.model.StatusConta;
+import br.com.banksystem.contas.model.dto.StatusConta;
 import java.time.LocalDateTime;
 
 /**

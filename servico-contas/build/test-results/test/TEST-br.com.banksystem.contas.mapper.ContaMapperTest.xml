@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="br.com.banksystem.contas.mapper.ContaMapperTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-04-09T19:17:24.588Z" hostname="NB-608211" time="0.004">
+  <properties/>
+  <testcase name="deveManterContaComoPendenteEmailAoCriarEntidade()" classname="br.com.banksystem.contas.mapper.ContaMapperTest" time="0.001"/>
+  <testcase name="deveConverterCriarContaDTOParaEntidade()" classname="br.com.banksystem.contas.mapper.ContaMapperTest" time="0.001"/>
+  <testcase name="deveConverterEntidadeParaPerfilDTO()" classname="br.com.banksystem.contas.mapper.ContaMapperTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

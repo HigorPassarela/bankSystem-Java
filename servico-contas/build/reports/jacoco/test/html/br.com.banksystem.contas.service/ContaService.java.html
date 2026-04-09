@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ContaService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">servico-contas</a> &gt; <a href="index.source.html" class="el_package">br.com.banksystem.contas.service</a> &gt; <span class="el_source">ContaService.java</span></div><h1>ContaService.java</h1><pre class="source lang-java linenums">package br.com.banksystem.contas.service;
+
+import br.com.banksystem.contas.dto.*;
+import br.com.banksystem.contas.exception.ContaJaExisteException;
+import br.com.banksystem.contas.exception.ContaNaoEncontradaException;
+import br.com.banksystem.contas.mapper.ContaMapper;
+import br.com.banksystem.contas.model.Conta;
+import br.com.banksystem.contas.model.dto.StatusConta;
+import br.com.banksystem.contas.repository.ContaRepository;
+import br.com.banksystem.contas.security.JwtUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.Random;
+import java.util.UUID;
+
+/**
+ * Serviço de negócio para gestão de contas bancárias.
+ *
+ * Fluxo de status:
+ *   criarConta()    → PENDENTE_EMAIL
+ *   verificarEmail() → ATIVA
+ */
+@Service
+public class ContaService {
+
+<span class="fc" id="L34">    private static final Logger log = LoggerFactory.getLogger(ContaService.class);</span>
+    private static final long SALDO_INICIAL_CENTAVOS  = 0L;       // sem saldo inicial
+    private static final long LIMITE_INICIAL_CENTAVOS = 500000L;  // R$ 5.000,00
+
+    private final ContaRepository contaRepository;
+    private final ContaMapper contaMapper;
+    private final PasswordEncoder codificadorSenha;
+    private final AuthenticationManager gerenciadorAutenticacao;
+    private final JwtUtil jwtUtil;
+    private final RedisTemplate&lt;String, String&gt; redisTemplate;
+    private final EmailService emailService;
+
+    public ContaService(ContaRepository contaRepository, ContaMapper contaMapper,
+                        PasswordEncoder codificadorSenha,
+                        AuthenticationManager gerenciadorAutenticacao,
+                        JwtUtil jwtUtil,
+                        RedisTemplate&lt;String, String&gt; redisTemplate,
+<span class="fc" id="L51">                        EmailService emailService) {</span>
+<span class="fc" id="L52">        this.contaRepository = contaRepository;</span>
+<span class="fc" id="L53">        this.contaMapper = contaMapper;</span>
+<span class="fc" id="L54">        this.codificadorSenha = codificadorSenha;</span>
+<span class="fc" id="L55">        this.gerenciadorAutenticacao = gerenciadorAutenticacao;</span>
+<span class="fc" id="L56">        this.jwtUtil = jwtUtil;</span>
+<span class="fc" id="L57">        this.redisTemplate = redisTemplate;</span>
+<span class="fc" id="L58">        this.emailService = emailService;</span>
+<span class="fc" id="L59">    }</span>
+
+    /**
+     * Cria uma nova conta bancária.
+     * Status inicial: PENDENTE_EMAIL.
+     * A conta só fica ATIVA após a confirmação do e-mail.
+     */
+    public PerfilContaDTO criarConta(CriarContaDTO dto) {
+<span class="fc" id="L67">        log.info(&quot;Criando conta para CPF: {}&quot;, dto.cpf());</span>
+
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        if (contaRepository.existsByCpf(dto.cpf()))</span>
+<span class="fc" id="L70">            throw new ContaJaExisteException(&quot;CPF já cadastrado no sistema&quot;);</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        if (contaRepository.existsByEmail(dto.email()))</span>
+<span class="fc" id="L72">            throw new ContaJaExisteException(&quot;E-mail já cadastrado no sistema&quot;);</span>
+
+<span class="fc" id="L74">        String numeroConta          = gerarNumeroConta();</span>
+<span class="fc" id="L75">        String senhaHash            = codificadorSenha.encode(dto.senha());</span>
+<span class="fc" id="L76">        String senhaTransferenciaHash = codificadorSenha.encode(dto.senhaTransferencia());</span>
+<span class="fc" id="L77">        String tokenVerificacao     = UUID.randomUUID().toString();</span>
+
+<span class="fc" id="L79">        Conta conta = contaMapper.paraEntidade(dto, senhaHash, senhaTransferenciaHash, numeroConta);</span>
+<span class="fc" id="L80">        conta.setTokenVerificacaoEmail(tokenVerificacao);</span>
+<span class="fc" id="L81">        conta.setTokenVerificacaoExpiracao(LocalDateTime.now().plusHours(24));</span>
+<span class="fc" id="L82">        conta = contaRepository.save(conta);</span>
+
+        // Inicializa saldo = 0 e limite no Redis (bloqueado até verificação)
+<span class="fc" id="L85">        redisTemplate.opsForValue().set(&quot;saldo:&quot; + numeroConta,</span>
+<span class="fc" id="L86">                String.valueOf(SALDO_INICIAL_CENTAVOS));</span>
+<span class="fc" id="L87">        redisTemplate.opsForValue().set(&quot;limite:&quot; + numeroConta,</span>
+<span class="fc" id="L88">                String.valueOf(LIMITE_INICIAL_CENTAVOS));</span>
+
+<span class="fc" id="L90">        emailService.enviarVerificacaoEmail(</span>
+<span class="fc" id="L91">                dto.email(), dto.nomeCompleto(), numeroConta, tokenVerificacao);</span>
+
+<span class="fc" id="L93">        log.info(&quot;Conta criada com status PENDENTE_EMAIL: {}&quot;, numeroConta);</span>
+<span class="fc" id="L94">        return contaMapper.paraPerfilDTO(conta);</span>
+    }
+
+    /**
+     * Verifica e-mail via token do link enviado pelo MailHog.
+     * Transição de status: PENDENTE_EMAIL → ATIVA.
+     */
+    public VerificarEmailDTO verificarEmail(String token) {
+<span class="fc" id="L102">        Conta conta = contaRepository.findByTokenVerificacaoEmail(token)</span>
+<span class="pc" id="L103">                .orElseThrow(() -&gt; new ContaNaoEncontradaException(</span>
+                        &quot;Token de verificação inválido ou já utilizado&quot;));
+
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        if (conta.getStatus() == StatusConta.ATIVA) {</span>
+<span class="fc" id="L107">            return new VerificarEmailDTO(&quot;E-mail já verificado anteriormente. Conta está ATIVA.&quot;, true);</span>
+        }
+<span class="fc bfc" id="L109" title="All 2 branches covered.">        if (conta.getTokenVerificacaoExpiracao().isBefore(LocalDateTime.now())) {</span>
+<span class="fc" id="L110">            throw new ContaNaoEncontradaException(</span>
+                    &quot;Token expirado. Solicite um novo e-mail de verificação.&quot;);
+        }
+
+<span class="fc" id="L114">        conta.setStatus(StatusConta.ATIVA);          // PENDENTE_EMAIL → ATIVA</span>
+<span class="fc" id="L115">        conta.setEmailVerificado(true);</span>
+<span class="fc" id="L116">        conta.setTokenVerificacaoEmail(null);</span>
+<span class="fc" id="L117">        conta.setTokenVerificacaoExpiracao(null);</span>
+<span class="fc" id="L118">        conta.setDataAtualizacao(LocalDateTime.now());</span>
+<span class="fc" id="L119">        contaRepository.save(conta);</span>
+
+<span class="fc" id="L121">        log.info(&quot;Conta ativada após verificação de e-mail: {}&quot;, conta.getNumeroConta());</span>
+<span class="fc" id="L122">        return new VerificarEmailDTO(</span>
+<span class="fc" id="L123">                &quot;E-mail verificado com sucesso! Conta &quot; + conta.getNumeroConta() + &quot; está ATIVA.&quot;, true);</span>
+    }
+
+    /** Reenvia e-mail de verificação para contas ainda PENDENTE_EMAIL. */
+    public void reenviarVerificacao(String email) {
+<span class="fc" id="L128">        Conta conta = contaRepository.findByEmail(email)</span>
+<span class="pc" id="L129">                .orElseThrow(() -&gt; new ContaNaoEncontradaException(</span>
+                        &quot;Conta não encontrada para o e-mail informado&quot;));
+
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        if (conta.getStatus() == StatusConta.ATIVA) {</span>
+<span class="fc" id="L133">            throw new ContaJaExisteException(&quot;E-mail já verificado — conta está ATIVA&quot;);</span>
+        }
+
+<span class="fc" id="L136">        String novoToken = UUID.randomUUID().toString();</span>
+<span class="fc" id="L137">        conta.setTokenVerificacaoEmail(novoToken);</span>
+<span class="fc" id="L138">        conta.setTokenVerificacaoExpiracao(LocalDateTime.now().plusHours(24));</span>
+<span class="fc" id="L139">        contaRepository.save(conta);</span>
+
+<span class="fc" id="L141">        emailService.enviarVerificacaoEmail(</span>
+<span class="fc" id="L142">                email, conta.getNomeCompleto(), conta.getNumeroConta(), novoToken);</span>
+<span class="fc" id="L143">        log.info(&quot;E-mail de verificação reenviado para: {}&quot;, email);</span>
+<span class="fc" id="L144">    }</span>
+
+    /**
+     * Autentica a conta — exige status ATIVA.
+     * Contas PENDENTE_EMAIL são bloqueadas com mensagem clara.
+     */
+    public TokenDTO autenticar(LoginDTO dto) {
+<span class="fc" id="L151">        log.info(&quot;Tentativa de login para conta: {}&quot;, dto.numeroConta());</span>
+
+<span class="fc" id="L153">        Conta conta = contaRepository.findByNumeroConta(dto.numeroConta())</span>
+<span class="fc" id="L154">                .orElseThrow(() -&gt; new BadCredentialsException(&quot;Número da conta ou senha inválidos&quot;));</span>
+
+<span class="fc bfc" id="L156" title="All 2 branches covered.">        if (conta.getStatus() == StatusConta.PENDENTE_EMAIL) {</span>
+<span class="fc" id="L157">            throw new BadCredentialsException(</span>
+                    &quot;Conta pendente de verificação. Acesse seu e-mail e confirme sua conta.&quot;);
+        }
+<span class="fc bfc" id="L160" title="All 2 branches covered.">        if (conta.getStatus() == StatusConta.SUSPENSA) {</span>
+<span class="fc" id="L161">            throw new BadCredentialsException(&quot;Conta suspensa. Entre em contato com o suporte.&quot;);</span>
+        }
+<span class="fc bfc" id="L163" title="All 2 branches covered.">        if (conta.getStatus() == StatusConta.ENCERRADA) {</span>
+<span class="fc" id="L164">            throw new BadCredentialsException(&quot;Conta encerrada.&quot;);</span>
+        }
+
+<span class="fc" id="L167">        gerenciadorAutenticacao.authenticate(</span>
+<span class="fc" id="L168">                new UsernamePasswordAuthenticationToken(dto.numeroConta(), dto.senha()));</span>
+
+<span class="fc" id="L170">        String token = jwtUtil.gerarToken(</span>
+<span class="fc" id="L171">                conta.getNumeroConta(), conta.getNomeCompleto(), conta.getRole());</span>
+
+<span class="fc" id="L173">        log.info(&quot;Login realizado com sucesso: {}&quot;, dto.numeroConta());</span>
+<span class="fc" id="L174">        return new TokenDTO(token, &quot;Bearer&quot;, conta.getNumeroConta(),</span>
+<span class="fc" id="L175">                conta.getNomeCompleto(), jwtUtil.obterExpiracaoMs());</span>
+    }
+
+    public PerfilContaDTO obterPerfil(String numeroConta) {
+<span class="nc" id="L179">        return contaMapper.paraPerfilDTO(buscarOuLancar(numeroConta));</span>
+    }
+
+    public PerfilContaDTO atualizarConta(String numeroConta, AtualizarContaDTO dto) {
+<span class="nc" id="L183">        Conta conta = buscarOuLancar(numeroConta);</span>
+<span class="nc bnc" id="L184" title="All 4 branches missed.">        if (dto.nomeCompleto() != null &amp;&amp; !dto.nomeCompleto().isBlank())</span>
+<span class="nc" id="L185">            conta.setNomeCompleto(dto.nomeCompleto());</span>
+<span class="nc bnc" id="L186" title="All 4 branches missed.">        if (dto.email() != null &amp;&amp; !dto.email().isBlank()) {</span>
+<span class="nc bnc" id="L187" title="All 4 branches missed.">            if (!dto.email().equals(conta.getEmail()) &amp;&amp; contaRepository.existsByEmail(dto.email()))</span>
+<span class="nc" id="L188">                throw new ContaJaExisteException(&quot;E-mail já utilizado por outra conta&quot;);</span>
+<span class="nc" id="L189">            conta.setEmail(dto.email());</span>
+        }
+<span class="nc bnc" id="L191" title="All 4 branches missed.">        if (dto.telefone() != null &amp;&amp; !dto.telefone().isBlank())</span>
+<span class="nc" id="L192">            conta.setTelefone(dto.telefone());</span>
+<span class="nc bnc" id="L193" title="All 4 branches missed.">        if (dto.novaSenha() != null &amp;&amp; !dto.novaSenha().isBlank())</span>
+<span class="nc" id="L194">            conta.setSenhaHash(codificadorSenha.encode(dto.novaSenha()));</span>
+<span class="nc" id="L195">        conta.setDataAtualizacao(LocalDateTime.now());</span>
+<span class="nc" id="L196">        return contaMapper.paraPerfilDTO(contaRepository.save(conta));</span>
+    }
+
+    public void atualizarSenhaTransferencia(String numeroConta, AtualizarSenhaTransferenciaDTO dto) {
+<span class="nc" id="L200">        Conta conta = buscarOuLancar(numeroConta);</span>
+<span class="nc bnc" id="L201" title="All 2 branches missed.">        if (!codificadorSenha.matches(dto.senhaAtual(), conta.getSenhaTransferenciaHash()))</span>
+<span class="nc" id="L202">            throw new BadCredentialsException(&quot;Senha de transferência atual incorreta&quot;);</span>
+<span class="nc" id="L203">        conta.setSenhaTransferenciaHash(codificadorSenha.encode(dto.novaSenha()));</span>
+<span class="nc" id="L204">        conta.setDataAtualizacao(LocalDateTime.now());</span>
+<span class="nc" id="L205">        contaRepository.save(conta);</span>
+<span class="nc" id="L206">        log.info(&quot;PIN de transferência atualizado: {}&quot;, numeroConta);</span>
+<span class="nc" id="L207">    }</span>
+
+    public boolean validarSenhaTransferencia(String numeroConta, String senhaTransferencia) {
+<span class="nc" id="L210">        Conta conta = buscarOuLancar(numeroConta);</span>
+<span class="nc" id="L211">        return codificadorSenha.matches(senhaTransferencia, conta.getSenhaTransferenciaHash());</span>
+    }
+
+    public PerfilContaDTO buscarContaPorNumero(String numeroConta) {
+<span class="nc" id="L215">        Conta conta = buscarOuLancar(numeroConta);</span>
+<span class="nc bnc" id="L216" title="All 2 branches missed.">        if (conta.getStatus() != StatusConta.ATIVA)</span>
+<span class="nc" id="L217">            throw new ContaNaoEncontradaException(</span>
+<span class="nc" id="L218">                    &quot;Conta de destino não está ativa (status: &quot; + conta.getStatus() + &quot;)&quot;);</span>
+<span class="nc" id="L219">        return contaMapper.paraPerfilDTO(conta);</span>
+    }
+
+    private Conta buscarOuLancar(String numeroConta) {
+<span class="nc" id="L223">        return contaRepository.findByNumeroConta(numeroConta)</span>
+<span class="nc" id="L224">                .orElseThrow(() -&gt; new ContaNaoEncontradaException(</span>
+                        &quot;Conta não encontrada: &quot; + numeroConta));
+    }
+
+    private String gerarNumeroConta() {
+<span class="fc" id="L229">        Random random = new Random();</span>
+        String numero;
+<span class="fc" id="L231">        do { numero = String.format(&quot;%08d&quot;, random.nextInt(100000000)); }</span>
+<span class="pc bpc" id="L232" title="1 of 2 branches missed.">        while (contaRepository.existsByNumeroConta(numero));</span>
+<span class="fc" id="L233">        return numero;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

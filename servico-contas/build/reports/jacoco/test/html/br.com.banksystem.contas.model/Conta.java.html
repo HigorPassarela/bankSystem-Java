@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Conta.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">servico-contas</a> &gt; <a href="index.source.html" class="el_package">br.com.banksystem.contas.model</a> &gt; <span class="el_source">Conta.java</span></div><h1>Conta.java</h1><pre class="source lang-java linenums">package br.com.banksystem.contas.model;
+
+import br.com.banksystem.contas.model.dto.StatusConta;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.index.Indexed;
+import java.time.LocalDateTime;
+
+/**
+ * Entidade que representa uma conta bancária no sistema.
+ *
+ * Ciclo de vida:
+ *   PENDENTE_EMAIL → (verificação) → ATIVA → (encerramento) → ENCERRADA
+ */
+@Document(collection = &quot;contas&quot;)
+public class Conta {
+
+    @Id private String id;
+    @Indexed(unique = true) private String numeroConta;
+    private String nomeCompleto;
+    private String cpf;
+    private String email;
+    @Indexed(unique = true) private String telefone;
+    private String senhaHash;
+    /** PIN de 4 dígitos — exclusivo para autorizar transferências */
+    private String senhaTransferenciaHash;
+    private String role;
+
+    /** Status atual da conta — reflete o ciclo de vida completo */
+    private StatusConta status;
+
+    /** Mantido por compatibilidade e conveniência — derivado de status */
+    private Boolean ativa;
+
+    private Boolean emailVerificado;
+    private String tokenVerificacaoEmail;
+    private LocalDateTime tokenVerificacaoExpiracao;
+    private LocalDateTime dataCriacao;
+    private LocalDateTime dataAtualizacao;
+
+<span class="fc" id="L41">    public Conta() {}</span>
+
+    // ── Getters e Setters ────────────────────────────────────
+<span class="fc" id="L44">    public String getId() { return id; }</span>
+<span class="fc" id="L45">    public void setId(String id) { this.id = id; }</span>
+<span class="fc" id="L46">    public String getNumeroConta() { return numeroConta; }</span>
+<span class="fc" id="L47">    public void setNumeroConta(String numeroConta) { this.numeroConta = numeroConta; }</span>
+<span class="fc" id="L48">    public String getNomeCompleto() { return nomeCompleto; }</span>
+<span class="fc" id="L49">    public void setNomeCompleto(String nomeCompleto) { this.nomeCompleto = nomeCompleto; }</span>
+<span class="fc" id="L50">    public String getCpf() { return cpf; }</span>
+<span class="fc" id="L51">    public void setCpf(String cpf) { this.cpf = cpf; }</span>
+<span class="fc" id="L52">    public String getEmail() { return email; }</span>
+<span class="fc" id="L53">    public void setEmail(String email) { this.email = email; }</span>
+<span class="fc" id="L54">    public String getTelefone() { return telefone; }</span>
+<span class="fc" id="L55">    public void setTelefone(String telefone) { this.telefone = telefone; }</span>
+<span class="fc" id="L56">    public String getSenhaHash() { return senhaHash; }</span>
+<span class="fc" id="L57">    public void setSenhaHash(String senhaHash) { this.senhaHash = senhaHash; }</span>
+<span class="fc" id="L58">    public String getSenhaTransferenciaHash() { return senhaTransferenciaHash; }</span>
+<span class="fc" id="L59">    public void setSenhaTransferenciaHash(String h) { this.senhaTransferenciaHash = h; }</span>
+<span class="fc" id="L60">    public String getRole() { return role; }</span>
+<span class="fc" id="L61">    public void setRole(String role) { this.role = role; }</span>
+<span class="fc" id="L62">    public StatusConta getStatus() { return status; }</span>
+    public void setStatus(StatusConta status) {
+<span class="fc" id="L64">        this.status = status;</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        this.ativa = (status == StatusConta.ATIVA);</span>
+<span class="fc" id="L66">    }</span>
+<span class="fc" id="L67">    public Boolean getAtiva() { return ativa; }</span>
+<span class="fc" id="L68">    public void setAtiva(Boolean ativa) { this.ativa = ativa; }</span>
+<span class="fc" id="L69">    public Boolean getEmailVerificado() { return emailVerificado; }</span>
+<span class="fc" id="L70">    public void setEmailVerificado(Boolean emailVerificado) { this.emailVerificado = emailVerificado; }</span>
+<span class="fc" id="L71">    public String getTokenVerificacaoEmail() { return tokenVerificacaoEmail; }</span>
+<span class="fc" id="L72">    public void setTokenVerificacaoEmail(String t) { this.tokenVerificacaoEmail = t; }</span>
+<span class="fc" id="L73">    public LocalDateTime getTokenVerificacaoExpiracao() { return tokenVerificacaoExpiracao; }</span>
+<span class="fc" id="L74">    public void setTokenVerificacaoExpiracao(LocalDateTime t) { this.tokenVerificacaoExpiracao = t; }</span>
+<span class="fc" id="L75">    public LocalDateTime getDataCriacao() { return dataCriacao; }</span>
+<span class="fc" id="L76">    public void setDataCriacao(LocalDateTime dataCriacao) { this.dataCriacao = dataCriacao; }</span>
+<span class="fc" id="L77">    public LocalDateTime getDataAtualizacao() { return dataAtualizacao; }</span>
+<span class="fc" id="L78">    public void setDataAtualizacao(LocalDateTime dataAtualizacao) { this.dataAtualizacao = dataAtualizacao; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

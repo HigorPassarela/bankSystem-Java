@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ContaUserDetailsService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">servico-contas</a> &gt; <a href="index.source.html" class="el_package">br.com.banksystem.contas.security</a> &gt; <span class="el_source">ContaUserDetailsService.java</span></div><h1>ContaUserDetailsService.java</h1><pre class="source lang-java linenums">package br.com.banksystem.contas.security;
+
+import br.com.banksystem.contas.model.Conta;
+import br.com.banksystem.contas.repository.ContaRepository;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+ * Serviço de carregamento de detalhes do usuário para Spring Security.
+ * Utiliza o número da conta como identificador de login.
+ */
+@Service
+public class ContaUserDetailsService implements UserDetailsService {
+
+    private final ContaRepository contaRepository;
+
+<span class="fc" id="L23">    public ContaUserDetailsService(ContaRepository contaRepository) {</span>
+<span class="fc" id="L24">        this.contaRepository = contaRepository;</span>
+<span class="fc" id="L25">    }</span>
+
+    @Override
+    public UserDetails loadUserByUsername(String numeroConta) throws UsernameNotFoundException {
+<span class="fc" id="L29">        Conta conta = contaRepository.findByNumeroConta(numeroConta)</span>
+<span class="fc" id="L30">                .orElseThrow(() -&gt; new UsernameNotFoundException(</span>
+                        &quot;Conta não encontrada: &quot; + numeroConta));
+
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        if (!conta.getAtiva()) {</span>
+<span class="fc" id="L34">            throw new UsernameNotFoundException(&quot;Conta inativa: &quot; + numeroConta);</span>
+        }
+
+<span class="fc" id="L37">        return new User(</span>
+<span class="fc" id="L38">                conta.getNumeroConta(),</span>
+<span class="fc" id="L39">                conta.getSenhaHash(),</span>
+<span class="fc" id="L40">                List.of(new SimpleGrantedAuthority(conta.getRole()))</span>
+        );
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

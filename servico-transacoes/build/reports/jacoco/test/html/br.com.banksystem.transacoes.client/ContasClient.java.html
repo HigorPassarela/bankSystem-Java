@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ContasClient.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">servico-transacoes</a> &gt; <a href="index.source.html" class="el_package">br.com.banksystem.transacoes.client</a> &gt; <span class="el_source">ContasClient.java</span></div><h1>ContasClient.java</h1><pre class="source lang-java linenums">package br.com.banksystem.transacoes.client;
+
+import br.com.banksystem.transacoes.dto.ValidacaoSenhaDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+
+/**
+ * Cliente HTTP para comunicação com o Serviço de Contas.
+ * Usado para validar a senha de transferência e buscar dados de contas.
+ */
+@Component
+public class ContasClient {
+
+<span class="nc" id="L18">    private static final Logger log = LoggerFactory.getLogger(ContasClient.class);</span>
+
+    private final RestTemplate restTemplate;
+
+    @Value(&quot;${servico.contas.url:http://localhost:8081}&quot;)
+    private String contasUrl;
+
+<span class="nc" id="L25">    public ContasClient(RestTemplate restTemplate) {</span>
+<span class="nc" id="L26">        this.restTemplate = restTemplate;</span>
+<span class="nc" id="L27">    }</span>
+
+    /**
+     * Valida o PIN de transferência da conta junto ao servico-contas.
+     */
+    public boolean validarSenhaTransferencia(String numeroConta, String senhaTransferencia, String jwtToken) {
+        try {
+<span class="nc" id="L34">            HttpHeaders headers = new HttpHeaders();</span>
+<span class="nc" id="L35">            headers.setBearerAuth(jwtToken);</span>
+
+<span class="nc" id="L37">            HttpEntity&lt;Void&gt; entity = new HttpEntity&lt;&gt;(headers);</span>
+<span class="nc" id="L38">            String url = contasUrl + &quot;/api/contas/validar-senha-transferencia?senhaTransferencia=&quot; + senhaTransferencia;</span>
+
+<span class="nc" id="L40">            ResponseEntity&lt;ValidacaoSenhaDTO&gt; resposta = restTemplate.exchange(</span>
+                    url, HttpMethod.POST, entity, ValidacaoSenhaDTO.class);
+
+<span class="nc bnc" id="L43" title="All 4 branches missed.">            if (resposta.getStatusCode().is2xxSuccessful() &amp;&amp; resposta.getBody() != null) {</span>
+<span class="nc" id="L44">                Object dados = resposta.getBody().dados();</span>
+<span class="nc" id="L45">                return Boolean.TRUE.equals(dados);</span>
+            }
+<span class="nc" id="L47">            return false;</span>
+<span class="nc" id="L48">        } catch (Exception ex) {</span>
+<span class="nc" id="L49">            log.error(&quot;Erro ao validar senha de transferência para conta {}: {}&quot;, numeroConta, ex.getMessage());</span>
+<span class="nc" id="L50">            return false;</span>
+        }
+    }
+
+    /**
+     * Busca o nome do titular da conta de destino para registro.
+     */
+    public String buscarNomeConta(String numeroConta, String jwtToken) {
+        try {
+<span class="nc" id="L59">            HttpHeaders headers = new HttpHeaders();</span>
+<span class="nc" id="L60">            headers.setBearerAuth(jwtToken);</span>
+<span class="nc" id="L61">            HttpEntity&lt;Void&gt; entity = new HttpEntity&lt;&gt;(headers);</span>
+<span class="nc" id="L62">            String url = contasUrl + &quot;/api/contas/buscar/&quot; + numeroConta;</span>
+
+<span class="nc" id="L64">            ResponseEntity&lt;java.util.Map&gt; resposta = restTemplate.exchange(</span>
+                    url, HttpMethod.GET, entity, java.util.Map.class);
+
+<span class="nc bnc" id="L67" title="All 4 branches missed.">            if (resposta.getStatusCode().is2xxSuccessful() &amp;&amp; resposta.getBody() != null) {</span>
+<span class="nc" id="L68">                Object dados = resposta.getBody().get(&quot;dados&quot;);</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">                if (dados instanceof java.util.Map&lt;?,?&gt; dadosMap) {</span>
+<span class="nc" id="L70">                    Object nome = dadosMap.get(&quot;nomeCompleto&quot;);</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">                    return nome != null ? nome.toString() : numeroConta;</span>
+                }
+            }
+<span class="nc" id="L74">            return numeroConta;</span>
+<span class="nc" id="L75">        } catch (Exception ex) {</span>
+<span class="nc" id="L76">            log.warn(&quot;Não foi possível buscar nome da conta {}: {}&quot;, numeroConta, ex.getMessage());</span>
+<span class="nc" id="L77">            return numeroConta;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

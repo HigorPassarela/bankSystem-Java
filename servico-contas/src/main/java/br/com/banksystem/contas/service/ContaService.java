@@ -5,7 +5,7 @@ import br.com.banksystem.contas.exception.ContaJaExisteException;
 import br.com.banksystem.contas.exception.ContaNaoEncontradaException;
 import br.com.banksystem.contas.mapper.ContaMapper;
 import br.com.banksystem.contas.model.Conta;
-import br.com.banksystem.contas.model.StatusConta;
+import br.com.banksystem.contas.model.dto.StatusConta;
 import br.com.banksystem.contas.repository.ContaRepository;
 import br.com.banksystem.contas.security.JwtUtil;
 import org.slf4j.Logger;

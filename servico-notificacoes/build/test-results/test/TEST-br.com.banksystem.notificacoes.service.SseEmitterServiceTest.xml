@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="br.com.banksystem.notificacoes.service.SseEmitterServiceTest" tests="14" skipped="0" failures="0" errors="0" timestamp="2026-04-09T20:11:12.908Z" hostname="NB-608211" time="2.972">
+  <properties/>
+  <testcase name="devePermitirMultiplosEmissoresParaMesmaConta()" classname="br.com.banksystem.notificacoes.service.SseEmitterServiceTest" time="2.739"/>
+  <testcase name="deveGerenciarEmissoresDeContasDiferentes()" classname="br.com.banksystem.notificacoes.service.SseEmitterServiceTest" time="0.157"/>
+  <testcase name="deveAdicionarNotificacaoAoHistoricoMesmoSemEmissores()" classname="br.com.banksystem.notificacoes.service.SseEmitterServiceTest" time="0.016"/>
+  <testcase name="deveCriarEmissorComSucesso()" classname="br.com.banksystem.notificacoes.service.SseEmitterServiceTest" time="0.002"/>
+  <testcase name="devePermitirDadosNulos()" classname="br.com.banksystem.notificacoes.service.SseEmitterServiceTest" time="0.004"/>
+  <testcase name="deveManterHistoricoAposRemocaoDeEmissor()" classname="br.com.banksystem.notificacoes.service.SseEmitterServiceTest" time="0.008"/>
+  <testcase name="deveAcumularNotificacaoNoHistorico()" classname="br.com.banksystem.notificacoes.service.SseEmitterServiceTest" time="0.003"/>
+  <testcase name="deveManterTimestampOriginalDaNotificacao()" classname="br.com.banksystem.notificacoes.service.SseEmitterServiceTest" time="0.002"/>
+  <testcase name="devePermitirEnvioDeNotificacaoSemEmissoresAtivos()" classname="br.com.banksystem.notificacoes.service.SseEmitterServiceTest" time="0.002"/>
+  <testcase name="deveManterHistoricoSeparadoPorConta()" classname="br.com.banksystem.notificacoes.service.SseEmitterServiceTest" time="0.002"/>
+  <testcase name="deveUsarMetodoStaticoCriarCorretamente()" classname="br.com.banksystem.notificacoes.service.SseEmitterServiceTest" time="0.004"/>
+  <testcase name="deveRetornarHistoricoVazioParaContaInexistente()" classname="br.com.banksystem.notificacoes.service.SseEmitterServiceTest" time="0.002"/>
+  <testcase name="deveEnviarNotificacaoParaEmissorAtivo()" classname="br.com.banksystem.notificacoes.service.SseEmitterServiceTest" time="0.006"/>
+  <testcase name="deveSerializarNotificacaoCorretamenteParaJson()" classname="br.com.banksystem.notificacoes.service.SseEmitterServiceTest" time="0.008"/>
+  <system-out><![CDATA[17:11:15.608 [Test worker] INFO br.com.banksystem.notificacoes.service.SseEmitterService -- Novo emitter SSE criado para conta: 12345
+17:11:15.622 [Test worker] INFO br.com.banksystem.notificacoes.service.SseEmitterService -- Novo emitter SSE criado para conta: 12345
+17:11:15.652 [Test worker] INFO br.com.banksystem.notificacoes.service.SseEmitterService -- Novo emitter SSE criado para conta: 12345
+17:11:15.653 [Test worker] INFO br.com.banksystem.notificacoes.service.SseEmitterService -- Novo emitter SSE criado para conta: 67890
+17:11:15.800 [Test worker] INFO br.com.banksystem.notificacoes.service.SseEmitterService -- Notificação enviada via SSE para conta: 12345
+17:11:15.802 [Test worker] INFO br.com.banksystem.notificacoes.service.SseEmitterService -- Notificação enviada via SSE para conta: 67890
+17:11:15.828 [Test worker] INFO br.com.banksystem.notificacoes.service.SseEmitterService -- Novo emitter SSE criado para conta: 12345
+17:11:15.837 [Test worker] INFO br.com.banksystem.notificacoes.service.SseEmitterService -- Novo emitter SSE criado para conta: 12345
+17:11:15.842 [Test worker] INFO br.com.banksystem.notificacoes.service.SseEmitterService -- Notificação enviada via SSE para conta: 12345
+17:11:15.867 [Test worker] INFO br.com.banksystem.notificacoes.service.SseEmitterService -- Novo emitter SSE criado para conta: 12345
+17:11:15.871 [Test worker] INFO br.com.banksystem.notificacoes.service.SseEmitterService -- Notificação enviada via SSE para conta: 12345
+17:11:15.875 [Test worker] INFO br.com.banksystem.notificacoes.service.SseEmitterService -- Novo emitter SSE criado para conta: 12345
+17:11:15.879 [Test worker] INFO br.com.banksystem.notificacoes.service.SseEmitterService -- Notificação enviada via SSE para conta: 12345
+]]></system-out>
+  <system-err><![CDATA[WARNING: A Java agent has been loaded dynamically (C:\Users\higor.passarela\.gradle\caches\modules-2\files-2.1\net.bytebuddy\byte-buddy-agent\1.14.10\90ed94ac044ea8953b224304c762316e91fd6b31\byte-buddy-agent-1.14.10.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
+</testsuite>

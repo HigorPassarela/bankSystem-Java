@@ -1,5 +1,6 @@
 package br.com.banksystem.contas.model;
 
+import br.com.banksystem.contas.model.dto.StatusConta;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.index.Indexed;

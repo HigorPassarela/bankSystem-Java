@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CamundaExternalTaskWorker.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">servico-fraudes</a> &gt; <a href="index.source.html" class="el_package">br.com.banksystem.fraudes.service</a> &gt; <span class="el_source">CamundaExternalTaskWorker.java</span></div><h1>CamundaExternalTaskWorker.java</h1><pre class="source lang-java linenums">package br.com.banksystem.fraudes.service;
+
+import br.com.banksystem.fraudes.dto.FraudeDetectadaDTO;
+import com.fasterxml.jackson.databind.JsonNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.http.*;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+
+@Component
+public class CamundaExternalTaskWorker implements CommandLineRunner {
+
+<span class="fc" id="L23">    private static final Logger log = LoggerFactory.getLogger(CamundaExternalTaskWorker.class);</span>
+
+    private final RestTemplate restTemplate;
+    private final KafkaTemplate&lt;String, FraudeDetectadaDTO&gt; fraudeKafkaTemplate;
+
+    @Value(&quot;${servico.camunda.url}&quot;)
+    private String camundaUrl;
+
+    public CamundaExternalTaskWorker(
+            RestTemplate restTemplate,
+            @Qualifier(&quot;fraudeKafkaTemplate&quot;) KafkaTemplate&lt;String, FraudeDetectadaDTO&gt; fraudeKafkaTemplate
+<span class="fc" id="L34">    ) {</span>
+<span class="fc" id="L35">        this.restTemplate = restTemplate;</span>
+<span class="fc" id="L36">        this.fraudeKafkaTemplate = fraudeKafkaTemplate;</span>
+<span class="fc" id="L37">    }</span>
+
+    @Override
+    public void run(String... args) {
+<span class="fc" id="L41">        startWorker(&quot;verificar-risco&quot;);</span>
+<span class="fc" id="L42">        startWorker(&quot;aprovar-transacao&quot;);</span>
+<span class="fc" id="L43">        startWorker(&quot;bloquear-transacao&quot;);</span>
+<span class="fc" id="L44">    }</span>
+
+    private void startWorker(String topic) {
+<span class="fc" id="L47">        final String workerId = &quot;fraudes-worker-&quot; + topic;</span>
+
+<span class="fc" id="L49">        Thread.startVirtualThread(() -&gt; {</span>
+            while (true) {
+                try {
+<span class="fc" id="L52">                    HttpHeaders headers = new HttpHeaders();</span>
+<span class="fc" id="L53">                    headers.setContentType(MediaType.APPLICATION_JSON);</span>
+
+<span class="fc" id="L55">                    Map&lt;String, Object&gt; body = Map.of(</span>
+                            &quot;workerId&quot;, workerId,
+<span class="fc" id="L57">                            &quot;maxTasks&quot;, 1,</span>
+<span class="fc" id="L58">                            &quot;topics&quot;, List.of(Map.of(</span>
+                                    &quot;topicName&quot;, topic,
+<span class="fc" id="L60">                                    &quot;lockDuration&quot;, 10000</span>
+                            ))
+                    );
+
+<span class="fc" id="L64">                    ResponseEntity&lt;JsonNode[]&gt; response = restTemplate.postForEntity(</span>
+                            camundaUrl + &quot;/external-task/fetchAndLock&quot;,
+                            new HttpEntity&lt;&gt;(body, headers),
+                            JsonNode[].class
+                    );
+
+<span class="fc" id="L70">                    JsonNode[] tasks = response.getBody();</span>
+<span class="pc bpc" id="L71" title="2 of 4 branches missed.">                    if (tasks != null &amp;&amp; tasks.length &gt; 0) {</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">                        for (JsonNode task : tasks) {</span>
+<span class="nc bnc" id="L73" title="All 4 branches missed.">                            switch (topic) {</span>
+<span class="nc" id="L74">                                case &quot;verificar-risco&quot; -&gt; handleVerificarRisco(task, workerId);</span>
+<span class="nc" id="L75">                                case &quot;aprovar-transacao&quot; -&gt; handleAprovar(task, workerId);</span>
+<span class="nc" id="L76">                                case &quot;bloquear-transacao&quot; -&gt; handleBloquear(task, workerId);</span>
+                            }
+                        }
+                    }
+
+<span class="nc" id="L81">                    Thread.sleep(1000);</span>
+<span class="fc" id="L82">                } catch (Exception e) {</span>
+<span class="fc" id="L83">                    log.error(&quot;Erro no worker do tópico {}: {}&quot;, topic, e.getMessage(), e);</span>
+                    try {
+<span class="nc" id="L85">                        Thread.sleep(3000);</span>
+<span class="nc" id="L86">                    } catch (InterruptedException ignored) {</span>
+<span class="nc" id="L87">                    }</span>
+<span class="nc" id="L88">                }</span>
+            }
+        });
+<span class="fc" id="L91">    }</span>
+
+    private void handleVerificarRisco(JsonNode task, String workerId) {
+<span class="nc" id="L94">        String taskId = task.get(&quot;id&quot;).asText();</span>
+<span class="nc" id="L95">        JsonNode vars = task.get(&quot;variables&quot;);</span>
+
+<span class="nc" id="L97">        double valor = vars.get(&quot;valor&quot;).get(&quot;value&quot;).asDouble();</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        boolean altoRisco = valor &gt; 10000.0;</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">        int scoreRisco = altoRisco ? 85 : 20;</span>
+
+        try {
+<span class="nc" id="L102">            Thread.sleep(3000); // só para visualização no cockpit</span>
+<span class="nc" id="L103">        } catch (InterruptedException ignored) {}</span>
+
+<span class="nc" id="L105">        completeTask(taskId, workerId, Map.of(</span>
+<span class="nc" id="L106">                &quot;altoRisco&quot;, Map.of(&quot;value&quot;, altoRisco, &quot;type&quot;, &quot;Boolean&quot;),</span>
+<span class="nc" id="L107">                &quot;scoreRisco&quot;, Map.of(&quot;value&quot;, scoreRisco, &quot;type&quot;, &quot;Integer&quot;)</span>
+        ));
+
+<span class="nc" id="L110">        log.info(&quot;ExternalTask verificar-risco concluída. valor={} altoRisco={}&quot;, valor, altoRisco);</span>
+<span class="nc" id="L111">    }</span>
+
+    private void handleAprovar(JsonNode task, String workerId) {
+<span class="nc" id="L114">        String taskId = task.get(&quot;id&quot;).asText();</span>
+
+<span class="nc" id="L116">        completeTask(taskId, workerId, Map.of(</span>
+<span class="nc" id="L117">                &quot;resultadoAntifraude&quot;, Map.of(&quot;value&quot;, &quot;APROVADA_ANTIFRAUDE&quot;, &quot;type&quot;, &quot;String&quot;)</span>
+        ));
+
+<span class="nc" id="L120">        log.info(&quot;ExternalTask aprovar-transacao concluída&quot;);</span>
+<span class="nc" id="L121">    }</span>
+
+    private void handleBloquear(JsonNode task, String workerId) {
+<span class="nc" id="L124">        String taskId = task.get(&quot;id&quot;).asText();</span>
+<span class="nc" id="L125">        JsonNode vars = task.get(&quot;variables&quot;);</span>
+
+<span class="nc" id="L127">        String idTransacao = vars.get(&quot;idTransacao&quot;).get(&quot;value&quot;).asText();</span>
+<span class="nc" id="L128">        String numeroConta = vars.get(&quot;numeroConta&quot;).get(&quot;value&quot;).asText();</span>
+<span class="nc" id="L129">        String tipo = vars.get(&quot;tipo&quot;).get(&quot;value&quot;).asText();</span>
+<span class="nc" id="L130">        double valor = vars.get(&quot;valor&quot;).get(&quot;value&quot;).asDouble();</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        String contaOrigem = vars.has(&quot;contaOrigem&quot;) ? vars.get(&quot;contaOrigem&quot;).get(&quot;value&quot;).asText() : null;</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">        String contaDestino = vars.has(&quot;contaDestino&quot;) ? vars.get(&quot;contaDestino&quot;).get(&quot;value&quot;).asText() : null;</span>
+<span class="nc" id="L133">        int scoreRisco = vars.get(&quot;scoreRisco&quot;).get(&quot;value&quot;).asInt();</span>
+
+<span class="nc" id="L135">        fraudeKafkaTemplate.send(</span>
+                &quot;transacoes-suspeitas&quot;,
+                numeroConta,
+                new FraudeDetectadaDTO(
+                        idTransacao,
+                        numeroConta,
+<span class="nc" id="L141">                        BigDecimal.valueOf(valor),</span>
+                        tipo,
+<span class="nc" id="L143">                        scoreRisco,</span>
+                        &quot;SUSPEITA_FRAUDE&quot;,
+<span class="nc" id="L145">                        LocalDateTime.now(),</span>
+                        contaOrigem,
+                        contaDestino
+                )
+        );
+
+<span class="nc" id="L151">        completeTask(taskId, workerId, Map.of(</span>
+<span class="nc" id="L152">                &quot;resultadoAntifraude&quot;, Map.of(&quot;value&quot;, &quot;SUSPEITA_FRAUDE&quot;, &quot;type&quot;, &quot;String&quot;)</span>
+        ));
+
+<span class="nc" id="L155">        log.warn(&quot;ExternalTask bloquear-transacao concluída e fraude publicada para {}&quot;, idTransacao);</span>
+<span class="nc" id="L156">    }</span>
+
+    private void completeTask(String taskId, String workerId, Map&lt;String, Object&gt; variables) {
+<span class="nc" id="L159">        HttpHeaders headers = new HttpHeaders();</span>
+<span class="nc" id="L160">        headers.setContentType(MediaType.APPLICATION_JSON);</span>
+
+<span class="nc" id="L162">        Map&lt;String, Object&gt; body = Map.of(</span>
+                &quot;workerId&quot;, workerId,
+                &quot;variables&quot;, variables
+        );
+
+<span class="nc" id="L167">        restTemplate.postForEntity(</span>
+                camundaUrl + &quot;/external-task/&quot; + taskId + &quot;/complete&quot;,
+                new HttpEntity&lt;&gt;(body, headers),
+                String.class
+        );
+<span class="nc" id="L172">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

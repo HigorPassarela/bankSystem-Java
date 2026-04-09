@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BloquearTransacaoDelegate.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">servico-fraudes</a> &gt; <a href="index.source.html" class="el_package">br.com.banksystem.fraudes.delegate</a> &gt; <span class="el_source">BloquearTransacaoDelegate.java</span></div><h1>BloquearTransacaoDelegate.java</h1><pre class="source lang-java linenums">package br.com.banksystem.fraudes.delegate;
+
+import br.com.banksystem.fraudes.dto.FraudeDetectadaDTO;
+import org.camunda.bpm.engine.delegate.DelegateExecution;
+import org.camunda.bpm.engine.delegate.JavaDelegate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+/**
+ * Delegate Camunda para marcar transações de alto risco e publicar evento de compensação.
+ */
+@Component(&quot;bloquearTransacaoDelegate&quot;)
+public class BloquearTransacaoDelegate implements JavaDelegate {
+
+<span class="nc" id="L21">    private static final Logger log = LoggerFactory.getLogger(BloquearTransacaoDelegate.class);</span>
+
+    private final KafkaTemplate&lt;String, FraudeDetectadaDTO&gt; fraudeKafkaTemplate;
+
+    public BloquearTransacaoDelegate(
+            @Qualifier(&quot;fraudeKafkaTemplate&quot;)
+            KafkaTemplate&lt;String, FraudeDetectadaDTO&gt; fraudeKafkaTemplate
+<span class="nc" id="L28">    ) {</span>
+<span class="nc" id="L29">        this.fraudeKafkaTemplate = fraudeKafkaTemplate;</span>
+<span class="nc" id="L30">    }</span>
+
+    @Override
+    public void execute(DelegateExecution execution) {
+<span class="nc" id="L34">        String idTransacao = (String) execution.getVariable(&quot;idTransacao&quot;);</span>
+<span class="nc" id="L35">        String numeroConta = (String) execution.getVariable(&quot;numeroConta&quot;);</span>
+<span class="nc" id="L36">        Integer scoreRisco = (Integer) execution.getVariable(&quot;scoreRisco&quot;);</span>
+<span class="nc" id="L37">        Double valorDouble = (Double) execution.getVariable(&quot;valor&quot;);</span>
+<span class="nc" id="L38">        String tipo = (String) execution.getVariable(&quot;tipo&quot;);</span>
+<span class="nc" id="L39">        String contaOrigem = (String) execution.getVariable(&quot;contaOrigem&quot;);</span>
+<span class="nc" id="L40">        String contaDestino = (String) execution.getVariable(&quot;contaDestino&quot;);</span>
+
+<span class="nc" id="L42">        log.warn(&quot;Transação {} da conta {} marcada como suspeita de fraude. Score={}&quot;,</span>
+                idTransacao, numeroConta, scoreRisco);
+
+<span class="nc" id="L45">        execution.setVariable(&quot;resultadoAntifraude&quot;, &quot;SUSPEITA_FRAUDE&quot;);</span>
+
+<span class="nc" id="L47">        FraudeDetectadaDTO evento = new FraudeDetectadaDTO(</span>
+                idTransacao,
+                numeroConta,
+<span class="nc bnc" id="L50" title="All 2 branches missed.">                valorDouble != null ? BigDecimal.valueOf(valorDouble) : BigDecimal.ZERO,</span>
+                tipo,
+                scoreRisco,
+                &quot;SUSPEITA_FRAUDE&quot;,
+<span class="nc" id="L54">                LocalDateTime.now(),</span>
+                contaOrigem,
+                contaDestino
+        );
+
+<span class="nc" id="L59">        fraudeKafkaTemplate.send(&quot;transacoes-suspeitas&quot;, numeroConta, evento);</span>
+<span class="nc" id="L60">        log.warn(&quot;Evento de fraude suspeita publicado para transação {}&quot;, idTransacao);</span>
+<span class="nc" id="L61">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

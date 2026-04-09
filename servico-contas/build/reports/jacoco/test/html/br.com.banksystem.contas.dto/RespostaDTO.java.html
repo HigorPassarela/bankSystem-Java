@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RespostaDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">servico-contas</a> &gt; <a href="index.source.html" class="el_package">br.com.banksystem.contas.dto</a> &gt; <span class="el_source">RespostaDTO.java</span></div><h1>RespostaDTO.java</h1><pre class="source lang-java linenums">package br.com.banksystem.contas.dto;
+
+import java.time.LocalDateTime;
+
+/**
+ * DTO de resposta padronizada para todas as APIs.
+ */
+<span class="fc" id="L8">public record RespostaDTO&lt;T&gt;(</span>
+        boolean sucesso,
+        T dados,
+        String mensagem,
+        LocalDateTime timestamp
+) {
+    public static &lt;T&gt; RespostaDTO&lt;T&gt; sucesso(T dados, String mensagem) {
+<span class="fc" id="L15">        return new RespostaDTO&lt;&gt;(true, dados, mensagem, LocalDateTime.now());</span>
+    }
+
+    public static &lt;T&gt; RespostaDTO&lt;T&gt; erro(String mensagem) {
+<span class="fc" id="L19">        return new RespostaDTO&lt;&gt;(false, null, mensagem, LocalDateTime.now());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -3,7 +3,7 @@ package br.com.banksystem.contas.mapper;
 import br.com.banksystem.contas.dto.CriarContaDTO;
 import br.com.banksystem.contas.dto.PerfilContaDTO;
 import br.com.banksystem.contas.model.Conta;
-import br.com.banksystem.contas.model.StatusConta;
+import br.com.banksystem.contas.model.dto.StatusConta;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 

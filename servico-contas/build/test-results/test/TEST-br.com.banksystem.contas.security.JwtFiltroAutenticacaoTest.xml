@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Testes para JwtFiltroAutenticacao" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-04-09T19:17:24.819Z" hostname="NB-608211" time="0.364">
+  <properties/>
+  <testcase name="Deve autenticar usuário com token válido" classname="br.com.banksystem.contas.security.JwtFiltroAutenticacaoTest" time="0.289"/>
+  <testcase name="Deve prosseguir sem autenticação quando número da conta é nulo" classname="br.com.banksystem.contas.security.JwtFiltroAutenticacaoTest" time="0.005"/>
+  <testcase name="Deve prosseguir sem autenticação quando não há cabeçalho Authorization" classname="br.com.banksystem.contas.security.JwtFiltroAutenticacaoTest" time="0.005"/>
+  <testcase name="Deve prosseguir sem autenticação quando usuário já está autenticado" classname="br.com.banksystem.contas.security.JwtFiltroAutenticacaoTest" time="0.039"/>
+  <testcase name="Deve propagar exceção do UserDetailsService" classname="br.com.banksystem.contas.security.JwtFiltroAutenticacaoTest" time="0.009"/>
+  <testcase name="Deve prosseguir sem autenticação quando token é inválido" classname="br.com.banksystem.contas.security.JwtFiltroAutenticacaoTest" time="0.003"/>
+  <testcase name="Deve prosseguir quando token Bearer está vazio" classname="br.com.banksystem.contas.security.JwtFiltroAutenticacaoTest" time="0.005"/>
+  <testcase name="Deve prosseguir sem autenticação quando cabeçalho não inicia com Bearer" classname="br.com.banksystem.contas.security.JwtFiltroAutenticacaoTest" time="0.004"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
