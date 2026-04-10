@@ -15,4 +15,5 @@ public record EstornoFraudeDTO(
         LocalDateTime dataHora,
         String contaOrigem,
         String contaDestino
-) {}
+) {
+}

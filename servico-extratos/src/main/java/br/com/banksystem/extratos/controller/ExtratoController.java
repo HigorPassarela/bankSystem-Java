@@ -21,12 +21,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/extratos")
-//@CrossOrigin(
-//        originPatterns = {"http://localhost:*", "https://*.lovable.app"},
-//        allowCredentials = "true",
-//        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
-//        allowedHeaders = "*"
-//)
 @Tag(name = "Extratos", description = "Consulta de extrato e download de PDF")
 public class ExtratoController {
 
@@ -57,7 +51,7 @@ public class ExtratoController {
     )
     public ResponseEntity<RespostaDTO<Page<TransacaoDTO>>> listarPaginado(
             @PathVariable String numeroConta,
-            @RequestParam(defaultValue = "0")  int pagina,
+            @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue = "20") int tamanho) {
         Page<TransacaoDTO> pagina_resultado =
                 extratoService.listarPorContaPaginado(numeroConta, pagina, tamanho);

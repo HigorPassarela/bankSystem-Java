@@ -15,4 +15,5 @@ public record TransacaoDTO(
         String descricao,
         LocalDateTime dataHora,
         BigDecimal saldoAposTransacao
-) {}
+) {
+}
