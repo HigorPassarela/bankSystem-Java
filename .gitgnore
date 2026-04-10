@@ -1,2 +1,134 @@
-# FlowSet Studio
-flowset-studio/
+# ============================================================
+# BankSystem — .gitignore
+# Cobre: Java, Gradle, Spring Boot, IntelliJ IDEA, Docker, OS
+# ============================================================
+
+
+# ── GRADLE ──────────────────────────────────────────────────
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Cache de configuração do Gradle
+.gradle/configuration-cache/
+
+
+# ── JAVA / SPRING BOOT ──────────────────────────────────────
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+
+# Logs de aplicação
+*.log
+logs/
+spring.log
+
+# Arquivos temporários da JVM
+hs_err_pid*
+replay_pid*
+
+
+# ── INTELLIJ IDEA ────────────────────────────────────────────
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Flowset plugin (IntelliJ) — configuração local gerada automaticamente
+.idea/flowset.xml
+
+# Mas manter o .idea/modules se quiser compartilhar estrutura
+# (descomente se preferir versionar os módulos)
+# !.idea/modules.xml
+# !.idea/*.xml
+# !.idea/modules/
+
+
+# ── VSCODE ──────────────────────────────────────────────────
+.vscode/
+*.code-workspace
+
+
+# ── ECLIPSE ─────────────────────────────────────────────────
+.classpath
+.project
+.settings/
+bin/
+
+
+# ── MAVEN (caso algum serviço migre) ────────────────────────
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+
+# ── DOCKER ──────────────────────────────────────────────────
+# Não versionar override de compose local
+docker-compose.override.yml
+docker-compose.local.yml
+
+# Dados persistidos localmente pelos containers
+docker-volumes/
+.docker/
+
+
+# ── VARIÁVEIS DE AMBIENTE / SEGREDOS ─────────────────────────
+.env
+.env.local
+.env.*.local
+*.env
+
+# Nunca versionar secrets, chaves ou certificados
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore
+secrets/
+
+
+# ── RELATÓRIOS DE TESTES E COBERTURA ────────────────────────
+# Manter fontes de teste, ignorar artefatos gerados
+**/build/reports/
+**/build/test-results/
+**/build/jacoco/
+
+
+# ── SISTEMA OPERACIONAL ──────────────────────────────────────
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+
+# ── ARQUIVOS TEMPORÁRIOS ─────────────────────────────────────
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*.orig
+
+
+# ── DOCUMENTAÇÃO GERADA ─────────────────────────────────────
+# Manter fontes .md, ignorar HTML gerado
+docs/generated/
