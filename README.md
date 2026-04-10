@@ -57,9 +57,9 @@ graph TB
     Client --> Notificacoes[🔔 Notificações :8084]
     Client --> Fraudes[🛡️ Fraudes :8085]
 
-    Contas --> H2_1[(H2 Database)]
-    Transacoes --> H2_2[(H2 Database)]
-    Extratos --> H2_3[(H2 Database)]
+    Contas --> Mongo[(MongoDB)]
+    Transacoes --> Mongo[(MongoDB)]
+    Extratos --> Mongo[(MongoDB)]
 
     Contas --> Email[📧 MailHog :8025]
     Transacoes --> Kafka[Apache Kafka]
@@ -118,7 +118,7 @@ graph TB
 ![Gradle](https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white)
 
 ### Banco de Dados & Cache
-![H2](https://img.shields.io/badge/H2_Database-018bff?style=for-the-badge&logo=h2&logoColor=white)
+![MongoDB](https://img.shields.io/badge/H2_Database-018bff?style=for-the-badge&logo=h2&logoColor=white)
 ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
 ![JPA](https://img.shields.io/badge/JPA-59666C?style=for-the-badge&logo=hibernate&logoColor=white)
 
