@@ -17,4 +17,5 @@ public record TransacaoEventoDTO(
         BigDecimal saldoAposTransacao,
         String contaOrigem,
         String contaDestino
-) {}
+) {
+}

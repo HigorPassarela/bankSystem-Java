@@ -100,7 +100,8 @@ public class CamundaExternalTaskWorker implements CommandLineRunner {
 
         try {
             Thread.sleep(3000); // só para visualização no cockpit
-        } catch (InterruptedException ignored) {}
+        } catch (InterruptedException ignored) {
+        }
 
         completeTask(taskId, workerId, Map.of(
                 "altoRisco", Map.of("value", altoRisco, "type", "Boolean"),

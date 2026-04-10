@@ -8,4 +8,5 @@ import java.util.Map;
 public record CamundaStartProcessRequestDTO(
         String businessKey,
         Map<String, CamundaVariableDTO> variables
-) {}
+) {
+}

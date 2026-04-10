@@ -6,4 +6,5 @@ package br.com.banksystem.fraudes.dto;
 public record CamundaVariableDTO(
         Object value,
         String type
-) {}
+) {
+}
