@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Consumidor Kafka — persiste transações no MongoDB.
- *
+ * <p>
  * Idempotência: verifica se o idTransacao já existe antes de salvar,
  * evitando duplicatas em caso de reprocessamento de mensagens.
  */

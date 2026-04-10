@@ -11,4 +11,5 @@ public record LoginDTO(
 
         @NotBlank(message = "Senha é obrigatória")
         String senha
-) {}
+) {
+}

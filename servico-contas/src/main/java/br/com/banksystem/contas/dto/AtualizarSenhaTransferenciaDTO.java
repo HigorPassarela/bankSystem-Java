@@ -13,4 +13,5 @@ public record AtualizarSenhaTransferenciaDTO(
         @NotBlank(message = "Nova senha de transferência é obrigatória")
         @Pattern(regexp = "\\d{4}", message = "Nova senha deve ter exatamente 4 dígitos numéricos")
         String novaSenha
-) {}
+) {
+}

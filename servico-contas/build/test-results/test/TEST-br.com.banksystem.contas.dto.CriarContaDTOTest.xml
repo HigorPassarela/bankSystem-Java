@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Testes do CriarContaDTO" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-04-09T19:17:23.992Z" hostname="NB-608211" time="0.036">
+  <properties/>
+  <testcase name="Deve rejeitar nome em branco" classname="br.com.banksystem.contas.dto.CriarContaDTOTest" time="0.015"/>
+  <testcase name="Deve aceitar DTO válido" classname="br.com.banksystem.contas.dto.CriarContaDTOTest" time="0.002"/>
+  <testcase name="Deve rejeitar telefone inválido" classname="br.com.banksystem.contas.dto.CriarContaDTOTest" time="0.003"/>
+  <testcase name="Deve rejeitar senha de transferência inválida" classname="br.com.banksystem.contas.dto.CriarContaDTOTest" time="0.003"/>
+  <testcase name="Deve rejeitar CPF inválido" classname="br.com.banksystem.contas.dto.CriarContaDTOTest" time="0.003"/>
+  <testcase name="Deve rejeitar email inválido" classname="br.com.banksystem.contas.dto.CriarContaDTOTest" time="0.002"/>
+  <testcase name="Deve rejeitar senha curta" classname="br.com.banksystem.contas.dto.CriarContaDTOTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

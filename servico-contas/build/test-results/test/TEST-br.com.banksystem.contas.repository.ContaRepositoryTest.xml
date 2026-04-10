@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Testes do ContaRepository" tests="11" skipped="0" failures="0" errors="0" timestamp="2026-04-09T19:17:24.623Z" hostname="NB-608211" time="0.15">
+  <properties/>
+  <testcase name="Deve retornar vazio quando não encontrar conta por número" classname="br.com.banksystem.contas.repository.ContaRepositoryTest" time="0.121"/>
+  <testcase name="Deve encontrar conta por número da conta" classname="br.com.banksystem.contas.repository.ContaRepositoryTest" time="0.002"/>
+  <testcase name="Deve encontrar conta por CPF" classname="br.com.banksystem.contas.repository.ContaRepositoryTest" time="0.002"/>
+  <testcase name="Deve encontrar conta por email" classname="br.com.banksystem.contas.repository.ContaRepositoryTest" time="0.002"/>
+  <testcase name="Deve deletar conta por ID" classname="br.com.banksystem.contas.repository.ContaRepositoryTest" time="0.002"/>
+  <testcase name="Deve contar total de contas" classname="br.com.banksystem.contas.repository.ContaRepositoryTest" time="0.001"/>
+  <testcase name="Deve verificar existência por número da conta" classname="br.com.banksystem.contas.repository.ContaRepositoryTest" time="0.001"/>
+  <testcase name="Deve encontrar conta por token de verificação" classname="br.com.banksystem.contas.repository.ContaRepositoryTest" time="0.002"/>
+  <testcase name="Deve verificar existência por email" classname="br.com.banksystem.contas.repository.ContaRepositoryTest" time="0.003"/>
+  <testcase name="Deve verificar existência por CPF" classname="br.com.banksystem.contas.repository.ContaRepositoryTest" time="0.002"/>
+  <testcase name="Deve salvar conta" classname="br.com.banksystem.contas.repository.ContaRepositoryTest" time="0.004"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

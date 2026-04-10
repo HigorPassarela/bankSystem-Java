@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Testes do CreditoDTO" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-04-09T19:31:48.575Z" hostname="NB-608211" time="0.824">
+  <properties/>
+  <testcase name="Deve rejeitar valor nulo" classname="br.com.banksystem.transacoes.dto.CreditoDTOTest" time="0.797"/>
+  <testcase name="Deve aceitar DTO válido" classname="br.com.banksystem.transacoes.dto.CreditoDTOTest" time="0.01"/>
+  <testcase name="Deve rejeitar valor menor que zero zero um" classname="br.com.banksystem.transacoes.dto.CreditoDTOTest" time="0.005"/>
+  <system-out><![CDATA[16:31:47.537 [Test worker] INFO org.hibernate.validator.internal.util.Version -- HV000001: Hibernate Validator 8.0.1.Final
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

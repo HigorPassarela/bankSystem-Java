@@ -1,6 +1,7 @@
 package br.com.banksystem.transacoes.dto;
 
 import jakarta.validation.constraints.*;
+
 import java.math.BigDecimal;
 
 /**
@@ -22,4 +23,5 @@ public record TransferenciaDTO(
         String senhaTransferencia,
 
         String descricao
-) {}
+) {
+}

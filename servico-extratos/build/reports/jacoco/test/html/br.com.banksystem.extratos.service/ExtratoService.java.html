@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExtratoService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">servico-extratos</a> &gt; <a href="index.source.html" class="el_package">br.com.banksystem.extratos.service</a> &gt; <span class="el_source">ExtratoService.java</span></div><h1>ExtratoService.java</h1><pre class="source lang-java linenums">package br.com.banksystem.extratos.service;
+
+import br.com.banksystem.extratos.dto.TransacaoDTO;
+import br.com.banksystem.extratos.mapper.TransacaoMapper;
+import br.com.banksystem.extratos.repository.TransacaoRepository;
+import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.colors.DeviceRgb;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.borders.Border;
+import com.itextpdf.layout.borders.SolidBorder;
+import com.itextpdf.layout.element.*;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+
+import java.awt.*;
+import java.io.ByteArrayOutputStream;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+/**
+ * Serviço de consulta de extratos e geração de PDF com iText 8.
+ *
+ * O PDF gerado inclui:
+ *  - Cabeçalho com dados da conta e período
+ *  - Tabela de transações com cores por tipo
+ *  - Totalizadores: entradas, saídas, saldo do período
+ *  - Rodapé com data de geração
+ */
+@Service
+public class ExtratoService {
+
+<span class="nc" id="L41">    private static final Logger log = LoggerFactory.getLogger(ExtratoService.class);</span>
+<span class="nc" id="L42">    private static final DateTimeFormatter FMT_DATETIME = DateTimeFormatter.ofPattern(&quot;dd/MM/yyyy HH:mm&quot;);</span>
+<span class="nc" id="L43">    private static final DateTimeFormatter FMT_DATE     = DateTimeFormatter.ofPattern(&quot;dd/MM/yyyy&quot;);</span>
+
+    // Cores do layout
+<span class="nc" id="L46">    private static final DeviceRgb COR_HEADER    = new DeviceRgb(26, 86, 219);   // azul</span>
+<span class="nc" id="L47">    private static final DeviceRgb COR_SUBHEADER = new DeviceRgb(239, 246, 255); // azul claro</span>
+<span class="nc" id="L48">    private static final DeviceRgb COR_ENTRADA   = new DeviceRgb(220, 252, 231); // verde claro</span>
+<span class="nc" id="L49">    private static final DeviceRgb COR_SAIDA     = new DeviceRgb(254, 226, 226); // vermelho claro</span>
+<span class="nc" id="L50">    private static final DeviceRgb COR_LINHA_PAR = new DeviceRgb(249, 250, 251); // cinza</span>
+
+    private final TransacaoRepository transacaoRepository;
+    private final TransacaoMapper transacaoMapper;
+
+<span class="nc" id="L55">    public ExtratoService(TransacaoRepository transacaoRepository, TransacaoMapper transacaoMapper) {</span>
+<span class="nc" id="L56">        this.transacaoRepository = transacaoRepository;</span>
+<span class="nc" id="L57">        this.transacaoMapper = transacaoMapper;</span>
+<span class="nc" id="L58">    }</span>
+
+    // ── CONSULTAS ─────────────────────────────────────────────────────────────
+
+    public List&lt;TransacaoDTO&gt; listarPorConta(String numeroConta) {
+<span class="nc" id="L63">        return transacaoRepository.findByNumeroContaOrderByDataHoraDesc(numeroConta)</span>
+<span class="nc" id="L64">                .stream().map(transacaoMapper::paraDTO).toList();</span>
+    }
+
+    public Page&lt;TransacaoDTO&gt; listarPorContaPaginado(String numeroConta, int pagina, int tamanho) {
+<span class="nc" id="L68">        return transacaoRepository.findByNumeroContaOrderByDataHoraDesc(</span>
+<span class="nc" id="L69">                numeroConta, PageRequest.of(pagina, tamanho))</span>
+<span class="nc" id="L70">                .map(transacaoMapper::paraDTO);</span>
+    }
+
+    public List&lt;TransacaoDTO&gt; listarPorPeriodo(String numeroConta,
+                                                LocalDateTime inicio, LocalDateTime fim) {
+<span class="nc" id="L75">        return transacaoRepository</span>
+<span class="nc" id="L76">                .findByNumeroContaAndDataHoraBetweenOrderByDataHoraDesc(numeroConta, inicio, fim)</span>
+<span class="nc" id="L77">                .stream().map(transacaoMapper::paraDTO).toList();</span>
+    }
+
+    public List&lt;TransacaoDTO&gt; listarPorTipo(String numeroConta, String tipo) {
+<span class="nc" id="L81">        return transacaoRepository.findByNumeroContaAndTipoOrderByDataHoraDesc(numeroConta, tipo)</span>
+<span class="nc" id="L82">                .stream().map(transacaoMapper::paraDTO).toList();</span>
+    }
+
+    // ── GERAÇÃO DE PDF ────────────────────────────────────────────────────────
+
+    /**
+     * Gera PDF completo do extrato de uma conta.
+     * Layout profissional com cores, totalizadores e rodapé.
+     */
+    public byte[] gerarPdf(String numeroConta) {
+<span class="nc" id="L92">        return gerarPdfPorPeriodo(numeroConta, null, null);</span>
+    }
+
+    /**
+     * Gera PDF do extrato filtrado por período.
+     * Se inicio/fim forem nulos, usa todas as transações.
+     */
+    public byte[] gerarPdfPorPeriodo(String numeroConta,
+                                      LocalDateTime inicio, LocalDateTime fim) {
+<span class="nc" id="L101">        log.info(&quot;Gerando PDF do extrato — conta: {} | período: {} → {}&quot;,</span>
+                numeroConta,
+<span class="nc bnc" id="L103" title="All 2 branches missed.">                inicio != null ? inicio.format(FMT_DATE) : &quot;início&quot;,</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">                fim    != null ? fim.format(FMT_DATE)    : &quot;agora&quot;);</span>
+
+<span class="nc bnc" id="L106" title="All 4 branches missed.">        List&lt;TransacaoDTO&gt; transacoes = (inicio != null &amp;&amp; fim != null)</span>
+<span class="nc" id="L107">                ? listarPorPeriodo(numeroConta, inicio, fim)</span>
+<span class="nc" id="L108">                : listarPorConta(numeroConta);</span>
+
+<span class="nc" id="L110">        ByteArrayOutputStream baos = new ByteArrayOutputStream();</span>
+
+<span class="nc" id="L112">        try (PdfWriter writer    = new PdfWriter(baos);</span>
+<span class="nc" id="L113">             PdfDocument pdf     = new PdfDocument(writer);</span>
+<span class="nc" id="L114">             Document documento  = new Document(pdf)) {</span>
+
+<span class="nc" id="L116">            documento.setMargins(36, 36, 36, 36);</span>
+
+            // ── Cabeçalho principal ───────────────────────────
+<span class="nc" id="L119">            adicionarCabecalho(documento, numeroConta, inicio, fim, transacoes.size());</span>
+
+            // ── Tabela de transações ──────────────────────────
+<span class="nc bnc" id="L122" title="All 2 branches missed.">            if (transacoes.isEmpty()) {</span>
+<span class="nc" id="L123">                documento.add(new Paragraph(&quot;Nenhuma transação encontrada para o período informado.&quot;)</span>
+<span class="nc" id="L124">                        .setTextAlignment(TextAlignment.CENTER)</span>
+<span class="nc" id="L125">                        .setFontColor(ColorConstants.GRAY)</span>
+<span class="nc" id="L126">                        .setMarginTop(20));</span>
+            } else {
+<span class="nc" id="L128">                adicionarTabelaTransacoes(documento, transacoes);</span>
+<span class="nc" id="L129">                adicionarTotalizadores(documento, transacoes);</span>
+            }
+
+            // ── Rodapé ────────────────────────────────────────
+<span class="nc" id="L133">            adicionarRodape(documento);</span>
+
+<span class="nc" id="L135">        } catch (Exception ex) {</span>
+<span class="nc" id="L136">            log.error(&quot;Erro ao gerar PDF do extrato da conta {}: {}&quot;, numeroConta, ex.getMessage(), ex);</span>
+<span class="nc" id="L137">            throw new RuntimeException(&quot;Falha ao gerar extrato PDF: &quot; + ex.getMessage(), ex);</span>
+<span class="nc" id="L138">        }</span>
+
+<span class="nc" id="L140">        log.info(&quot;PDF gerado com sucesso — {} transações — {} bytes&quot;,</span>
+<span class="nc" id="L141">                transacoes.size(), baos.size());</span>
+<span class="nc" id="L142">        return baos.toByteArray();</span>
+    }
+
+    // ── MÉTODOS PRIVADOS DE COMPOSIÇÃO DO PDF ────────────────────────────────
+
+    private void adicionarCabecalho(Document doc, String numeroConta,
+                                     LocalDateTime inicio, LocalDateTime fim, int total) {
+        // Bloco azul de título
+<span class="nc" id="L150">        Table headerTable = new Table(UnitValue.createPercentArray(new float[]{1}))</span>
+<span class="nc" id="L151">                .setWidth(UnitValue.createPercentValue(100))</span>
+<span class="nc" id="L152">                .setBackgroundColor(COR_HEADER)</span>
+<span class="nc" id="L153">                .setBorder(Border.NO_BORDER);</span>
+
+<span class="nc" id="L155">        Cell tituloCell = new Cell()</span>
+<span class="nc" id="L156">                .add(new Paragraph(&quot;EXTRATO BANCÁRIO&quot;)</span>
+<span class="nc" id="L157">                        .setBold().setFontSize(20).setFontColor(ColorConstants.WHITE))</span>
+<span class="nc" id="L158">                .add(new Paragraph(&quot;BankSystem — Sistema Bancário Digital&quot;)</span>
+<span class="nc" id="L159">                        .setFontSize(10).setFontColor(new DeviceRgb(186, 212, 255)))</span>
+<span class="nc" id="L160">                .setBorder(Border.NO_BORDER)</span>
+<span class="nc" id="L161">                .setPadding(16);</span>
+<span class="nc" id="L162">        headerTable.addCell(tituloCell);</span>
+<span class="nc" id="L163">        doc.add(headerTable);</span>
+
+        // Dados da conta
+<span class="nc" id="L166">        Table infoTable = new Table(UnitValue.createPercentArray(new float[]{1, 1}))</span>
+<span class="nc" id="L167">                .setWidth(UnitValue.createPercentValue(100))</span>
+<span class="nc" id="L168">                .setBackgroundColor(COR_SUBHEADER)</span>
+<span class="nc" id="L169">                .setBorder(new SolidBorder(COR_HEADER, 1))</span>
+<span class="nc" id="L170">                .setMarginBottom(16);</span>
+
+<span class="nc" id="L172">        infoTable.addCell(criarCelulaInfo(&quot;Conta&quot;, numeroConta));</span>
+<span class="nc" id="L173">        infoTable.addCell(criarCelulaInfo(&quot;Data de Geração&quot;, LocalDateTime.now().format(FMT_DATETIME)));</span>
+
+<span class="nc bnc" id="L175" title="All 4 branches missed.">        String periodoTexto = (inicio != null &amp;&amp; fim != null)</span>
+<span class="nc" id="L176">                ? inicio.format(FMT_DATE) + &quot; a &quot; + fim.format(FMT_DATE)</span>
+<span class="nc" id="L177">                : &quot;Histórico completo&quot;;</span>
+<span class="nc" id="L178">        infoTable.addCell(criarCelulaInfo(&quot;Período&quot;, periodoTexto));</span>
+<span class="nc" id="L179">        infoTable.addCell(criarCelulaInfo(&quot;Total de Transações&quot;, String.valueOf(total)));</span>
+
+<span class="nc" id="L181">        doc.add(infoTable);</span>
+<span class="nc" id="L182">    }</span>
+
+    private void adicionarTabelaTransacoes(Document doc, List&lt;TransacaoDTO&gt; transacoes) {
+<span class="nc" id="L185">        doc.add(new Paragraph(&quot;Lançamentos&quot;)</span>
+<span class="nc" id="L186">                .setBold().setFontSize(13).setMarginBottom(6));</span>
+
+<span class="nc" id="L188">        Table tabela = new Table(UnitValue.createPercentArray(new float[]{2.5f, 3f, 2.5f, 2.5f, 2f, 2f}))</span>
+<span class="nc" id="L189">                .setWidth(UnitValue.createPercentValue(100))</span>
+<span class="nc" id="L190">                .setMarginBottom(16);</span>
+
+        // Cabeçalho da tabela
+<span class="nc" id="L193">        String[] cabecalhos = {&quot;Data/Hora&quot;, &quot;Descrição&quot;, &quot;Tipo&quot;, &quot;Valor (R$)&quot;, &quot;Saldo Após&quot;, &quot;Status&quot;};</span>
+<span class="nc bnc" id="L194" title="All 2 branches missed.">        for (String cab : cabecalhos) {</span>
+<span class="nc" id="L195">            tabela.addHeaderCell(new Cell()</span>
+<span class="nc" id="L196">                    .add(new Paragraph(cab).setBold().setFontSize(9).setFontColor(ColorConstants.WHITE))</span>
+<span class="nc" id="L197">                    .setBackgroundColor(COR_HEADER)</span>
+<span class="nc" id="L198">                    .setBorder(Border.NO_BORDER)</span>
+<span class="nc" id="L199">                    .setPadding(6));</span>
+        }
+
+        // Linhas de dados
+<span class="nc bnc" id="L203" title="All 2 branches missed.">        for (int i = 0; i &lt; transacoes.size(); i++) {</span>
+<span class="nc" id="L204">            TransacaoDTO t = transacoes.get(i);</span>
+<span class="nc" id="L205">            boolean isEntrada = isEntrada(t.tipo());</span>
+<span class="nc bnc" id="L206" title="All 2 branches missed.">            DeviceRgb corLinha = isEntrada ? COR_ENTRADA</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">                    : (i % 2 == 0 ? COR_LINHA_PAR : new DeviceRgb(Color.WHITE));</span>
+
+<span class="nc" id="L209">            tabela.addCell(celulaTabela(</span>
+<span class="nc bnc" id="L210" title="All 2 branches missed.">                    t.dataHora() != null ? t.dataHora().format(FMT_DATETIME) : &quot;-&quot;, corLinha, false));</span>
+<span class="nc" id="L211">            tabela.addCell(celulaTabela(</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">                    t.descricao() != null ? t.descricao() : &quot;-&quot;, corLinha, false));</span>
+<span class="nc" id="L213">            tabela.addCell(celulaTabela(</span>
+<span class="nc" id="L214">                    formatarTipo(t.tipo()), corLinha, false));</span>
+<span class="nc" id="L215">            tabela.addCell(celulaTabela(</span>
+<span class="nc bnc" id="L216" title="All 2 branches missed.">                    &quot;R$ &quot; + (t.valor() != null ? t.valor().toPlainString() : &quot;0.00&quot;),</span>
+<span class="nc bnc" id="L217" title="All 2 branches missed.">                    isEntrada ? COR_ENTRADA : COR_SAIDA, true));</span>
+<span class="nc" id="L218">            tabela.addCell(celulaTabela(</span>
+<span class="nc bnc" id="L219" title="All 2 branches missed.">                    t.saldoAposTransacao() != null</span>
+<span class="nc" id="L220">                            ? &quot;R$ &quot; + t.saldoAposTransacao().toPlainString() : &quot;-&quot;,</span>
+                    corLinha, false));
+<span class="nc" id="L222">            tabela.addCell(celulaTabela(</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">                    t.status() != null ? t.status() : &quot;-&quot;, corLinha, false));</span>
+        }
+
+<span class="nc" id="L226">        doc.add(tabela);</span>
+<span class="nc" id="L227">    }</span>
+
+    private void adicionarTotalizadores(Document doc, List&lt;TransacaoDTO&gt; transacoes) {
+<span class="nc" id="L230">        BigDecimal totalEntradas = transacoes.stream()</span>
+<span class="nc bnc" id="L231" title="All 4 branches missed.">                .filter(t -&gt; isEntrada(t.tipo()) &amp;&amp; &quot;APROVADA&quot;.equals(t.status()))</span>
+<span class="nc bnc" id="L232" title="All 2 branches missed.">                .map(t -&gt; t.valor() != null ? t.valor() : BigDecimal.ZERO)</span>
+<span class="nc" id="L233">                .reduce(BigDecimal.ZERO, BigDecimal::add);</span>
+
+<span class="nc" id="L235">        BigDecimal totalSaidas = transacoes.stream()</span>
+<span class="nc bnc" id="L236" title="All 4 branches missed.">                .filter(t -&gt; !isEntrada(t.tipo()) &amp;&amp; &quot;APROVADA&quot;.equals(t.status()))</span>
+<span class="nc bnc" id="L237" title="All 2 branches missed.">                .map(t -&gt; t.valor() != null ? t.valor() : BigDecimal.ZERO)</span>
+<span class="nc" id="L238">                .reduce(BigDecimal.ZERO, BigDecimal::add);</span>
+
+<span class="nc" id="L240">        BigDecimal saldoLiquido = totalEntradas.subtract(totalSaidas);</span>
+
+<span class="nc" id="L242">        BigDecimal saldoFinalConhecido = transacoes.stream()</span>
+<span class="nc" id="L243">                .map(TransacaoDTO::saldoAposTransacao)</span>
+<span class="nc bnc" id="L244" title="All 2 branches missed.">                .filter(v -&gt; v != null)</span>
+<span class="nc" id="L245">                .findFirst()</span>
+<span class="nc" id="L246">                .orElse(null);</span>
+
+<span class="nc" id="L248">        Table totais = new Table(UnitValue.createPercentArray(</span>
+<span class="nc bnc" id="L249" title="All 2 branches missed.">                saldoFinalConhecido != null ? new float[]{1, 1, 1, 1} : new float[]{1, 1, 1}</span>
+        ))
+<span class="nc" id="L251">                .setWidth(UnitValue.createPercentValue(100))</span>
+<span class="nc" id="L252">                .setMarginBottom(20);</span>
+
+<span class="nc" id="L254">        totais.addCell(criarCelulaTotalizador(</span>
+                &quot;Total de Entradas&quot;,
+<span class="nc" id="L256">                &quot;R$ &quot; + totalEntradas.toPlainString(),</span>
+                COR_ENTRADA
+        ));
+
+<span class="nc" id="L260">        totais.addCell(criarCelulaTotalizador(</span>
+                &quot;Total de Saídas&quot;,
+<span class="nc" id="L262">                &quot;R$ &quot; + totalSaidas.toPlainString(),</span>
+                COR_SAIDA
+        ));
+
+<span class="nc" id="L266">        totais.addCell(criarCelulaTotalizador(</span>
+                &quot;Saldo do Período&quot;,
+<span class="nc" id="L268">                &quot;R$ &quot; + saldoLiquido.toPlainString(),</span>
+<span class="nc bnc" id="L269" title="All 2 branches missed.">                saldoLiquido.compareTo(BigDecimal.ZERO) &gt;= 0 ? COR_ENTRADA : COR_SAIDA</span>
+        ));
+
+<span class="nc bnc" id="L272" title="All 2 branches missed.">        if (saldoFinalConhecido != null) {</span>
+<span class="nc" id="L273">            totais.addCell(criarCelulaTotalizador(</span>
+                    &quot;Saldo Final&quot;,
+<span class="nc" id="L275">                    &quot;R$ &quot; + saldoFinalConhecido.toPlainString(),</span>
+                    COR_SUBHEADER
+            ));
+        }
+
+<span class="nc" id="L280">        doc.add(new Paragraph(&quot;Resumo do Período&quot;).setBold().setFontSize(13).setMarginBottom(6));</span>
+<span class="nc" id="L281">        doc.add(totais);</span>
+<span class="nc" id="L282">    }</span>
+
+    private void adicionarRodape(Document doc) {
+<span class="nc" id="L285">        doc.add(new Paragraph(</span>
+                &quot;Este documento é um extrato informativo gerado automaticamente pelo BankSystem em &quot;
+<span class="nc" id="L287">                + LocalDateTime.now().format(FMT_DATETIME) + &quot;. &quot;</span>
+                + &quot;Guarde-o para sua conferência.&quot;)
+<span class="nc" id="L289">                .setFontSize(8)</span>
+<span class="nc" id="L290">                .setFontColor(ColorConstants.GRAY)</span>
+<span class="nc" id="L291">                .setTextAlignment(TextAlignment.CENTER)</span>
+<span class="nc" id="L292">                .setMarginTop(10)</span>
+<span class="nc" id="L293">                .setBorderTop(new SolidBorder(ColorConstants.LIGHT_GRAY, 1))</span>
+<span class="nc" id="L294">                .setPaddingTop(8));</span>
+<span class="nc" id="L295">    }</span>
+
+    // ── HELPERS ───────────────────────────────────────────────────────────────
+
+    private boolean isEntrada(String tipo) {
+<span class="nc bnc" id="L300" title="All 2 branches missed.">        return &quot;DEPOSITO&quot;.equals(tipo)</span>
+<span class="nc bnc" id="L301" title="All 2 branches missed.">                || &quot;TRANSFERENCIA_ENTRADA&quot;.equals(tipo)</span>
+<span class="nc bnc" id="L302" title="All 2 branches missed.">                || &quot;ESTORNO_FRAUDE&quot;.equals(tipo);</span>
+    }
+
+    private String formatarTipo(String tipo) {
+<span class="nc bnc" id="L306" title="All 2 branches missed.">        if (tipo == null) return &quot;-&quot;;</span>
+<span class="nc bnc" id="L307" title="All 7 branches missed.">        return switch (tipo) {</span>
+<span class="nc" id="L308">            case &quot;DEPOSITO&quot;              -&gt; &quot;Depósito&quot;;</span>
+<span class="nc" id="L309">            case &quot;DEBITO&quot;                -&gt; &quot;Débito&quot;;</span>
+<span class="nc" id="L310">            case &quot;CREDITO&quot;               -&gt; &quot;Crédito&quot;;</span>
+<span class="nc" id="L311">            case &quot;TRANSFERENCIA_SAIDA&quot;   -&gt; &quot;Transf. Envio&quot;;</span>
+<span class="nc" id="L312">            case &quot;TRANSFERENCIA_ENTRADA&quot; -&gt; &quot;Transf. Recebida&quot;;</span>
+<span class="nc" id="L313">            case &quot;ESTORNO_FRAUDE&quot;        -&gt; &quot;Estorno Fraude&quot;;</span>
+<span class="nc" id="L314">            default                      -&gt; tipo;</span>
+        };
+    }
+
+    private Cell criarCelulaInfo(String rotulo, String valor) {
+<span class="nc" id="L319">        return new Cell()</span>
+<span class="nc" id="L320">                .add(new Paragraph(rotulo).setFontSize(8).setFontColor(ColorConstants.GRAY))</span>
+<span class="nc" id="L321">                .add(new Paragraph(valor).setBold().setFontSize(11))</span>
+<span class="nc" id="L322">                .setBorder(Border.NO_BORDER)</span>
+<span class="nc" id="L323">                .setPadding(10);</span>
+    }
+
+    private Cell celulaTabela(String texto, DeviceRgb cor, boolean negrito) {
+<span class="nc bnc" id="L327" title="All 2 branches missed.">        Paragraph p = new Paragraph(texto != null ? texto : &quot;-&quot;).setFontSize(8);</span>
+<span class="nc bnc" id="L328" title="All 2 branches missed.">        if (negrito) p.setBold();</span>
+<span class="nc" id="L329">        return new Cell().add(p)</span>
+<span class="nc" id="L330">                .setBackgroundColor(cor)</span>
+<span class="nc" id="L331">                .setBorder(Border.NO_BORDER)</span>
+<span class="nc" id="L332">                .setPadding(5);</span>
+    }
+
+    private Cell criarCelulaTotalizador(String rotulo, String valor, DeviceRgb cor) {
+<span class="nc" id="L336">        return new Cell()</span>
+<span class="nc" id="L337">                .add(new Paragraph(rotulo).setFontSize(9).setFontColor(ColorConstants.DARK_GRAY))</span>
+<span class="nc" id="L338">                .add(new Paragraph(valor).setBold().setFontSize(14))</span>
+<span class="nc" id="L339">                .setBackgroundColor(cor)</span>
+<span class="nc" id="L340">                .setBorder(new SolidBorder(ColorConstants.LIGHT_GRAY, 1))</span>
+<span class="nc" id="L341">                .setPadding(12)</span>
+<span class="nc" id="L342">                .setTextAlignment(TextAlignment.CENTER);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

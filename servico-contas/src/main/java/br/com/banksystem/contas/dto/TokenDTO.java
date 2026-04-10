@@ -9,4 +9,5 @@ public record TokenDTO(
         String numeroConta,
         String nomeCompleto,
         long expiracaoMs
-) {}
+) {
+}

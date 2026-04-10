@@ -4,6 +4,7 @@ import br.com.banksystem.extratos.dto.TransacaoDTO;
 import br.com.banksystem.extratos.dto.TransacaoEventoDTO;
 import br.com.banksystem.extratos.model.Transacao;
 import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
 
 /**

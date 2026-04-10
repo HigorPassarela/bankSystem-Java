@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Testes do AtualizarSenhaTransferenciaDTO" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-04-09T19:17:23.967Z" hostname="NB-608211" time="0.015">
+  <properties/>
+  <testcase name="Deve rejeitar senha atual em branco" classname="br.com.banksystem.contas.dto.AtualizarSenhaTransferenciaDTOTest" time="0.008"/>
+  <testcase name="Deve rejeitar nova senha em branco" classname="br.com.banksystem.contas.dto.AtualizarSenhaTransferenciaDTOTest" time="0.001"/>
+  <testcase name="Deve aceitar DTO válido" classname="br.com.banksystem.contas.dto.AtualizarSenhaTransferenciaDTOTest" time="0.001"/>
+  <testcase name="Deve rejeitar nova senha fora do padrão de 4 dígitos" classname="br.com.banksystem.contas.dto.AtualizarSenhaTransferenciaDTOTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

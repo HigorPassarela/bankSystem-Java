@@ -50,6 +50,10 @@ dependencies {
     implementation 'com.itextpdf:itext7-core:8.0.3'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring30x:4.7.0'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.mockito:mockito-junit-jupiter'
 }
 
 tasks.named('test') {
@@ -59,8 +63,36 @@ tasks.named('test') {
 
 jacocoTestReport {
     dependsOn test
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    '**/config/**'
+            ])
+        }))
+    }
+
     reports {
         xml.required = true
         html.required = true
+    }
+}
+
+jacocoTestCoverageVerification {
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    '**/config/**',
+                    '**/*Application.class'
+            ])
+        }))
+    }
+
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.65
+            }
+        }
     }
 }

@@ -30,4 +30,5 @@ public record CriarContaDTO(
         @NotBlank(message = "Senha de transferência é obrigatória")
         @Pattern(regexp = "\\d{4}", message = "Senha de transferência deve ter exatamente 4 dígitos numéricos")
         String senhaTransferencia
-) {}
+) {
+}

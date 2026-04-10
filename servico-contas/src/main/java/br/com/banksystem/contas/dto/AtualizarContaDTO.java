@@ -19,4 +19,5 @@ public record AtualizarContaDTO(
 
         @Size(min = 6, max = 50, message = "Senha deve ter entre 6 e 50 caracteres")
         String novaSenha
-) {}
+) {
+}

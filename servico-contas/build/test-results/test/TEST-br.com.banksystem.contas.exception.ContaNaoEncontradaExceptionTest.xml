@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="br.com.banksystem.contas.exception.ContaNaoEncontradaExceptionTest" tests="14" skipped="0" failures="0" errors="0" timestamp="2026-04-09T19:17:24.125Z" hostname="NB-608211" time="0.022">
+  <properties/>
+  <testcase name="toString_DeveConterInformacoesRelevantes()" classname="br.com.banksystem.contas.exception.ContaNaoEncontradaExceptionTest" time="0.001"/>
+  <testcase name="construtor_ComCausaCompleta_DeveManterStackTrace()" classname="br.com.banksystem.contas.exception.ContaNaoEncontradaExceptionTest" time="0.001"/>
+  <testcase name="construtor_ComMensagemNulaECausa_DeveAceitarMensagemNulaComCausa()" classname="br.com.banksystem.contas.exception.ContaNaoEncontradaExceptionTest" time="0.001"/>
+  <testcase name="heranca_DeveSerRuntimeException()" classname="br.com.banksystem.contas.exception.ContaNaoEncontradaExceptionTest" time="0.001"/>
+  <testcase name="construtor_CenarioRealista_ContaComNumero()" classname="br.com.banksystem.contas.exception.ContaNaoEncontradaExceptionTest" time="0.001"/>
+  <testcase name="construtor_ComMensagemVazia_DeveDefinirMensagemVazia()" classname="br.com.banksystem.contas.exception.ContaNaoEncontradaExceptionTest" time="0.001"/>
+  <testcase name="excecao_DevePodSerCapturada()" classname="br.com.banksystem.contas.exception.ContaNaoEncontradaExceptionTest" time="0.0"/>
+  <testcase name="construtor_ComMensagemECausa_DeveDefinirMensagemECausaCorretamente()" classname="br.com.banksystem.contas.exception.ContaNaoEncontradaExceptionTest" time="0.002"/>
+  <testcase name="excecao_DevePodSerLancada()" classname="br.com.banksystem.contas.exception.ContaNaoEncontradaExceptionTest" time="0.001"/>
+  <testcase name="equals_MesmaExcecao_DeveSerIgual()" classname="br.com.banksystem.contas.exception.ContaNaoEncontradaExceptionTest" time="0.001"/>
+  <testcase name="construtor_ComMensagem_DeveDefinirMensagemCorretamente()" classname="br.com.banksystem.contas.exception.ContaNaoEncontradaExceptionTest" time="0.001"/>
+  <testcase name="construtor_ComMensagemECausaNula_DeveAceitarCausaNula()" classname="br.com.banksystem.contas.exception.ContaNaoEncontradaExceptionTest" time="0.001"/>
+  <testcase name="construtor_ComMensagemNula_DeveAceitarMensagemNula()" classname="br.com.banksystem.contas.exception.ContaNaoEncontradaExceptionTest" time="0.001"/>
+  <testcase name="construtor_CenarioRealista_ComCausaBancoDados()" classname="br.com.banksystem.contas.exception.ContaNaoEncontradaExceptionTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

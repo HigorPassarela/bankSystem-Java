@@ -3,8 +3,9 @@ package br.com.banksystem.contas.mapper;
 import br.com.banksystem.contas.dto.CriarContaDTO;
 import br.com.banksystem.contas.dto.PerfilContaDTO;
 import br.com.banksystem.contas.model.Conta;
-import br.com.banksystem.contas.model.StatusConta;
+import br.com.banksystem.contas.model.enums.StatusConta;
 import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
 
 /**
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 public class ContaMapper {
 
     public Conta paraEntidade(CriarContaDTO dto, String senhaHash,
-                               String senhaTransferenciaHash, String numeroConta) {
+                              String senhaTransferenciaHash, String numeroConta) {
         Conta conta = new Conta();
         conta.setNumeroConta(numeroConta);
         conta.setNomeCompleto(dto.nomeCompleto());

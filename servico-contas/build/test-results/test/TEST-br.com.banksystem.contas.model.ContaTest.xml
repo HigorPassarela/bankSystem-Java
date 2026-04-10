@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="br.com.banksystem.contas.model.ContaTest" tests="23" skipped="0" failures="0" errors="0" timestamp="2026-04-09T19:17:24.593Z" hostname="NB-608211" time="0.027">
+  <properties/>
+  <testcase name="deveDefinirEObterCpfCorretamente()" classname="br.com.banksystem.contas.model.ContaTest" time="0.001"/>
+  <testcase name="deveDefinirEObterDataAtualizacaoCorretamente()" classname="br.com.banksystem.contas.model.ContaTest" time="0.001"/>
+  <testcase name="deveDefinirEObterRoleCorretamente()" classname="br.com.banksystem.contas.model.ContaTest" time="0.001"/>
+  <testcase name="deveDefinirStatusPendenteEmailEAtualizarCampoAtiva()" classname="br.com.banksystem.contas.model.ContaTest" time="0.001"/>
+  <testcase name="deveDefinirEObterAtivaCorretamente()" classname="br.com.banksystem.contas.model.ContaTest" time="0.001"/>
+  <testcase name="deveDefinirEObterNomeCompletoCorretamente()" classname="br.com.banksystem.contas.model.ContaTest" time="0.001"/>
+  <testcase name="deveDefinirEObterEmailCorretamente()" classname="br.com.banksystem.contas.model.ContaTest" time="0.001"/>
+  <testcase name="devePermitirValoresNulosParaCamposOpcionais()" classname="br.com.banksystem.contas.model.ContaTest" time="0.001"/>
+  <testcase name="deveDefinirEObterTelefoneCorretamente()" classname="br.com.banksystem.contas.model.ContaTest" time="0.0"/>
+  <testcase name="deveDefinirEObterSenhaTransferenciaHashCorretamente()" classname="br.com.banksystem.contas.model.ContaTest" time="0.001"/>
+  <testcase name="deveDefinirEObterEmailVerificadoCorretamente()" classname="br.com.banksystem.contas.model.ContaTest" time="0.001"/>
+  <testcase name="deveInstanciarContaVazia()" classname="br.com.banksystem.contas.model.ContaTest" time="0.0"/>
+  <testcase name="deveDefinirEObterTokenVerificacaoExpiracaoCorretamente()" classname="br.com.banksystem.contas.model.ContaTest" time="0.0"/>
+  <testcase name="deveDefinirStatusAtivaEAtualizarCampoAtiva()" classname="br.com.banksystem.contas.model.ContaTest" time="0.0"/>
+  <testcase name="deveDefinirStatusEncerradaEAtualizarCampoAtiva()" classname="br.com.banksystem.contas.model.ContaTest" time="0.001"/>
+  <testcase name="deveDefinirEObterTokenVerificacaoEmailCorretamente()" classname="br.com.banksystem.contas.model.ContaTest" time="0.001"/>
+  <testcase name="deveDefinirTodosOsCamposCorretamente()" classname="br.com.banksystem.contas.model.ContaTest" time="0.001"/>
+  <testcase name="deveDefinirEObterDataCriacaoCorretamente()" classname="br.com.banksystem.contas.model.ContaTest" time="0.001"/>
+  <testcase name="deveDefinirEObterSenhaHashCorretamente()" classname="br.com.banksystem.contas.model.ContaTest" time="0.001"/>
+  <testcase name="deveDefinirEObterNumeroContaCorretamente()" classname="br.com.banksystem.contas.model.ContaTest" time="0.001"/>
+  <testcase name="deveManterConsistenciaEntreStatusEAtiva()" classname="br.com.banksystem.contas.model.ContaTest" time="0.001"/>
+  <testcase name="deveDefinirEObterIdCorretamente()" classname="br.com.banksystem.contas.model.ContaTest" time="0.001"/>
+  <testcase name="devePermitirAlteracaoDeStatus()" classname="br.com.banksystem.contas.model.ContaTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

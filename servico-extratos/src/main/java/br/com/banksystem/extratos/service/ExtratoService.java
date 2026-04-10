@@ -28,25 +28,25 @@ import java.util.List;
 
 /**
  * Serviço de consulta de extratos e geração de PDF com iText 8.
- *
+ * <p>
  * O PDF gerado inclui:
- *  - Cabeçalho com dados da conta e período
- *  - Tabela de transações com cores por tipo
- *  - Totalizadores: entradas, saídas, saldo do período
- *  - Rodapé com data de geração
+ * - Cabeçalho com dados da conta e período
+ * - Tabela de transações com cores por tipo
+ * - Totalizadores: entradas, saídas, saldo do período
+ * - Rodapé com data de geração
  */
 @Service
 public class ExtratoService {
 
     private static final Logger log = LoggerFactory.getLogger(ExtratoService.class);
     private static final DateTimeFormatter FMT_DATETIME = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-    private static final DateTimeFormatter FMT_DATE     = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter FMT_DATE = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     // Cores do layout
-    private static final DeviceRgb COR_HEADER    = new DeviceRgb(26, 86, 219);   // azul
+    private static final DeviceRgb COR_HEADER = new DeviceRgb(26, 86, 219);   // azul
     private static final DeviceRgb COR_SUBHEADER = new DeviceRgb(239, 246, 255); // azul claro
-    private static final DeviceRgb COR_ENTRADA   = new DeviceRgb(220, 252, 231); // verde claro
-    private static final DeviceRgb COR_SAIDA     = new DeviceRgb(254, 226, 226); // vermelho claro
+    private static final DeviceRgb COR_ENTRADA = new DeviceRgb(220, 252, 231); // verde claro
+    private static final DeviceRgb COR_SAIDA = new DeviceRgb(254, 226, 226); // vermelho claro
     private static final DeviceRgb COR_LINHA_PAR = new DeviceRgb(249, 250, 251); // cinza
 
     private final TransacaoRepository transacaoRepository;
@@ -66,12 +66,12 @@ public class ExtratoService {
 
     public Page<TransacaoDTO> listarPorContaPaginado(String numeroConta, int pagina, int tamanho) {
         return transacaoRepository.findByNumeroContaOrderByDataHoraDesc(
-                numeroConta, PageRequest.of(pagina, tamanho))
+                        numeroConta, PageRequest.of(pagina, tamanho))
                 .map(transacaoMapper::paraDTO);
     }
 
     public List<TransacaoDTO> listarPorPeriodo(String numeroConta,
-                                                LocalDateTime inicio, LocalDateTime fim) {
+                                               LocalDateTime inicio, LocalDateTime fim) {
         return transacaoRepository
                 .findByNumeroContaAndDataHoraBetweenOrderByDataHoraDesc(numeroConta, inicio, fim)
                 .stream().map(transacaoMapper::paraDTO).toList();
@@ -97,11 +97,11 @@ public class ExtratoService {
      * Se inicio/fim forem nulos, usa todas as transações.
      */
     public byte[] gerarPdfPorPeriodo(String numeroConta,
-                                      LocalDateTime inicio, LocalDateTime fim) {
+                                     LocalDateTime inicio, LocalDateTime fim) {
         log.info("Gerando PDF do extrato — conta: {} | período: {} → {}",
                 numeroConta,
                 inicio != null ? inicio.format(FMT_DATE) : "início",
-                fim    != null ? fim.format(FMT_DATE)    : "agora");
+                fim != null ? fim.format(FMT_DATE) : "agora");
 
         List<TransacaoDTO> transacoes = (inicio != null && fim != null)
                 ? listarPorPeriodo(numeroConta, inicio, fim)
@@ -109,9 +109,9 @@ public class ExtratoService {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        try (PdfWriter writer    = new PdfWriter(baos);
-             PdfDocument pdf     = new PdfDocument(writer);
-             Document documento  = new Document(pdf)) {
+        try (PdfWriter writer = new PdfWriter(baos);
+             PdfDocument pdf = new PdfDocument(writer);
+             Document documento = new Document(pdf)) {
 
             documento.setMargins(36, 36, 36, 36);
 
@@ -145,7 +145,7 @@ public class ExtratoService {
     // ── MÉTODOS PRIVADOS DE COMPOSIÇÃO DO PDF ────────────────────────────────
 
     private void adicionarCabecalho(Document doc, String numeroConta,
-                                     LocalDateTime inicio, LocalDateTime fim, int total) {
+                                    LocalDateTime inicio, LocalDateTime fim, int total) {
         // Bloco azul de título
         Table headerTable = new Table(UnitValue.createPercentArray(new float[]{1}))
                 .setWidth(UnitValue.createPercentValue(100))
@@ -284,8 +284,8 @@ public class ExtratoService {
     private void adicionarRodape(Document doc) {
         doc.add(new Paragraph(
                 "Este documento é um extrato informativo gerado automaticamente pelo BankSystem em "
-                + LocalDateTime.now().format(FMT_DATETIME) + ". "
-                + "Guarde-o para sua conferência.")
+                        + LocalDateTime.now().format(FMT_DATETIME) + ". "
+                        + "Guarde-o para sua conferência.")
                 .setFontSize(8)
                 .setFontColor(ColorConstants.GRAY)
                 .setTextAlignment(TextAlignment.CENTER)
@@ -305,13 +305,13 @@ public class ExtratoService {
     private String formatarTipo(String tipo) {
         if (tipo == null) return "-";
         return switch (tipo) {
-            case "DEPOSITO"              -> "Depósito";
-            case "DEBITO"                -> "Débito";
-            case "CREDITO"               -> "Crédito";
-            case "TRANSFERENCIA_SAIDA"   -> "Transf. Envio";
+            case "DEPOSITO" -> "Depósito";
+            case "DEBITO" -> "Débito";
+            case "CREDITO" -> "Crédito";
+            case "TRANSFERENCIA_SAIDA" -> "Transf. Envio";
             case "TRANSFERENCIA_ENTRADA" -> "Transf. Recebida";
-            case "ESTORNO_FRAUDE"        -> "Estorno Fraude";
-            default                      -> tipo;
+            case "ESTORNO_FRAUDE" -> "Estorno Fraude";
+            default -> tipo;
         };
     }
 

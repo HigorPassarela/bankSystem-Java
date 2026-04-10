@@ -16,4 +16,5 @@ public record FraudeDetectadaDTO(
         LocalDateTime dataHora,
         String contaOrigem,
         String contaDestino
-) {}
+) {
+}

@@ -2,6 +2,7 @@ package br.com.banksystem.transacoes.dto;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
+
 import java.math.BigDecimal;
 
 /**
@@ -13,4 +14,5 @@ public record DebitoDTO(
         BigDecimal valor,
 
         String descricao
-) {}
+) {
+}

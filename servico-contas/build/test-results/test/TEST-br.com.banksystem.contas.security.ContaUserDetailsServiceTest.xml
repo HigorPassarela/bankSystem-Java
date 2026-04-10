@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Testes para ContaUserDetailsService" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-04-09T19:17:24.778Z" hostname="NB-608211" time="0.034">
+  <properties/>
+  <testcase name="Deve carregar usuário com role diferente" classname="br.com.banksystem.contas.security.ContaUserDetailsServiceTest" time="0.01"/>
+  <testcase name="Deve verificar que UserDetails está habilitado por padrão" classname="br.com.banksystem.contas.security.ContaUserDetailsServiceTest" time="0.002"/>
+  <testcase name="Deve lançar UsernameNotFoundException quando conta não existe" classname="br.com.banksystem.contas.security.ContaUserDetailsServiceTest" time="0.005"/>
+  <testcase name="Deve carregar usuário com sucesso quando conta existe e está ativa" classname="br.com.banksystem.contas.security.ContaUserDetailsServiceTest" time="0.004"/>
+  <testcase name="Deve tratar número da conta vazio" classname="br.com.banksystem.contas.security.ContaUserDetailsServiceTest" time="0.004"/>
+  <testcase name="Deve lançar UsernameNotFoundException quando conta está inativa" classname="br.com.banksystem.contas.security.ContaUserDetailsServiceTest" time="0.004"/>
+  <testcase name="Deve tratar número da conta nulo" classname="br.com.banksystem.contas.security.ContaUserDetailsServiceTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

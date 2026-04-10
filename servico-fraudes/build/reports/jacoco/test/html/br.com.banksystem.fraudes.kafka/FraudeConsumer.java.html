@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FraudeConsumer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">servico-fraudes</a> &gt; <a href="index.source.html" class="el_package">br.com.banksystem.fraudes.kafka</a> &gt; <span class="el_source">FraudeConsumer.java</span></div><h1>FraudeConsumer.java</h1><pre class="source lang-java linenums">package br.com.banksystem.fraudes.kafka;
+
+import br.com.banksystem.fraudes.dto.TransacaoEventoDTO;
+import br.com.banksystem.fraudes.service.AnaliseFraudeService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Component;
+
+/**
+ * Consumidor Kafka que inicia análise de fraude para cada transação aprovada.
+ */
+@Component
+public class FraudeConsumer {
+
+<span class="nc" id="L16">    private static final Logger log = LoggerFactory.getLogger(FraudeConsumer.class);</span>
+    private final AnaliseFraudeService analiseFraudeService;
+
+<span class="nc" id="L19">    public FraudeConsumer(AnaliseFraudeService analiseFraudeService) {</span>
+<span class="nc" id="L20">        this.analiseFraudeService = analiseFraudeService;</span>
+<span class="nc" id="L21">    }</span>
+
+    @KafkaListener(
+            topics = &quot;transacoes-aprovadas&quot;,
+            groupId = &quot;servico-fraudes&quot;,
+            containerFactory = &quot;kafkaListenerContainerFactory&quot;
+    )
+    public void consumirTransacaoAprovada(TransacaoEventoDTO evento) {
+<span class="nc" id="L29">        log.info(&quot;Iniciando análise de fraude para transação: {}&quot;, evento.idTransacao());</span>
+<span class="nc" id="L30">        analiseFraudeService.iniciarAnalise(evento);</span>
+<span class="nc" id="L31">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

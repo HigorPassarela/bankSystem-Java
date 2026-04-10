@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="br.com.banksystem.contas.controller.ContaControllerTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-04-09T19:17:18.213Z" hostname="NB-608211" time="5.563">
+  <properties/>
+  <testcase name="deveVerificarEmailComSucesso()" classname="br.com.banksystem.contas.controller.ContaControllerTest" time="5.025"/>
+  <testcase name="deveAtualizarContaComSucesso()" classname="br.com.banksystem.contas.controller.ContaControllerTest" time="0.041"/>
+  <testcase name="deveAtualizarSenhaTransferenciaComSucesso()" classname="br.com.banksystem.contas.controller.ContaControllerTest" time="0.028"/>
+  <testcase name="deveReenviarVerificacaoComSucesso()" classname="br.com.banksystem.contas.controller.ContaControllerTest" time="0.034"/>
+  <testcase name="deveCriarContaComSucesso()" classname="br.com.banksystem.contas.controller.ContaControllerTest" time="0.307"/>
+  <testcase name="deveBuscarContaPorNumeroComSucesso()" classname="br.com.banksystem.contas.controller.ContaControllerTest" time="0.031"/>
+  <testcase name="deveRealizarLoginComSucesso()" classname="br.com.banksystem.contas.controller.ContaControllerTest" time="0.043"/>
+  <testcase name="deveValidarSenhaTransferenciaComSucesso()" classname="br.com.banksystem.contas.controller.ContaControllerTest" time="0.018"/>
+  <testcase name="deveObterPerfilComSucesso()" classname="br.com.banksystem.contas.controller.ContaControllerTest" time="0.019"/>
+  <system-out><![CDATA[16:17:20.944 [Test worker] INFO org.hibernate.validator.internal.util.Version -- HV000001: Hibernate Validator 8.0.1.Final
+16:17:22.546 [Test worker] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:17:22.546 [Test worker] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:17:22.559 [Test worker] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 9 ms
+16:17:23.270 [Test worker] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:17:23.271 [Test worker] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:17:23.271 [Test worker] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+16:17:23.309 [Test worker] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:17:23.309 [Test worker] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:17:23.309 [Test worker] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+16:17:23.342 [Test worker] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:17:23.342 [Test worker] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:17:23.342 [Test worker] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+16:17:23.375 [Test worker] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:17:23.375 [Test worker] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:17:23.375 [Test worker] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+16:17:23.684 [Test worker] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:17:23.685 [Test worker] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:17:23.685 [Test worker] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+16:17:23.712 [Test worker] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:17:23.713 [Test worker] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:17:23.713 [Test worker] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+16:17:23.755 [Test worker] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:17:23.755 [Test worker] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:17:23.755 [Test worker] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+16:17:23.774 [Test worker] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:17:23.774 [Test worker] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:17:23.774 [Test worker] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+]]></system-out>
+  <system-err><![CDATA[WARNING: A Java agent has been loaded dynamically (C:\Users\higor.passarela\.gradle\caches\modules-2\files-2.1\net.bytebuddy\byte-buddy-agent\1.14.10\90ed94ac044ea8953b224304c762316e91fd6b31\byte-buddy-agent-1.14.10.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
+</testsuite>

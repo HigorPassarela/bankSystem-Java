@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EstornoNotificacaoConsumer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">servico-notificacoes</a> &gt; <a href="index.source.html" class="el_package">br.com.banksystem.notificacoes.kafka</a> &gt; <span class="el_source">EstornoNotificacaoConsumer.java</span></div><h1>EstornoNotificacaoConsumer.java</h1><pre class="source lang-java linenums">package br.com.banksystem.notificacoes.kafka;
+
+import br.com.banksystem.notificacoes.dto.EstornoFraudeDTO;
+import br.com.banksystem.notificacoes.dto.NotificacaoDTO;
+import br.com.banksystem.notificacoes.service.SseEmitterService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Component;
+
+/**
+ * Consumidor Kafka que envia notificação SSE quando uma transação é estornada por fraude.
+ */
+@Component
+public class EstornoNotificacaoConsumer {
+
+<span class="nc" id="L17">    private static final Logger log = LoggerFactory.getLogger(EstornoNotificacaoConsumer.class);</span>
+
+    private final SseEmitterService sseEmitterService;
+
+<span class="nc" id="L21">    public EstornoNotificacaoConsumer(SseEmitterService sseEmitterService) {</span>
+<span class="nc" id="L22">        this.sseEmitterService = sseEmitterService;</span>
+<span class="nc" id="L23">    }</span>
+
+    @KafkaListener(
+            topics = &quot;transacoes-estornadas&quot;,
+            groupId = &quot;servico-notificacoes-estorno&quot;,
+            containerFactory = &quot;estornoKafkaListenerContainerFactory&quot;
+    )
+    public void consumirEstorno(EstornoFraudeDTO evento) {
+<span class="nc" id="L31">        log.warn(&quot;Enviando notificação de estorno para conta {} referente à transação {}&quot;,</span>
+<span class="nc" id="L32">                evento.numeroConta(), evento.idTransacaoOriginal());</span>
+
+<span class="nc" id="L34">        String mensagem = String.format(</span>
+                &quot;Transação estornada por suspeita de fraude. Tipo: %s | Valor: R$ %.2f&quot;,
+<span class="nc" id="L36">                evento.tipoOriginal(),</span>
+<span class="nc" id="L37">                evento.valor()</span>
+        );
+
+<span class="nc" id="L40">        sseEmitterService.enviarNotificacao(</span>
+<span class="nc" id="L41">                evento.numeroConta(),</span>
+<span class="nc" id="L42">                NotificacaoDTO.criar(&quot;TRANSACAO_ESTORNADA&quot;, mensagem, evento)</span>
+        );
+<span class="nc" id="L44">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

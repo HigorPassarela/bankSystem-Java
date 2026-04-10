@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - Testes para JwtUtil</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>Testes para JwtUtil</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/br.com.banksystem.contas.security.html">br.com.banksystem.contas.security</a> &gt; JwtUtilTest</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">13</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">0.276s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="tab-container">
+<ul class="tabLinks">
+<li>
+<a href="#">Tests</a>
+</li>
+<li>
+<a href="#">Standard output</a>
+</li>
+</ul>
+<div class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Method name</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">Deve extrair número da conta do token válido</td>
+<td class="success">deveExtrairNumeroContaDoTokenValido()</td>
+<td class="success">0.005s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">Deve gerar token com claims customizadas corretas</td>
+<td class="success">deveGerarTokenComClaimsCustomizadasCorretas()</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">Deve gerar token com data de expiração correta</td>
+<td class="success">deveGerarTokenComDataExpiracaoCorreta()</td>
+<td class="success">0.006s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">Deve gerar token JWT válido com todas as claims</td>
+<td class="success">deveGerarTokenJwtValidoComTodasAsClaims()</td>
+<td class="success">0.028s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">Deve gerar tokens diferentes para contas diferentes</td>
+<td class="success">deveGerarTokensDiferentesParaContasDiferentes()</td>
+<td class="success">0.089s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">Deve lançar exceção ao extrair número da conta de token inválido</td>
+<td class="success">deveLancarExcecaoAoExtrairNumeroContaDeTokenInvalido()</td>
+<td class="success">0.120s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">Deve lançar exceção ao extrair número da conta de token nulo</td>
+<td class="success">deveLancarExcecaoAoExtrairNumeroContaDeTokenNulo()</td>
+<td class="success">0.003s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">Deve lançar exceção ao extrair número da conta de token vazio</td>
+<td class="success">deveLancarExcecaoAoExtrairNumeroContaDeTokenVazio()</td>
+<td class="success">0.003s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">Deve retornar false para token com assinatura inválida</td>
+<td class="success">deveRetornarFalseParaTokenComAssinaturaInvalida()</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">Deve retornar false para token expirado</td>
+<td class="success">deveRetornarFalseParaTokenExpirado()</td>
+<td class="success">0.007s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">Deve retornar false para token malformado</td>
+<td class="success">deveRetornarFalseParaTokenMalformado()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">Deve retornar tempo de expiração configurado</td>
+<td class="success">deveRetornarTempoExpiracaoConfigurado()</td>
+<td class="success">0.001s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">Deve validar token válido</td>
+<td class="success">deveValidarTokenValido()</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre>16:17:25.408 [Test worker] WARN br.com.banksystem.contas.security.JwtUtil -- Token JWT inválido: Malformed protected header JSON: Unable to deserialize: Unexpected character ('�' (code 65533 / 0xfffd)): expected a valid value (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (InputStreamReader); line: 1, column: 2]
+16:17:25.463 [Test worker] WARN br.com.banksystem.contas.security.JwtUtil -- Token JWT inválido: JWT expired 3600460 milliseconds ago at 2026-04-09T18:17:25.000Z. Current time: 2026-04-09T19:17:25.460Z. Allowed clock skew: 0 milliseconds.
+16:17:25.473 [Test worker] WARN br.com.banksystem.contas.security.JwtUtil -- Token JWT inválido: JWT signature does not match locally computed signature. JWT validity cannot be asserted and should not be trusted.
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="https://www.gradle.org">Gradle 8.14</a> at 9 de abr. de 2026 16:17:26</p>
+</div>
+</div>
+</body>
+</html>
