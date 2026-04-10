@@ -1,4 +1,3 @@
-```markdown
 <div align="center">
 
 # 🏦 BankSystem API
@@ -18,16 +17,16 @@
 
 ## 📋 Índice
 
-- [🏦 Sobre o Sistema](#-sobre-o-sistema)
-- [🏗️ Arquitetura](#️-arquitetura)
-- [🔥 Funcionalidades](#-funcionalidades)
-- [🛠️ Stack Tecnológica](#️-stack-tecnológica)
-- [🚀 Começando](#-começando)
-- [⚙️ Configuração Local](#️-configuração-local)
-- [📡 Microserviços](#-microserviços)
-- [🔐 Autenticação](#-autenticação)
-- [🧪 Testes](#-testes)
-- [🤝 Contribuindo](#-contribuindo)
+- [Sobre o Sistema](#-sobre-o-sistema)
+- [Arquitetura](#️-arquitetura)
+- [Funcionalidades](#-funcionalidades)
+- [Stack Tecnológica](#️-stack-tecnológica)
+- [Começando](#-começando)
+- [Configuração Local](#️-configuração-local)
+- [Microserviços](#-microserviços)
+- [Autenticação](#-autenticação)
+- [Testes](#-testes)
+- [Contribuindo](#-contribuindo)
 
 ---
 
@@ -37,18 +36,18 @@ O **BankSystem** é uma API completa para operações bancárias, construída co
 
 ### 🎯 Por que BankSystem?
 
-- 🏗️ **Microserviços**: Arquitetura distribuída e escalável
-- 🔒 **Segurança**: Autenticação JWT + PIN duplo para transferências
-- ⚡ **Setup Simples**: Tudo configurado para rodar localmente
-- 📊 **Desenvolvimento Ágil**: Sem complexidade de ambiente
-- 🔄 **Tempo Real**: Notificações SSE + Kafka
-- 📄 **Relatórios**: Geração de extratos em PDF
+| | |
+|---|---|
+| 🏗️ **Microserviços** | Arquitetura distribuída e escalável |
+| 🔒 **Segurança** | Autenticação JWT + PIN duplo para transferências |
+| ⚡ **Setup Simples** | Tudo configurado para rodar localmente |
+| 📊 **Desenvolvimento Ágil** | Sem complexidade de ambiente |
+| 🔄 **Tempo Real** | Notificações SSE + Kafka |
+| 📄 **Relatórios** | Geração de extratos em PDF |
 
 ---
 
 ## 🏗️ Arquitetura
-
-<div align="center">
 
 ```mermaid
 graph TB
@@ -57,23 +56,21 @@ graph TB
     Client --> Extratos[📊 Extratos :8083]
     Client --> Notificacoes[🔔 Notificações :8084]
     Client --> Fraudes[🛡️ Fraudes :8085]
-    
+
     Contas --> H2_1[(H2 Database)]
     Transacoes --> H2_2[(H2 Database)]
     Extratos --> H2_3[(H2 Database)]
-    
+
     Contas --> Email[📧 MailHog :8025]
     Transacoes --> Kafka[Apache Kafka]
     Kafka --> Notificacoes
     Notificacoes --> Redis[(Redis Cache)]
 ```
 
-</div>
-
-### 🎯 Ciclo de Vida da Conta
+### 🔄 Ciclo de Vida da Conta
 
 ```
-📧 PENDENTE_EMAIL → ✅ ATIVA → ⏸️ SUSPENSA / ❌ ENCERRADA
+📧 PENDENTE_EMAIL  →  ✅ ATIVA  →  ⏸️ SUSPENSA / ❌ ENCERRADA
 ```
 
 ---
@@ -85,7 +82,7 @@ graph TB
 <td width="50%">
 
 ### ✅ Core Banking
-- 🏦 **Criação de Contas** com verificação email
+- 🏦 **Criação de Contas** com verificação de email
 - 🔐 **Autenticação JWT** segura
 - 💰 **Depósitos e Saques** instantâneos
 - 💸 **Transferências** com PIN duplo
@@ -100,7 +97,7 @@ graph TB
 - 🔔 **Notificações SSE** em tempo real
 - 📨 **Mensageria Kafka** para eventos
 - 🔍 **Filtros Avançados** por período/tipo
-- 🛡️ **Detecção de Fraudes** (em desenvolvimento)
+- 🛡️ **Detecção de Fraudes** *(em desenvolvimento)*
 - 📈 **Analytics** de transações
 - 🔄 **Paginação** otimizada
 
@@ -147,12 +144,12 @@ graph TB
 Java 21 (JDK 21)
 Gradle >= 8.0
 Git >= 2.30.0
-Redis (opcional - para notificações)
+Redis    # opcional — para notificações
 ```
 
-> ✅ **Sem Docker necessário!** Tudo roda nativamente com H2 Database em memória
+> ✅ **Sem Docker necessário!** Tudo roda nativamente com H2 Database em memória.
 
-### ⚡ Instalação Super Rápida
+### ⚡ Instalação Rápida
 
 ```bash
 # Clone o repositório
@@ -162,40 +159,25 @@ cd banksystem-api
 # Execute todos os serviços de uma vez
 ./gradlew bootRunAll
 
-# Ou execute cada serviço individualmente:
-# Terminal 1 - Contas
-cd contas-service && ./gradlew bootRun
-
-# Terminal 2 - Transações  
-cd transacoes-service && ./gradlew bootRun
-
-# Terminal 3 - Extratos
-cd extratos-service && ./gradlew bootRun
-
-# Terminal 4 - Notificações
-cd notificacoes-service && ./gradlew bootRun
-
-# Terminal 5 - Fraudes (opcional)
-cd fraudes-service && ./gradlew bootRun
-
-# Terminal 6 - MailHog (opcional)
-mailhog
+# Ou individualmente (um terminal por serviço):
+cd contas-service       && ./gradlew bootRun  # Terminal 1
+cd transacoes-service   && ./gradlew bootRun  # Terminal 2
+cd extratos-service     && ./gradlew bootRun  # Terminal 3
+cd notificacoes-service && ./gradlew bootRun  # Terminal 4
+cd fraudes-service      && ./gradlew bootRun  # Terminal 5 (opcional)
+mailhog                                        # Terminal 6 (opcional)
 ```
 
-<div align="center">
+### 🌐 Serviços Disponíveis
 
-### 🎉 Sistema rodando em segundos!
-
-| Serviço | URL | Status | Swagger | H2 Console |
-|---------|-----|--------|---------|------------|
-| 🏦 Contas | [localhost:8081](http://localhost:8081) | ✅ | [Swagger](http://localhost:8081/swagger-ui.html) | [H2](http://localhost:8081/h2-console) |
-| 💸 Transações | [localhost:8082](http://localhost:8082) | ✅ | [Swagger](http://localhost:8082/swagger-ui.html) | [H2](http://localhost:8082/h2-console) |
-| 📊 Extratos | [localhost:8083](http://localhost:8083) | ✅ | [Swagger](http://localhost:8083/swagger-ui.html) | [H2](http://localhost:8083/h2-console) |
-| 🔔 Notificações | [localhost:8084](http://localhost:8084) | ✅ | [Swagger](http://localhost:8084/swagger-ui.html) | - |
-| 🛡️ Fraudes | [localhost:8085](http://localhost:8085) | 🔄 | [Swagger](http://localhost:8085/swagger-ui.html) | [H2](http://localhost:8085/h2-console) |
-| 📧 MailHog | [localhost:8025](http://localhost:8025) | ✅ | - | - |
-
-</div>
+| Serviço | URL | Swagger | H2 Console |
+|---|---|---|---|
+| 🏦 Contas | [localhost:8081](http://localhost:8081) | [/swagger-ui.html](http://localhost:8081/swagger-ui.html) | [/h2-console](http://localhost:8081/h2-console) |
+| 💸 Transações | [localhost:8082](http://localhost:8082) | [/swagger-ui.html](http://localhost:8082/swagger-ui.html) | [/h2-console](http://localhost:8082/h2-console) |
+| 📊 Extratos | [localhost:8083](http://localhost:8083) | [/swagger-ui.html](http://localhost:8083/swagger-ui.html) | [/h2-console](http://localhost:8083/h2-console) |
+| 🔔 Notificações | [localhost:8084](http://localhost:8084) | [/swagger-ui.html](http://localhost:8084/swagger-ui.html) | — |
+| 🛡️ Fraudes | [localhost:8085](http://localhost:8085) | [/swagger-ui.html](http://localhost:8085/swagger-ui.html) | [/h2-console](http://localhost:8085/h2-console) |
+| 📧 MailHog | [localhost:8025](http://localhost:8025) | — | — |
 
 ---
 
@@ -203,17 +185,17 @@ mailhog
 
 ### 🗄️ Banco de Dados H2
 
-Cada microserviço usa seu próprio banco H2 em memória:
+Cada microserviço possui seu próprio banco H2 em memória:
 
 ```yaml
-# application.yml (padrão para todos os serviços)
+# application.yml — padrão para todos os serviços
 spring:
   datasource:
     url: jdbc:h2:mem:banksystem
     driver-class-name: org.h2.Driver
     username: sa
-    password: 
-  
+    password:
+
   h2:
     console:
       enabled: true
@@ -227,25 +209,23 @@ spring:
       hibernate:
         format_sql: true
 
-  # Redis (para notificações)
   data:
     redis:
       host: localhost
-      port: 6379
+      port: 6379       # para notificações
 
-  # Kafka (para mensageria)
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: localhost:9092  # para mensageria
 ```
 
-### 🏗️ Estrutura do Projeto Gradle
+### 🏗️ Estrutura do Projeto
 
 ```
 banksystem-api/
-├── build.gradle                    # Configuração raiz
-├── settings.gradle                 # Configuração de módulos
+├── build.gradle
+├── settings.gradle
 ├── contas-service/
-│   ├── build.gradle               # Dependências específicas
+│   ├── build.gradle
 │   └── src/main/java/
 ├── transacoes-service/
 │   ├── build.gradle
@@ -261,63 +241,49 @@ banksystem-api/
     └── src/main/java/
 ```
 
-### 🔧 Gradle Commands
+### 🔧 Comandos Gradle
 
 ```bash
-# Build de todos os projetos
-./gradlew build
-
-# Executar testes
-./gradlew test
-
-# Executar um serviço específico
-./gradlew :contas-service:bootRun
-
-# Gerar relatório de cobertura
-./gradlew jacocoTestReport
-
-# Verificar cobertura mínima (65%)
-./gradlew jacocoTestCoverageVerification
-
-# Limpar build
-./gradlew clean
-
-# Ver dependências
-./gradlew dependencies
+./gradlew build                                # Build de todos os projetos
+./gradlew test                                 # Executar todos os testes
+./gradlew :contas-service:bootRun              # Executar serviço específico
+./gradlew jacocoTestReport                     # Gerar relatório de cobertura
+./gradlew jacocoTestCoverageVerification       # Verificar cobertura mínima (65%)
+./gradlew clean                                # Limpar build
+./gradlew dependencies                         # Ver dependências
 ```
 
-### 🔍 Acessar Console H2
+### 🔍 Acesso ao Console H2
 
 ```
-URL: http://localhost:808X/h2-console
+URL:      http://localhost:808X/h2-console
 JDBC URL: jdbc:h2:mem:banksystem
-User: sa
+User:     sa
 Password: (vazio)
 ```
 
-### 📧 MailHog para Emails
+### 📧 MailHog
 
 ```bash
-# Instalar MailHog (macOS)
+# macOS
 brew install mailhog
 
-# Instalar MailHog (Linux)
+# Linux
 sudo apt-get install mailhog
 
-# Instalar MailHog (Windows)
-# Download: https://github.com/mailhog/MailHog/releases
+# Windows — download em: https://github.com/mailhog/MailHog/releases
 
-# Executar
+# Iniciar
 mailhog
 
-# Acessar interface web
+# Interface web
 http://localhost:8025
 ```
 
-### 🔧 Configuração JWT (Hardcoded)
+### 🔧 Configuração JWT
 
 ```java
-// SecurityConfig.java - Configuração fixa para desenvolvimento local
+// SecurityConfig.java — configuração fixa para desenvolvimento local
 @Value("${jwt.secret:minha-chave-super-secreta-para-desenvolvimento-local-256-bits}")
 private String jwtSecret;
 
@@ -329,10 +295,10 @@ private Long jwtExpiration;
 
 ## 📡 Microserviços
 
-### 🏦 Serviço de Contas (8081)
+### 🏦 Contas (porta 8081)
 
 <details>
-<summary><b>📋 Endpoints de Contas</b></summary>
+<summary><b>Ver endpoints</b></summary>
 
 #### Criar Conta
 ```bash
@@ -358,7 +324,7 @@ curl -X POST http://localhost:8081/api/contas/login \
   }'
 ```
 
-#### Perfil (Autenticado)
+#### Perfil *(autenticado)*
 ```bash
 curl -H "Authorization: Bearer SEU_TOKEN" \
   http://localhost:8081/api/contas/perfil
@@ -366,10 +332,10 @@ curl -H "Authorization: Bearer SEU_TOKEN" \
 
 </details>
 
-### 💸 Serviço de Transações (8082)
+### 💸 Transações (porta 8082)
 
 <details>
-<summary><b>💰 Endpoints de Transações</b></summary>
+<summary><b>Ver endpoints</b></summary>
 
 #### Depósito
 ```bash
@@ -382,7 +348,7 @@ curl -X POST http://localhost:8082/api/transacoes/deposito \
   }'
 ```
 
-#### Transferência (com PIN)
+#### Transferência *(com PIN)*
 ```bash
 curl -X POST http://localhost:8082/api/transacoes/transferencia \
   -H "Authorization: Bearer SEU_TOKEN" \
@@ -403,10 +369,10 @@ curl -H "Authorization: Bearer SEU_TOKEN" \
 
 </details>
 
-### 📊 Serviço de Extratos (8083)
+### 📊 Extratos (porta 8083)
 
 <details>
-<summary><b>📄 Endpoints de Extratos</b></summary>
+<summary><b>Ver endpoints</b></summary>
 
 #### Extrato Completo
 ```bash
@@ -429,12 +395,12 @@ curl -H "Authorization: Bearer SEU_TOKEN" \
 
 </details>
 
-### 🔔 Serviço de Notificações (8084)
+### 🔔 Notificações (porta 8084)
 
 <details>
-<summary><b>⚡ Notificações em Tempo Real</b></summary>
+<summary><b>Ver endpoints</b></summary>
 
-#### Conexão SSE (JavaScript)
+#### Conexão SSE *(JavaScript)*
 ```javascript
 const token = 'SEU_JWT_TOKEN_AQUI';
 const eventSource = new EventSource(
@@ -444,14 +410,11 @@ const eventSource = new EventSource(
 eventSource.onmessage = (event) => {
   const notificacao = JSON.parse(event.data);
   console.log('💰 Nova notificação:', notificacao);
-  
-  // Exibir toast/popup
   showToast(`💰 ${notificacao.mensagem}`, 'success');
 };
 
 eventSource.onerror = (error) => {
   console.log('❌ Conexão SSE perdida:', error);
-  // Tentar reconectar após 5 segundos
   setTimeout(() => {
     eventSource.close();
     // Recriar conexão
@@ -473,178 +436,145 @@ curl -H "Authorization: Bearer SEU_TOKEN" \
 
 ### 🎫 JWT Token
 
-Todos os endpoints marcados com *(autenticado)* exigem:
+Todos os endpoints autenticados exigem o header:
 
 ```http
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0Mzc0MzIzNiIsImlhdCI6MTY5...
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
 ```
 
 ### 🔒 Dupla Autenticação
 
-1. **Senha de Login**: Para acessar a conta
-2. **PIN de Transferência**: 4 dígitos para autorizar transferências
-
 ```json
 {
-  "senha": "minhasenha123",          // Login na conta
-  "senhaTransferencia": "1234"       // PIN para transferências
+  "senha": "minhasenha123",     // Senha de login da conta
+  "senhaTransferencia": "1234"  // PIN de 4 dígitos para transferências
 }
 ```
 
-### 📧 Verificação de Email
+### 📧 Fluxo de Verificação de Email
 
 ```bash
-# 1. Criar conta (status: PENDENTE_EMAIL)
+# 1. Criar conta (status inicial: PENDENTE_EMAIL)
 curl -X POST http://localhost:8081/api/contas/criar -d '{...}'
 
-# 2. Verificar email no MailHog
-# Abrir: http://localhost:8025
+# 2. Abrir MailHog e clicar no link recebido
+#    http://localhost:8025
 
-# 3. Clicar no link de verificação do email
-# Ou copiar o token e fazer:
+# 3. Ou verificar manualmente via token:
 curl "http://localhost:8081/api/contas/verificar-email?token=UUID-DO-EMAIL"
 
-# 4. Status muda para: ATIVA ✅
+# ✅ Status muda para: ATIVA
 ```
 
 ---
 
 ## 🧪 Testes
 
-### 🔬 Executar Testes
+### ▶️ Executar Testes
 
 ```bash
-# Todos os testes de todos os serviços
-./gradlew test
-
-# Testes de um serviço específico
-./gradlew :contas-service:test
-
-# Testes com relatório de cobertura
-./gradlew test jacocoTestReport
-
-# Verificar cobertura mínima (65%)
-./gradlew jacocoTestCoverageVerification
-
-# Testes contínuos (watch mode)
-./gradlew test --continuous
+./gradlew test                                   # Todos os serviços
+./gradlew :contas-service:test                   # Serviço específico
+./gradlew test jacocoTestReport                  # Com relatório de cobertura
+./gradlew jacocoTestCoverageVerification         # Verificar mínimo de 65%
+./gradlew test --continuous                      # Watch mode
 ```
 
 ### 📊 Relatórios de Cobertura
 
 ```bash
-# Gerar relatórios HTML
 ./gradlew jacocoTestReport
 
-# Relatórios ficam em:
+# Relatórios gerados em:
 # build/reports/jacoco/test/html/index.html
 
-# Verificar cobertura por serviço:
+# Por serviço:
 ./gradlew :contas-service:jacocoTestReport
 ./gradlew :transacoes-service:jacocoTestReport
 ./gradlew :extratos-service:jacocoTestReport
 ```
 
-### 🧪 Teste Manual Completo (Passo a Passo)
+### 📈 Coverage Atual
+
+| Serviço | Cobertura | Linhas |
+|---|---|---|
+| Contas Service | 91.2% | 145/159 |
+| Transações Service | 88.7% | 180/203 |
+| Extratos Service | 85.3% | 120/140 |
+| Notificações Service | 92.1% | 58/63 |
+| **Total Geral** | **89.2%** | **503/565** |
+
+### 🧪 Teste Manual Passo a Passo
 
 ```bash
-# 🚀 Iniciar todos os serviços
+# Iniciar todos os serviços
 ./gradlew bootRunAll
 
-# 1️⃣ Criar conta
+# 1. Criar conta
 curl -X POST http://localhost:8081/api/contas/criar \
   -H "Content-Type: application/json" \
   -d '{
     "nomeCompleto": "João Silva",
-    "cpf": "12345678901", 
+    "cpf": "12345678901",
     "email": "joao@email.com",
     "telefone": "11987654321",
     "senha": "minhasenha123",
     "senhaTransferencia": "1234"
   }'
+# ✅ Guarde o numeroConta retornado (ex: 43743236)
 
-# ✅ Resposta: numeroConta gerado (ex: 43743236)
-
-# 2️⃣ Verificar email
-# Abrir http://localhost:8025
-# Clicar no link do email OU:
+# 2. Verificar email em http://localhost:8025
+#    ou via token:
 curl "http://localhost:8081/api/contas/verificar-email?token=TOKEN-DO-EMAIL"
 
-# 3️⃣ Fazer login
+# 3. Login
 curl -X POST http://localhost:8081/api/contas/login \
   -H "Content-Type: application/json" \
-  -d '{
-    "numeroConta": "43743236",
-    "senha": "minhasenha123"
-  }'
+  -d '{"numeroConta": "43743236", "senha": "minhasenha123"}'
+# ✅ Copie o token JWT retornado
 
-# ✅ Copiar o token JWT da resposta
-
-# 4️⃣ Depositar dinheiro
+# 4. Depositar
 curl -X POST http://localhost:8082/api/transacoes/deposito \
-  -H "Authorization: Bearer SEU_TOKEN_AQUI" \
+  -H "Authorization: Bearer SEU_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{
-    "valor": 1000.00,
-    "descricao": "Depósito inicial"
-  }'
+  -d '{"valor": 1000.00, "descricao": "Depósito inicial"}'
 
-# 5️⃣ Consultar saldo
-curl -H "Authorization: Bearer SEU_TOKEN_AQUI" \
-  http://localhost:8082/api/transacoes/saldo
+# 5. Consultar saldo
+curl -H "Authorization: Bearer SEU_TOKEN" http://localhost:8082/api/transacoes/saldo
 
-# 6️⃣ Ver extrato
-curl -H "Authorization: Bearer SEU_TOKEN_AQUI" \
-  http://localhost:8083/api/extratos/conta/43743236
+# 6. Ver extrato
+curl -H "Authorization: Bearer SEU_TOKEN" http://localhost:8083/api/extratos/conta/43743236
 
-# 7️⃣ Baixar PDF do extrato
-curl -H "Authorization: Bearer SEU_TOKEN_AQUI" \
-  http://localhost:8083/api/extratos/pdf/43743236 \
-  --output meu-extrato.pdf
+# 7. Baixar PDF do extrato
+curl -H "Authorization: Bearer SEU_TOKEN" \
+  http://localhost:8083/api/extratos/pdf/43743236 --output extrato.pdf
 
-# 8️⃣ Testar notificações SSE (abrir no navegador)
-# http://localhost:8084/api/notificacoes/sse?token=SEU_TOKEN_AQUI
-```
-
-### 📊 Coverage Atual
-
-```
-Contas Service    : 91.2% ( 145/159 )
-Transações Service: 88.7% ( 180/203 )
-Extratos Service  : 85.3% ( 120/140 )
-Notificações     : 92.1% ( 58/63 )
-Total Geral      : 89.2% ( 503/565 )
+# 8. Notificações SSE (abrir no navegador)
+# http://localhost:8084/api/notificacoes/sse?token=SEU_TOKEN
 ```
 
 ---
 
 ## 🤝 Contribuindo
 
-<div align="center">
-
-### 🌟 Como Contribuir?
-
-</div>
-
-1. 🍴 **Fork** o projeto
-2. 🌿 Crie sua **branch** (`git checkout -b feature/NovaFuncionalidade`)
-3. ✨ **Commit** suas mudanças (`git commit -m 'Add: Nova funcionalidade bancária'`)
-4. 📤 **Push** para a branch (`git push origin feature/NovaFuncionalidade`)
+1. 🍴 Faça um **fork** do projeto
+2. 🌿 Crie sua branch: `git checkout -b feature/NovaFuncionalidade`
+3. ✨ Commit suas mudanças: `git commit -m 'feat: nova funcionalidade bancária'`
+4. 📤 Push para a branch: `git push origin feature/NovaFuncionalidade`
 5. 🔄 Abra um **Pull Request**
 
-### 📋 Padrões de Desenvolvimento
+### 📋 Padrões do Projeto
 
 - ✅ **Java 21** + **Spring Boot 3.2**
 - ✅ **Gradle** para build e dependências
-- ✅ **Testes unitários** obrigatórios (>65% coverage)
+- ✅ **Testes unitários** obrigatórios (cobertura mínima de 65%)
 - ✅ **Swagger** para documentação automática
-- ✅ **Conventional Commits** para mensagens
-- ✅ **Code Review** obrigatório
+- ✅ **Conventional Commits** para mensagens de commit
+- ✅ **Code Review** obrigatório antes do merge
 
-### 🏗️ Estrutura de Commits
+### 💬 Padrão de Commits
 
 ```bash
-# Exemplos de commits seguindo padrão
 git commit -m "feat: adicionar endpoint de transferência internacional"
 git commit -m "fix: corrigir validação de CPF no cadastro"
 git commit -m "docs: atualizar documentação da API de extratos"
@@ -656,22 +586,22 @@ git commit -m "refactor: melhorar performance do cálculo de juros"
 
 ## 📈 Roadmap
 
-- [ ] 🤖 **Sistema de Fraudes** com ML
-- [ ] 📱 **Push Notifications** via Firebase
-- [ ] 🔄 **Event Sourcing** com Kafka
-- [ ] 📊 **Dashboard Analytics** em tempo real
-- [ ] 🌐 **API GraphQL** alternativa
-- [ ] 🔐 **Autenticação 2FA** com TOTP
-- [ ] 💳 **Cartões Virtuais** e físicos
-- [ ] 🏪 **Open Banking** APIs
-- [ ] 🚀 **Deploy Kubernetes** automático
-- [ ] 📦 **Docker Compose** completo
+- [ ] 🤖 Sistema de Fraudes com ML
+- [ ] 📱 Push Notifications via Firebase
+- [ ] 🔄 Event Sourcing com Kafka
+- [ ] 📊 Dashboard Analytics em tempo real
+- [ ] 🌐 API GraphQL alternativa
+- [ ] 🔐 Autenticação 2FA com TOTP
+- [ ] 💳 Cartões Virtuais e físicos
+- [ ] 🏪 Open Banking APIs
+- [ ] 🚀 Deploy Kubernetes automático
+- [ ] 📦 Docker Compose completo
 
 ---
 
 ## 📄 Licença
 
-Este projeto está sob a licença **MIT**. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+Distribuído sob a licença **MIT**. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ---
 
@@ -679,7 +609,7 @@ Este projeto está sob a licença **MIT**. Veja o arquivo [LICENSE](LICENSE) par
 
 ### 🔗 Links Úteis
 
-[📖 Docs](https://docs.banksystem.com) • [🔗 Swagger](http://localhost:8081/swagger-ui.html) • [📧 MailHog](http://localhost:8025) • [📊 Jacoco Reports](./build/reports/jacoco/test/html/index.html)
+[📖 Documentação](https://docs.banksystem.com) • [🔗 Swagger](http://localhost:8081/swagger-ui.html) • [📧 MailHog](http://localhost:8025) • [📊 Jacoco Reports](./build/reports/jacoco/test/html/index.html)
 
 ### 💙 Gostou do projeto? Deixe uma ⭐!
 
@@ -690,31 +620,3 @@ Este projeto está sob a licença **MIT**. Veja o arquivo [LICENSE](LICENSE) par
 *Desenvolvido com ❤️ e Java 21 para a comunidade fintech*
 
 </div>
-```
-
-## 🎯 **Principais Atualizações para Java 21 + Gradle:**
-
-### ✅ **Stack Atualizada**
-- **Java 21** destacado nos badges
-- **Spring Boot 3.2** especificado
-- **Gradle 8+** como build tool
-- **Kafka** para mensageria
-- **JaCoCo** para coverage
-
-### 🏗️ **Configuração Gradle**
-- Comandos Gradle específicos
-- Estrutura de projeto multi-módulo
-- Configuração de coverage (65% mínimo)
-- Tasks personalizadas
-
-### 📊 **Melhorias de Desenvolvimento**
-- Console H2 para cada serviço
-- Relatórios JaCoCo integrados
-- Testes contínuos com `--continuous`
-- Build otimizado para Java 21
-
-### 🔧 **Configuração Simplificada**
-- Sem variáveis de ambiente
-- Configurações hardcoded para dev
-- Setup local plug-and-play
-- Repositórios Maven alternativos (Aliyun)
