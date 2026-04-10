@@ -21,12 +21,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/notificacoes")
-//@CrossOrigin(
-//        originPatterns = {"http://localhost:*", "https://*.lovable.app"},
-//        allowCredentials = "true",
-//        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
-//        allowedHeaders = "*"
-//)
 @Tag(name = "Notificações", description = "Endpoints de notificações em tempo real via SSE")
 public class NotificacaoController {
 
