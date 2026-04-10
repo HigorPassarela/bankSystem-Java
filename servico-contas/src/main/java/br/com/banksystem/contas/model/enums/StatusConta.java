@@ -1,8 +1,8 @@
-package br.com.banksystem.contas.model.dto;
+package br.com.banksystem.contas.model.enums;
 
 /**
  * Status do ciclo de vida de uma conta bancária.
- *
+ * <p>
  * PENDENTE_EMAIL  → conta criada, aguardando verificação de e-mail
  * ATIVA           → e-mail verificado, conta operacional
  * SUSPENSA        → bloqueada por suspeita de fraude ou inadimplência

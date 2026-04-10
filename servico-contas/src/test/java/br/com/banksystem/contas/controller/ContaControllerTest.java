@@ -2,7 +2,7 @@ package br.com.banksystem.contas.controller;
 
 import br.com.banksystem.contas.dto.*;
 import br.com.banksystem.contas.exception.GlobalExceptionHandler;
-import br.com.banksystem.contas.model.dto.StatusConta;
+import br.com.banksystem.contas.model.enums.StatusConta;
 import br.com.banksystem.contas.service.ContaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;

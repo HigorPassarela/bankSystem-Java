@@ -78,8 +78,8 @@ public class EmailService {
      * Envia e-mail de notificação de transferência recebida.
      */
     public void enviarNotificacaoTransferencia(String destinatario, String nomeDestinatario,
-                                                String numeroConta, String valorFormatado,
-                                                String nomeRemetente) {
+                                               String numeroConta, String valorFormatado,
+                                               String nomeRemetente) {
         try {
             MimeMessage mensagem = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mensagem, true, "UTF-8");

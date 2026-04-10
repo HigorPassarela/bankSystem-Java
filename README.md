@@ -156,7 +156,7 @@ cd servico-fraudes
 ª   ª   ª   ª           +---br.com.banksystem.contas.exception
 ª   ª   ª   ª           +---br.com.banksystem.contas.mapper
 ª   ª   ª   ª           +---br.com.banksystem.contas.model
-ª   ª   ª   ª           +---br.com.banksystem.contas.model.dto
+ª   ª   ª   ª           +---br.com.banksystem.contas.model.enums
 ª   ª   ª   ª           +---br.com.banksystem.contas.security
 ª   ª   ª   ª           +---br.com.banksystem.contas.service
 ª   ª   ª   ª           +---jacoco-resources

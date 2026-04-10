@@ -1,6 +1,6 @@
 package br.com.banksystem.contas.model;
 
-import br.com.banksystem.contas.model.dto.StatusConta;
+import br.com.banksystem.contas.model.enums.StatusConta;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

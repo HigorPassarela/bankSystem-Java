@@ -5,7 +5,7 @@ import br.com.banksystem.contas.exception.ContaJaExisteException;
 import br.com.banksystem.contas.exception.ContaNaoEncontradaException;
 import br.com.banksystem.contas.mapper.ContaMapper;
 import br.com.banksystem.contas.model.Conta;
-import br.com.banksystem.contas.model.dto.StatusConta;
+import br.com.banksystem.contas.model.enums.StatusConta;
 import br.com.banksystem.contas.repository.ContaRepository;
 import br.com.banksystem.contas.security.JwtUtil;
 import org.slf4j.Logger;
@@ -23,16 +23,16 @@ import java.util.UUID;
 
 /**
  * Serviço de negócio para gestão de contas bancárias.
- *
+ * <p>
  * Fluxo de status:
- *   criarConta()    → PENDENTE_EMAIL
- *   verificarEmail() → ATIVA
+ * criarConta()    → PENDENTE_EMAIL
+ * verificarEmail() → ATIVA
  */
 @Service
 public class ContaService {
 
     private static final Logger log = LoggerFactory.getLogger(ContaService.class);
-    private static final long SALDO_INICIAL_CENTAVOS  = 0L;       // sem saldo inicial
+    private static final long SALDO_INICIAL_CENTAVOS = 0L;       // sem saldo inicial
     private static final long LIMITE_INICIAL_CENTAVOS = 500000L;  // R$ 5.000,00
 
     private final ContaRepository contaRepository;
@@ -71,10 +71,10 @@ public class ContaService {
         if (contaRepository.existsByEmail(dto.email()))
             throw new ContaJaExisteException("E-mail já cadastrado no sistema");
 
-        String numeroConta          = gerarNumeroConta();
-        String senhaHash            = codificadorSenha.encode(dto.senha());
+        String numeroConta = gerarNumeroConta();
+        String senhaHash = codificadorSenha.encode(dto.senha());
         String senhaTransferenciaHash = codificadorSenha.encode(dto.senhaTransferencia());
-        String tokenVerificacao     = UUID.randomUUID().toString();
+        String tokenVerificacao = UUID.randomUUID().toString();
 
         Conta conta = contaMapper.paraEntidade(dto, senhaHash, senhaTransferenciaHash, numeroConta);
         conta.setTokenVerificacaoEmail(tokenVerificacao);
@@ -123,7 +123,9 @@ public class ContaService {
                 "E-mail verificado com sucesso! Conta " + conta.getNumeroConta() + " está ATIVA.", true);
     }
 
-    /** Reenvia e-mail de verificação para contas ainda PENDENTE_EMAIL. */
+    /**
+     * Reenvia e-mail de verificação para contas ainda PENDENTE_EMAIL.
+     */
     public void reenviarVerificacao(String email) {
         Conta conta = contaRepository.findByEmail(email)
                 .orElseThrow(() -> new ContaNaoEncontradaException(
@@ -228,7 +230,9 @@ public class ContaService {
     private String gerarNumeroConta() {
         Random random = new Random();
         String numero;
-        do { numero = String.format("%08d", random.nextInt(100000000)); }
+        do {
+            numero = String.format("%08d", random.nextInt(100000000));
+        }
         while (contaRepository.existsByNumeroConta(numero));
         return numero;
     }
