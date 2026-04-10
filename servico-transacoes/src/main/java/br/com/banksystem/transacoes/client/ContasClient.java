@@ -66,7 +66,7 @@ public class ContasClient {
 
             if (resposta.getStatusCode().is2xxSuccessful() && resposta.getBody() != null) {
                 Object dados = resposta.getBody().get("dados");
-                if (dados instanceof java.util.Map<?,?> dadosMap) {
+                if (dados instanceof java.util.Map<?, ?> dadosMap) {
                     Object nome = dadosMap.get("nomeCompleto");
                     return nome != null ? nome.toString() : numeroConta;
                 }

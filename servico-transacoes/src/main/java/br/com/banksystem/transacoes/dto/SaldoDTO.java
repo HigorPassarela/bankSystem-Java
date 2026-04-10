@@ -9,4 +9,5 @@ public record SaldoDTO(
         String numeroConta,
         BigDecimal saldoDisponivel,
         BigDecimal limiteDisponivel
-) {}
+) {
+}

@@ -17,13 +17,13 @@ import java.util.UUID;
 
 /**
  * Serviço de processamento de transações bancárias.
- *
+ * <p>
  * Operações disponíveis:
- *  - Depósito     → credita no saldo (INCR Redis)
- *  - Débito       → debita do saldo  (DECR Redis, valida saldo)
- *  - Crédito      → usa limite       (DECR Redis limite)
- *  - Transferência → débito origem + crédito destino (atômico, exige PIN)
- *
+ * - Depósito     → credita no saldo (INCR Redis)
+ * - Débito       → debita do saldo  (DECR Redis, valida saldo)
+ * - Crédito      → usa limite       (DECR Redis limite)
+ * - Transferência → débito origem + crédito destino (atômico, exige PIN)
+ * <p>
  * Todas publicam evento no Kafka → extratos + notificações + fraudes.
  */
 @Service

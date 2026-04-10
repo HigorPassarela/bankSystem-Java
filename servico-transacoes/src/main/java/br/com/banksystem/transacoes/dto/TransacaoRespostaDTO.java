@@ -14,4 +14,5 @@ public record TransacaoRespostaDTO(
         String status,
         BigDecimal saldoAtualizado,
         LocalDateTime dataHora
-) {}
+) {
+}
